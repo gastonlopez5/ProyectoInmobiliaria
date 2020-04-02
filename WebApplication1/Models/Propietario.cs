@@ -10,11 +10,15 @@ namespace WebApplication1.Models
     {
         [Key]
         public int Id { get; set; }
+        [Required, StringLength(8)]
+        public string Dni { get; set; }
         [Required]
         public string Nombre { get; set; }
+        [Required]
+        public string Apellido { get; set; }
         [DataType(DataType.EmailAddress), Required]
         public string Email { get; set; }
-        [DataType(DataType.Password), Required]
-        public string Clave { get; set; }
+        [Required]
+        public string Telefono { get; set; }
     }
 }

@@ -16,7 +16,12 @@ namespace WebApplication1.Models
         [Required]
         public int Ambientes { get; set; }
         [Required]
-        public int Superficie { get; set; }
+        public int Tipo { get; set; }
+        [Required]
+        public String Uso { get; set; }
+        [Required]
+        public Decimal Costo { get; set; }
+        public Boolean Disponible { get; set; }
         [Display(Name = "Dueño")]
         public int PropietarioId { get; set; }
         [ForeignKey("PropietarioId")]

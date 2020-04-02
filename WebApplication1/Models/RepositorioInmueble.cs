@@ -24,8 +24,8 @@ namespace WebApplication1.Models
 			int res = -1;
 			using (var connection = new MySqlConnection(connectionString))
 			{
-				string sql = $"INSERT INTO inmuebles (Direccion, Ambientes, Superficie, PropietarioId) " +
-					$"VALUES ('{p.Direccion}', '{p.Ambientes}','{p.Superficie}','{p.PropietarioId}')";
+				string sql = $"INSERT INTO inmuebles (Direccion, Tipo, Uso, Ambientes, Costo, Disponible, PropietarioId) " +
+					$"VALUES ('{p.Direccion}', '{p.Tipo}','{p.Uso}','{p.Ambientes}','{p.Costo}', '{p.Disponible}','{p.PropietarioId}')";
 				using (var command = new MySqlCommand(sql, connection))
 				{
 					command.CommandType = CommandType.Text;
@@ -60,14 +60,34 @@ namespace WebApplication1.Models
 			int res = -1;
 			using (var connection = new MySqlConnection(connectionString))
 			{
-				string sql = $"UPDATE inmuebles SET Direccion=@direccion, Ambientes=@ambientes, Superficie=@superficie, PropietarioId=@propietarioId " +
+				string sql = $"UPDATE inmuebles SET Direccion=@direccion,  Tipo=@tipo, Uso=@uso, Ambientes=@ambientes, Costo=@costo, Disponible=@disponible, PropietarioId=@propietarioId " +
 					$"WHERE Id = {p.Id}";
 				using (var command = new MySqlCommand(sql, connection))
 				{
 					command.Parameters.Add("@direccion", MySqlDbType.VarChar).Value = p.Direccion;
+					command.Parameters.Add("@tipo", MySqlDbType.Int32).Value = p.Tipo;
+					command.Parameters.Add("@uso", MySqlDbType.VarChar).Value = p.Uso;
 					command.Parameters.Add("@ambientes", MySqlDbType.Int32).Value = p.Ambientes;
-					command.Parameters.Add("@superficie", MySqlDbType.Int32).Value = p.Superficie;
+					command.Parameters.Add("@costo", MySqlDbType.Decimal).Value = p.Costo;
+					command.Parameters.Add("@disponible", MySqlDbType.Int32).Value = p.Disponible;
 					command.Parameters.Add("@propietarioId", MySqlDbType.Int32).Value = p.PropietarioId;
+					command.CommandType = CommandType.Text;
+					connection.Open();
+					res = command.ExecuteNonQuery();
+					connection.Close();
+				}
+			}
+			return res;
+		}
+
+		public int CambioDisponible(int p, string resp)
+		{
+			int res = -1;
+			using (var connection = new MySqlConnection(connectionString))
+			{
+				string sql = $"UPDATE Inmueble SET Disponible='{resp}' WHERE Id = {p}";
+				using (var command = new MySqlCommand(sql, connection))
+				{
 					command.CommandType = CommandType.Text;
 					connection.Open();
 					res = command.ExecuteNonQuery();
@@ -82,8 +102,8 @@ namespace WebApplication1.Models
 			IList<Inmueble> res = new List<Inmueble>();
 			using (var connection = new MySqlConnection(connectionString))
 			{
-				string sql = $"SELECT i.Id, Direccion, Ambientes, Superficie, PropietarioId, p.Nombre " +
-					$" FROM inmuebles i, propietarios p WHERE i.PropietarioId = p.Id";
+				string sql = $"SELECT i.Id, Direccion, Tipo, Uso, Ambientes, Costo, Disponible, PropietarioId, p.Nombre, p.apellido " +
+					$" FROM inmuebles i JOIN propietarios p ON(i.PropietarioId = p.Id)";
 				using (var command = new MySqlCommand(sql, connection))
 				{
 					command.CommandType = CommandType.Text;
@@ -95,13 +115,17 @@ namespace WebApplication1.Models
 						{
 							Id = reader.GetInt32(0),
 							Direccion = reader.GetString(1),
-							Ambientes = reader.GetInt32(2),
-							Superficie = reader.GetInt32(3),
-							PropietarioId = reader.GetInt32(4),
+							Tipo = reader.GetInt32(2),
+							Uso = reader.GetString(3),
+							Ambientes = reader.GetInt32(4),
+							Costo = reader.GetDecimal(5),
+							Disponible = reader.GetBoolean(6),
+							PropietarioId = reader.GetInt32(7),
 							Duenio = new Propietario
 							{
-								Id = reader.GetInt32(4),
-								Nombre = reader.GetString(5),
+								Id = reader.GetInt32(7),
+								Nombre = reader.GetString(8),
+								Apellido = reader.GetString(9),
 							}
 						};
 						res.Add(p);
@@ -117,8 +141,8 @@ namespace WebApplication1.Models
 			Inmueble entidad = null;
 			using (var connection = new MySqlConnection(connectionString))
 			{
-				string sql = $"SELECT i.Id, Direccion, Ambientes, Superficie, PropietarioId, p.Nombre " +
-					$" FROM inmuebles i, propietarios p WHERE i.PropietarioId = p.Id" +
+				string sql = $"SELECT i.Id, Direccion, Tipo, Uso, Ambientes, Costo, Disponible, PropietarioId, p.Nombre, p.Apellido " +
+					$" FROM inmuebles i JOIN propietarios p ON(i.PropietarioId = p.Id)" +
 					$" AND i.Id=@id";
 				using (var command = new MySqlCommand(sql, connection))
 				{
@@ -132,13 +156,17 @@ namespace WebApplication1.Models
 						{
 							Id = reader.GetInt32(0),
 							Direccion = reader.GetString(1),
-							Ambientes = reader.GetInt32(2),
-							Superficie = reader.GetInt32(3),
-							PropietarioId = reader.GetInt32(4),
+							Tipo = reader.GetInt32(2),
+							Uso = reader.GetString(3),
+							Ambientes = reader.GetInt32(4),
+							Costo = reader.GetDecimal(5),
+							Disponible = reader.GetBoolean(6),
+							PropietarioId = reader.GetInt32(7),
 							Duenio = new Propietario
 							{
-								Id = reader.GetInt32(4),
-								Nombre = reader.GetString(5),
+								Id = reader.GetInt32(7),
+								Nombre = reader.GetString(8),
+								Apellido = reader.GetString(9),
 							}
 						};
 					}
@@ -154,7 +182,7 @@ namespace WebApplication1.Models
 			Inmueble p = null;
 			using (var connection = new MySqlConnection(connectionString))
 			{
-				string sql = $"SELECT i.Id, Direccion, Ambientes, Superficie, Latitud, Longitud, PropietarioId, p.Nombre " +
+				string sql = $"SELECT i.Id, Direccion, Tipo, Uso, Ambientes, Costo, Disponible, PropietarioId, p.Nombre, p.Apellido " +
 					$" FROM Inmuebles i INNER JOIN Propietarios p ON i.PropietarioId = p.Id" +
 					$" WHERE PropietarioId=@idPropietario";
 				using (var command = new MySqlCommand(sql, connection))
@@ -169,13 +197,17 @@ namespace WebApplication1.Models
 						{
 							Id = reader.GetInt32(0),
 							Direccion = reader.GetString(1),
-							Ambientes = reader.GetInt32(2),
-							Superficie = reader.GetInt32(3),
-							PropietarioId = reader.GetInt32(4),
+							Tipo = reader.GetInt32(2),
+							Uso = reader.GetString(3),
+							Ambientes = reader.GetInt32(4),
+							Costo = reader.GetDecimal(5),
+							Disponible = reader.GetBoolean(6),
+							PropietarioId = reader.GetInt32(7),
 							Duenio = new Propietario
 							{
-								Id = reader.GetInt32(4),
-								Nombre = reader.GetString(5),
+								Id = reader.GetInt32(7),
+								Nombre = reader.GetString(8),
+								Apellido = reader.GetString(9),
 							}
 						};
 						res.Add(p);

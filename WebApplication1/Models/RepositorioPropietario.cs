@@ -25,15 +25,17 @@ namespace WebApplication1.Models
 			int res = -1;
 			using (var connection = new MySqlConnection(connectionString))
 			{
-				string sql = $"INSERT INTO Propietarios (Nombre, Email, Clave) " +
-					$"VALUES (@nombre, @email, @clave);" +
+				string sql = $"INSERT INTO Propietarios (Nombre, Apellido, Telefono, Email, Dni) " +
+					$"VALUES (@nombre, @apellido, @telefono, @email, @dni);" +
 					$"SELECT LAST_INSERT_ID();";//devuelve el id insertado
 				using (MySqlCommand command = new MySqlCommand(sql, connection))
 				{
 					command.CommandType = CommandType.Text;
 					command.Parameters.AddWithValue("@nombre", p.Nombre);
+					command.Parameters.AddWithValue("@apellido", p.Apellido);
+					command.Parameters.AddWithValue("@telefono", p.Telefono);
 					command.Parameters.AddWithValue("@email", p.Email);
-					command.Parameters.AddWithValue("@clave", p.Clave);
+					command.Parameters.AddWithValue("@dni", p.Dni);
 					connection.Open();
 					res = Convert.ToInt32(command.ExecuteScalar());
 					p.Id = res;
@@ -64,15 +66,17 @@ namespace WebApplication1.Models
 			int res = -1;
 			using (var connection = new MySqlConnection(connectionString))
 			{
-				string sql = $"UPDATE propietarios SET Nombre=@nombre, Email=@email, Clave=@clave " +
+				string sql = $"UPDATE propietarios SET Nombre=@nombre, Apellido=@apellido, Telefono=@telefono, Email=@email, Dni=@dni " +
 					$"WHERE Id = @id";
 				using (var command = new MySqlCommand(sql, connection))
 				{
 					command.CommandType = CommandType.Text;
-					command.Parameters.AddWithValue("@clave", p.Clave);
+					command.Parameters.AddWithValue("@apellido", p.Apellido);
 					command.Parameters.AddWithValue("@nombre", p.Nombre);
+					command.Parameters.AddWithValue("@telefono", p.Telefono);
 					command.Parameters.AddWithValue("@email", p.Email);
 					command.Parameters.AddWithValue("@id", p.Id);
+					command.Parameters.AddWithValue("@dni", p.Dni);
 					connection.Open();
 					res = command.ExecuteNonQuery();
 					connection.Close();
@@ -86,7 +90,7 @@ namespace WebApplication1.Models
 			IList<Propietario> res = new List<Propietario>();
 			using (var connection = new MySqlConnection(connectionString))
 			{
-				string sql = $"SELECT Id, Nombre, Email, Clave" +
+				string sql = $"SELECT Id, Nombre, Apellido, Telefono, Email, Dni" +
 					$" FROM propietarios" +
 					$" ORDER BY Nombre";
 				using (var command = new MySqlCommand(sql, connection))
@@ -100,8 +104,10 @@ namespace WebApplication1.Models
 						{
 							Id = reader.GetInt32(0),
 							Nombre = reader.GetString(1),
-							Email = reader.GetString(2),
-							Clave = reader.GetString(3),
+							Apellido = reader.GetString(2),
+							Telefono = reader.GetString(3),
+							Email = reader.GetString(4),
+							Dni = reader.GetString(5),
 						};
 						res.Add(p);
 					}
@@ -116,7 +122,7 @@ namespace WebApplication1.Models
 			Propietario p = null;
 			using (var connection = new MySqlConnection(connectionString))
 			{
-				string sql = $"SELECT Id, Nombre, Email, Clave FROM propietarios" +
+				string sql = $"SELECT Id, Nombre, Apellido, Telefono, Email, Dni FROM propietarios" +
 					$" WHERE Id=@id";
 				using (var command = new MySqlCommand(sql, connection))
 				{
@@ -130,8 +136,10 @@ namespace WebApplication1.Models
 						{
 							Id = reader.GetInt32(0),
 							Nombre = reader.GetString(1),
-							Email = reader.GetString(2),
-							Clave = reader.GetString(3),
+							Apellido = reader.GetString(2),
+							Telefono = reader.GetString(3),
+							Email = reader.GetString(4),
+							Dni = reader.GetString(5),
 						};
 					}
 					connection.Close();
@@ -145,7 +153,7 @@ namespace WebApplication1.Models
 			Propietario p = null;
 			using (var connection = new MySqlConnection(connectionString))
 			{
-				string sql = $"SELECT IdPropietario, Nombre, Email, Clave FROM propietarios" +
+				string sql = $"SELECT Id, Nombre, Apellido, Telefono, Email, Dni FROM propietarios" +
 					$" WHERE Email=@email";
 				using (var command = new MySqlCommand(sql, connection))
 				{
@@ -159,8 +167,10 @@ namespace WebApplication1.Models
 						{
 							Id = reader.GetInt32(0),
 							Nombre = reader.GetString(1),
-							Email = reader.GetString(2),
-							Clave = reader.GetString(3),
+							Apellido = reader.GetString(2),
+							Telefono = reader.GetString(3),
+							Email = reader.GetString(4),
+							Dni = reader.GetString(5),
 						};
 					}
 					connection.Close();
@@ -175,7 +185,7 @@ namespace WebApplication1.Models
 			Propietario p = null;
 			using (var connection = new MySqlConnection(connectionString))
 			{
-				string sql = $"SELECT IdPropietario, Nombre, Email, Clave FROM propietarios" +
+				string sql = $"SELECT Id, Nombre, Apellido, Telefono, Email, Dni FROM propietarios" +
 					$" WHERE Nombre LIKE %@nombre%";
 				using (var command = new MySqlCommand(sql, connection))
 				{
@@ -189,8 +199,10 @@ namespace WebApplication1.Models
 						{
 							Id = reader.GetInt32(0),
 							Nombre = reader.GetString(1),
-							Email = reader.GetString(2),
-							Clave = reader.GetString(3),
+							Apellido = reader.GetString(2),
+							Telefono = reader.GetString(3),
+							Email = reader.GetString(4),
+							Dni = reader.GetString(5),
 						};
 						res.Add(p);
 					}
