@@ -15,11 +15,22 @@ namespace WebApplication1.Models
 		public string Nombre { get; set; }
 		[Required]
 		public string Apellido { get; set; }
-		[Required]
+		[Required, StringLength(8)]
 		public string Dni { get; set; }
-		[Required]
+		[Required, StringLength(10)]
 		public string Telefono { get; set; }
 		[DataType(DataType.EmailAddress), Required]
 		public string Email { get; set; }
+		[Required]
+		public string DireccionTrabajo { get; set; }
+		[Required, StringLength(8)]
+		public string DniGarante { get; set; }
+		[Required]
+		public string NombreCompletoGarante { get; set; }
+		[Required, StringLength(10)]
+		public string TelefonoGarante { get; set; }
+		[DataType(DataType.EmailAddress), Required]
+		public string EmailGarante { get; set; }
+
 	}
 }

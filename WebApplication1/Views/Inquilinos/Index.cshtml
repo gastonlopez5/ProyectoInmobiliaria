@@ -1,13 +1,13 @@
 ﻿@model IEnumerable<WebApplication1.Models.Inquilino>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Inquilinos";
 }
 
-<h1>Index</h1>
+<h1>Listado de Inquilinos</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a class="btn btn-info" asp-action="Create">Agregar Nuevo</a>
 </p>
 <table class="table">
     <thead>
@@ -29,6 +29,21 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DireccionTrabajo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DniGarante)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NombreCompletoGarante)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TelefonoGarante)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EmailGarante)
             </th>
             <th></th>
         </tr>
@@ -55,8 +70,23 @@
                 @Html.DisplayFor(modelItem => item.Email)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.Id}) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                @Html.DisplayFor(modelItem => item.DireccionTrabajo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DniGarante)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NombreCompletoGarante)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TelefonoGarante)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmailGarante)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id" title="Editar"><span class="lnr lnr-pencil" style="font-weight:bold"></span></a>&nbsp; |
+                <a asp-action="Delete" asp-route-id="@item.Id" title="Eliminar"><span class="lnr lnr-cross" style="color:#fa0202; font-weight:bold"></span></a>
             </td>
         </tr>
 }

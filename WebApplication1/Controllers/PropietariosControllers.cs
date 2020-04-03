@@ -24,6 +24,10 @@ namespace WebApplication1.Controllers
         public ActionResult Index()
         {
             var lista = repositorioPropietario.ObtenerTodos();
+            if (TempData.ContainsKey("Id"))
+                ViewBag.Id = TempData["Id"];
+            if (TempData.ContainsKey("Mensaje"))
+                ViewBag.Mensaje = TempData["Mensaje"];
             return View(lista);
         }
 
@@ -44,17 +48,34 @@ namespace WebApplication1.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(Propietario p)
         {
+            ViewBag.propietarios = repositorioPropietario.ObtenerTodos();
+
+            foreach (var item in (IList<Propietario>)ViewBag.propietarios)
+            {
+                if (item.Email == p.Email || item.Dni == p.Dni)
+                {
+                    ViewBag.Error2 = "Error: Ya existe un propietario con ese email o dni";
+                    return View();
+                }
+            }
+
             try
             {
-                int res = repositorioPropietario.Alta(p);
-
-                return RedirectToAction(nameof(Index));
+                TempData["Nombre"] = p.Nombre;
+                if (ModelState.IsValid)
+                {
+                    repositorioPropietario.Alta(p);
+                    TempData["Alta"] = "Propietario agregado exitosamente!";
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                    return View();
             }
             catch (Exception ex)
             {
                 ViewBag.Error = ex.Message;
                 ViewBag.StackTrate = ex.StackTrace;
-                return View(p);
+                return View();
             }
         }
 
@@ -62,10 +83,6 @@ namespace WebApplication1.Controllers
         public ActionResult Edit(int id)
         {
             var p = repositorioPropietario.ObtenerPorId(id);
-            if (TempData.ContainsKey("Mensaje"))
-                ViewBag.Mensaje = TempData["Mensaje"];
-            if (TempData.ContainsKey("Error"))
-                ViewBag.Error = TempData["Error"];
             return View(p);
         }
 
@@ -79,10 +96,12 @@ namespace WebApplication1.Controllers
             {
                 p = repositorioPropietario.ObtenerPorId(id);
                 p.Nombre = collection["Nombre"];
+                p.Apellido = collection["Apellido"];
+                p.Dni = collection["Dni"];
                 p.Email = collection["Email"];
+                p.Telefono = collection["Telefono"];
                 repositorioPropietario.Modificacion(p);
-                TempData["Mensaje"] = "Datos guardados correctamente";
-
+                TempData["Alta"] = "Datos modificados con exito!";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -112,13 +131,12 @@ namespace WebApplication1.Controllers
             try
             {
                 repositorioPropietario.Baja(id);
-                TempData["Mensaje"] = "Eliminación realizada correctamente";
-
+                TempData["Alta"] = "Propietario eliminado";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                ViewBag.Error = ex.Message;
+                ViewBag.Error = "Propietario dispone de inmuebles";
                 ViewBag.StackTrate = ex.StackTrace;
                 return View(p);
             }

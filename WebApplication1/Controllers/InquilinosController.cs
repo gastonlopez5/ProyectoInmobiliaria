@@ -24,6 +24,8 @@ namespace WebApplication1.Controllers
         public ActionResult Index()
         {
             var lista = repositorioInquilino.ObtenerTodos();
+            if (TempData.ContainsKey("Alta"))
+                ViewBag.Alta = TempData["Alta"];
             return View(lista);
         }
 
@@ -44,17 +46,33 @@ namespace WebApplication1.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(Inquilino p)
         {
+            ViewBag.inquilinos = repositorioInquilino.ObtenerTodos();
+
+            foreach (var item in (IList<Inquilino>)ViewBag.inquilinos)
+            {
+                if (item.Dni == p.Dni)
+                {
+                    ViewBag.Error2 = "Error: Ya existe un inquilino con ese DNI";
+                    return View();
+                }
+            }
+
             try
             {
-                int res = repositorioInquilino.Alta(p);
-
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    repositorioInquilino.Alta(p);
+                    TempData["Alta"] = "Inquilino agregado exitosamente!";
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                    return View();
             }
             catch (Exception ex)
             {
                 ViewBag.Error = ex.Message;
                 ViewBag.StackTrate = ex.StackTrace;
-                return View(p);
+                return View();
             }
         }
 
@@ -62,10 +80,7 @@ namespace WebApplication1.Controllers
         public ActionResult Edit(int id)
         {
             var p = repositorioInquilino.ObtenerPorId(id);
-            if (TempData.ContainsKey("Mensaje"))
-                ViewBag.Mensaje = TempData["Mensaje"];
-            if (TempData.ContainsKey("Error"))
-                ViewBag.Error = TempData["Error"];
+            
             return View(p);
         }
 
@@ -83,8 +98,13 @@ namespace WebApplication1.Controllers
                 p.Dni = collection["Dni"];
                 p.Telefono = collection["Telefono"];
                 p.Email = collection["Email"];
+                p.DireccionTrabajo = collection["DireccionTrabajo"];
+                p.DniGarante = collection["DniGarante"];
+                p.NombreCompletoGarante = collection["NombreCompletoGarante"];
+                p.TelefonoGarante = collection["TelefonoGarante"];
+                p.EmailGarante = collection["EmailGarante"];
                 repositorioInquilino.Modificacion(p);
-                TempData["Mensaje"] = "Datos guardados correctamente";
+                TempData["Alta"] = "Datos guardados correctamente";
 
                 return RedirectToAction(nameof(Index));
             }
@@ -100,10 +120,7 @@ namespace WebApplication1.Controllers
         public ActionResult Delete(int id)
         {
             var p = repositorioInquilino.ObtenerPorId(id);
-            if (TempData.ContainsKey("Mensaje"))
-                ViewBag.Mensaje = TempData["Mensaje"];
-            if (TempData.ContainsKey("Error"))
-                ViewBag.Error = TempData["Error"];
+           
             return View(p);
         }
 
@@ -115,13 +132,13 @@ namespace WebApplication1.Controllers
             try
             {
                 repositorioInquilino.Baja(id);
-                TempData["Mensaje"] = "Eliminación realizada correctamente";
+                TempData["Alta"] = "Inquilino eliminado";
 
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                ViewBag.Error = ex.Message;
+                ViewBag.Error = "Inquilino con contrato vigente";
                 ViewBag.StackTrate = ex.StackTrace;
                 return View(p);
             }
