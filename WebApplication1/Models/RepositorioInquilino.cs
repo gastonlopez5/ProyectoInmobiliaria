@@ -24,8 +24,8 @@ namespace WebApplication1.Models
 			int res = -1;
 			using (var connection = new MySqlConnection(connectionString))
 			{
-				string sql = $"INSERT INTO inquilinos (Nombre, Apellido, Dni, Telefono, Email, DireccionTrabajo, DniGarante, NombreCompletoGarante, TelefonoGarante, EmailGarante) " +
-					$"VALUES ('{p.Nombre}', '{p.Apellido}','{p.Dni}','{p.Telefono}','{p.Email}', '{p.DireccionTrabajo}', '{p.DniGarante}','{p.NombreCompletoGarante}','{p.TelefonoGarante}','{p.EmailGarante}')";
+				string sql = $"INSERT INTO inquilinos (Nombre, Apellido, Dni, Telefono, Email, DireccionTrabajo) " +
+					$"VALUES ('{p.Nombre}', '{p.Apellido}','{p.Dni}','{p.Telefono}','{p.Email}', '{p.DireccionTrabajo}')";
 				using (var command = new MySqlCommand(sql, connection))
 				{
 					command.CommandType = CommandType.Text;
@@ -59,7 +59,7 @@ namespace WebApplication1.Models
 			int res = -1;
 			using (var connection = new MySqlConnection(connectionString))
 			{
-				string sql = $"UPDATE inquilinos SET Nombre='{p.Nombre}', Apellido='{p.Apellido}', Dni='{p.Dni}', Telefono='{p.Telefono}', Email='{p.Email}', DireccionTrabajo='{p.DireccionTrabajo}', DniGarante='{p.DniGarante}', NombreCompletoGarante='{p.NombreCompletoGarante}', TelefonoGarante='{p.TelefonoGarante}', EmailGarante='{p.EmailGarante}' " +
+				string sql = $"UPDATE inquilinos SET Nombre='{p.Nombre}', Apellido='{p.Apellido}', Dni='{p.Dni}', Telefono='{p.Telefono}', Email='{p.Email}', DireccionTrabajo='{p.DireccionTrabajo}' " +
 					$"WHERE Id = {p.Id}";
 				using (var command = new MySqlCommand(sql, connection))
 				{
@@ -77,7 +77,7 @@ namespace WebApplication1.Models
 			IList<Inquilino> res = new List<Inquilino>();
 			using (var connection = new MySqlConnection(connectionString))
 			{
-				string sql = $"SELECT Id, Nombre, Apellido, Dni, Telefono, Email, DireccionTrabajo, DniGarante, NombreCompletoGarante, TelefonoGarante, EmailGarante" +
+				string sql = $"SELECT Id, Nombre, Apellido, Dni, Telefono, Email, DireccionTrabajo" +
 					$" FROM inquilinos";
 				using (var command = new MySqlCommand(sql, connection))
 				{
@@ -95,10 +95,6 @@ namespace WebApplication1.Models
 							Telefono = reader.GetString(4),
 							Email = reader.GetString(5),
 							DireccionTrabajo = reader.GetString(6),
-							DniGarante = reader.GetString(7),
-							NombreCompletoGarante = reader.GetString(8),
-							TelefonoGarante = reader.GetString(9),
-							EmailGarante = reader.GetString(10),
 						};
 						res.Add(p);
 					}
@@ -113,7 +109,7 @@ namespace WebApplication1.Models
 			Inquilino p = null;
 			using (var connection = new MySqlConnection(connectionString))
 			{
-				string sql = $"SELECT Id, Nombre, Apellido, Dni, Telefono, Email, DireccionTrabajo, DniGarante, NombreCompletoGarante, TelefonoGarante, EmailGarante FROM inquilinos" +
+				string sql = $"SELECT Id, Nombre, Apellido, Dni, Telefono, Email, DireccionTrabajo, DniGarante FROM inquilinos" +
 					$" WHERE Id=@id";
 				using (var command = new MySqlCommand(sql, connection))
 				{
@@ -132,10 +128,6 @@ namespace WebApplication1.Models
 							Telefono = reader.GetString(4),
 							Email = reader.GetString(5),
 							DireccionTrabajo = reader.GetString(6),
-							DniGarante = reader.GetString(7),
-							NombreCompletoGarante = reader.GetString(8),
-							TelefonoGarante = reader.GetString(9),
-							EmailGarante = reader.GetString(10),
 						};
 						return p;
 					}

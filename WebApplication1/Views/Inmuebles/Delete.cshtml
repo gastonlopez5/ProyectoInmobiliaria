@@ -1,0 +1,62 @@
+﻿@model WebApplication1.Models.Inmueble
+
+@{
+    ViewData["Title"] = "Eliminar Inmueble";
+}
+
+<h3>Eliminar Inmueble</h3>
+
+<h6>¿Seguro que desea eliminar el inmueble?</h6>
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Direccion)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Direccion)
+        </dd>
+        <dt class="col-sm-2">
+            Tipo
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.TipoInmueble.Tipo)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Uso)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Uso)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Ambientes)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Ambientes)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Costo)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Costo)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Disponible)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Disponible)
+        </dd>
+        <dt class="col-sm-2">
+            Propietario
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Duenio.Nombre)
+            @Html.DisplayFor(model => model.Duenio.Apellido)
+        </dd>
+    </dl>
+
+    <form asp-action="Delete">
+        <input type="submit" value="Eliminar" class="btn btn-danger" /> |
+        <a class="btn btn-secondary" asp-action="Index">Volver al listado</a>
+    </form>
+</div>

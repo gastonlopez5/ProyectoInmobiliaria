@@ -25,20 +25,17 @@ namespace WebApplication1.Controllers
         public ActionResult Index()
         {
             var lista = repositorioInmueble.ObtenerTodos();
+            if (TempData.ContainsKey("Alta"))
+                ViewBag.Alta = TempData["Alta"];
             return View(lista);
         }
 
-        // GET: Inmueble/Details/5
-        public ActionResult Details(int id)
-        {
-            var p = repositorioInmueble.ObtenerPorId(id);
-            return View(p);
-        }
-
+        
         // GET: Inmueble/Create
         public ActionResult Create()
         {
             ViewBag.Propietarios = repositorioPropietario.ObtenerTodos();
+            ViewBag.TipoInmueble = repositorioInmueble.ObtenerTodosTipos();
             return View();
         }
 
@@ -52,20 +49,21 @@ namespace WebApplication1.Controllers
                 if (ModelState.IsValid)
                 {
                     repositorioInmueble.Alta(p);
-                    TempData["Id"] = p.Id;
+                    TempData["Alta"] = "Inmueble agregado exitosamente!";
                     return RedirectToAction(nameof(Index));
                 }
                 else
                 {
                     ViewBag.Propietarios = repositorioPropietario.ObtenerTodos();
-                    return View(p);
+                    ViewBag.TipoInmueble = repositorioInmueble.ObtenerTodosTipos();
+                    return View();
                 }
             }
             catch (Exception ex)
             {
                 ViewBag.Error = ex.Message;
                 ViewBag.StackTrate = ex.StackTrace;
-                return View(p);
+                return View();
             }
         }
 
@@ -74,6 +72,7 @@ namespace WebApplication1.Controllers
         {
             var p = repositorioInmueble.ObtenerPorId(id);
             ViewBag.Propietarios = repositorioPropietario.ObtenerTodos();
+            ViewBag.TipoInmueble = repositorioInmueble.ObtenerTodosTipos();
             if (TempData.ContainsKey("Mensaje"))
                 ViewBag.Mensaje = TempData["Mensaje"];
             if (TempData.ContainsKey("Error"))
@@ -84,43 +83,48 @@ namespace WebApplication1.Controllers
         // POST: Inmueble/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(int id, Inmueble entidad)
         {
-            Inmueble p = null;
             try
             {
-                //Prueba 2
-
+                entidad.Id = id;
+                repositorioInmueble.Modificacion(entidad);
+                TempData["Alta"] = "Datos guardados correctamente";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
+                ViewBag.Propietarios = repositorioPropietario.ObtenerTodos();
+                ViewBag.TipoInmueble = repositorioInmueble.ObtenerTodosTipos();
                 ViewBag.Error = ex.Message;
                 ViewBag.StackTrate = ex.StackTrace;
-                return View(p);
+                return View(entidad);
             }
         }
 
         // GET: Inmueble/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            var entidad = repositorioInmueble.ObtenerPorId(id);
+            return View(entidad);
         }
 
         // POST: Inmueble/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(int id, Inmueble entidad)
         {
             try
             {
-                // TODO: Add delete logic here
-
+                repositorioInmueble.Baja(id);
+                TempData["Alta"] = "Inmueble eliminado";
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                ViewBag.Error = ex.Message;
+                ViewBag.StackTrate = ex.StackTrace;
+                return View(entidad);
             }
         }
     }

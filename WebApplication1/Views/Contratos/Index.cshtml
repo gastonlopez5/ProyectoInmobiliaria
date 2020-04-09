@@ -1,0 +1,83 @@
+﻿@model IEnumerable<WebApplication1.Models.Contrato>
+
+@{
+    ViewData["Title"] = "Alquileres";
+}
+
+<h1>Listado de Contratos</h1>
+
+<p>
+    <a class="btn btn-info" asp-action="Create">Agregar Nuevo</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Inicio del Contrato
+            </th>
+            <th>
+                Fin del Contrato
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Importe)
+            </th>
+            <th>
+               DNI-Garante
+            </th>
+            <th>
+                Garante
+            </th>
+            <th>
+                Telefono-Garante
+            </th>
+            <th>
+                Email-Garante
+            </th>
+            <th>
+                Inquilino
+            </th>
+            <th>
+                Direccion Inmueble
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FechaInicio)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FechaFin)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Importe)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DniGarante)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NombreCompletoGarante)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TelefonoGarante)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmailGarante)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Inquilino.Apellido)
+                @Html.DisplayFor(modelItem => item.Inquilino.Nombre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Inmueble.Direccion)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id" title="Editar"><span class="lnr lnr-pencil" style="font-weight:bold"></span></a>&nbsp;
+                <a asp-action="Delete" asp-route-id="@item.Id" title="Eliminar"><span class="lnr lnr-cross" style="color:#fa0202; font-weight:bold"></span></a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

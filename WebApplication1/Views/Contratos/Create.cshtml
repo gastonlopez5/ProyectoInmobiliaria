@@ -1,0 +1,78 @@
+﻿@model WebApplication1.Models.Contrato
+
+@{
+    ViewData["Title"] = "Nuevo Alquiler";
+    DateTime fechaInicio = DateTime.Today;
+    DateTime fechaFin = fechaInicio.AddDays(730);
+}
+
+<h3>Nuevo Contrato de Alquiler</h3>
+<br />
+<br />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Inmueble" class="control-label"></label>
+                <select asp-for="InmuebleId" class="form-control">
+                    @foreach (Inmueble item in (IList<Inmueble>)ViewBag.inmueble)
+                    {
+                        if (item.Disponible)
+                        {
+                            <option value=@item.Id>Propietario: @item.Duenio.Apellido @item.Duenio.Nombre, Direccion: @item.Direccion</option>
+                        }
+                    }
+                </select>
+                <span asp-validation-for="InmuebleId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Inquilino" class="control-label"></label>
+                <select asp-for="InquilinoId" class="form-control">
+                    @foreach (Inquilino item in (IList<Inquilino>)ViewBag.inquilino)
+                    {
+                        <option value=@item.Id>@item.Apellido @item.Nombre</option>
+                    }
+                </select>
+                <span asp-validation-for="InquilinoId" class="text-danger"></span>
+            </div>
+            <input type="hidden" asp-for="FechaInicio" value="@fechaInicio.ToString("yyyy-MM-dd")" />
+            <input type="hidden" asp-for="FechaFin" value="@fechaFin.ToString("yyyy-MM-dd")" />
+            <div class="form-group">
+                <label asp-for="Importe" class="control-label"></label>
+                <input asp-for="Importe" class="form-control" />
+                <span asp-validation-for="Importe" class="text-danger"></span>
+            </div>
+            <h4>Datos del Garante</h4>
+            <div class="form-group">
+                <label asp-for="DniGarante" class="control-label">DNI</label>
+                <input asp-for="DniGarante" class="form-control" />
+                <span asp-validation-for="DniGarante" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NombreCompletoGarante" class="control-label">Nombre Completo</label>
+                <input asp-for="NombreCompletoGarante" class="form-control" />
+                <span asp-validation-for="NombreCompletoGarante" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TelefonoGarante" class="control-label">Telefono</label>
+                <input asp-for="TelefonoGarante" class="form-control" />
+                <span asp-validation-for="TelefonoGarante" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EmailGarante" class="control-label">Email</label>
+                <input asp-for="EmailGarante" class="form-control" />
+                <span asp-validation-for="EmailGarante" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Agregar" class="btn btn-primary" />
+                <a class="btn btn-secondary" asp-action="Index">Volver al listado</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -24,16 +24,22 @@ namespace WebApplication1.Models
 			int res = -1;
 			using (var connection = new MySqlConnection(connectionString))
 			{
-				string sql = $"INSERT INTO inmuebles (Direccion, Tipo, Uso, Ambientes, Costo, Disponible, PropietarioId) " +
-					$"VALUES ('{p.Direccion}', '{p.Tipo}','{p.Uso}','{p.Ambientes}','{p.Costo}', '{p.Disponible}','{p.PropietarioId}')";
+				string sql = "INSERT INTO Inmuebles (Direccion, Tipo, Uso, Ambientes, Costo, Disponible, PropietarioId) " +
+					"VALUES (@direccion, @tipo, @uso, @ambientes, @costo, @disponible, @propietarioId);" +
+					"SELECT LAST_INSERT_ID();";//devuelve el id insertado (LAST_INSERT_ID para mysql)
 				using (var command = new MySqlCommand(sql, connection))
 				{
 					command.CommandType = CommandType.Text;
+					command.Parameters.AddWithValue("@direccion", p.Direccion);
+					command.Parameters.AddWithValue("@tipo", p.Tipo);
+					command.Parameters.AddWithValue("@uso", p.Uso);
+					command.Parameters.AddWithValue("@ambientes", p.Ambientes);
+					command.Parameters.AddWithValue("@costo", p.Costo);
+					command.Parameters.AddWithValue("@disponible", p.Disponible);
+					command.Parameters.AddWithValue("@propietarioId", p.PropietarioId);
 					connection.Open();
-					res = command.ExecuteNonQuery();
-					command.CommandText = "SELECT LAST_INSERT_ID()";
-					var id = command.ExecuteScalar();
-					p.Id = Convert.ToInt32(id);
+					res = Convert.ToInt32(command.ExecuteScalar());
+					p.Id = res;
 					connection.Close();
 				}
 			}
@@ -85,7 +91,7 @@ namespace WebApplication1.Models
 			int res = -1;
 			using (var connection = new MySqlConnection(connectionString))
 			{
-				string sql = $"UPDATE Inmueble SET Disponible='{resp}' WHERE Id = {p}";
+				string sql = $"UPDATE inmuebles SET Disponible='{resp}' WHERE Id = {p}";
 				using (var command = new MySqlCommand(sql, connection))
 				{
 					command.CommandType = CommandType.Text;
@@ -102,8 +108,9 @@ namespace WebApplication1.Models
 			IList<Inmueble> res = new List<Inmueble>();
 			using (var connection = new MySqlConnection(connectionString))
 			{
-				string sql = $"SELECT i.Id, Direccion, Tipo, Uso, Ambientes, Costo, Disponible, PropietarioId, p.Nombre, p.apellido " +
-					$" FROM inmuebles i JOIN propietarios p ON(i.PropietarioId = p.Id)";
+				string sql = $"SELECT i.Id, Direccion, i.Tipo, Uso, Ambientes, Costo, Disponible, PropietarioId, p.Nombre, p.apellido, t.Id, t.Tipo " +
+					$" FROM inmuebles i JOIN propietarios p ON(i.PropietarioId = p.Id)" +
+					$" JOIN tipoinmueble t ON(i.Tipo = t.Id)";
 				using (var command = new MySqlCommand(sql, connection))
 				{
 					command.CommandType = CommandType.Text;
@@ -126,7 +133,38 @@ namespace WebApplication1.Models
 								Id = reader.GetInt32(7),
 								Nombre = reader.GetString(8),
 								Apellido = reader.GetString(9),
+							},
+							TipoInmueble = new TipoInmueble
+							{
+								Id = reader.GetInt32(10),
+								Tipo = reader.GetString(11),
 							}
+						};
+						res.Add(p);
+					}
+					connection.Close();
+				}
+			}
+			return res;
+		}
+
+		public IList<TipoInmueble> ObtenerTodosTipos()
+		{
+			IList<TipoInmueble> res = new List<TipoInmueble>();
+			using (var connection = new MySqlConnection(connectionString))
+			{
+				string sql = $"SELECT Id, Tipo FROM tipoinmueble";
+				using (var command = new MySqlCommand(sql, connection))
+				{
+					command.CommandType = CommandType.Text;
+					connection.Open();
+					var reader = command.ExecuteReader();
+					while (reader.Read())
+					{
+						TipoInmueble p = new TipoInmueble
+						{
+							Id = reader.GetInt32(0),
+							Tipo = reader.GetString(1),
 						};
 						res.Add(p);
 					}
@@ -141,8 +179,9 @@ namespace WebApplication1.Models
 			Inmueble entidad = null;
 			using (var connection = new MySqlConnection(connectionString))
 			{
-				string sql = $"SELECT i.Id, Direccion, Tipo, Uso, Ambientes, Costo, Disponible, PropietarioId, p.Nombre, p.Apellido " +
+				string sql = $"SELECT i.Id, Direccion, i.Tipo, Uso, Ambientes, Costo, Disponible, PropietarioId, p.Nombre, p.Apellido, t.Id, t.Tipo " +
 					$" FROM inmuebles i JOIN propietarios p ON(i.PropietarioId = p.Id)" +
+					$" JOIN tipoinmueble t ON(i.Tipo = t.Id)" +
 					$" AND i.Id=@id";
 				using (var command = new MySqlCommand(sql, connection))
 				{
@@ -167,6 +206,11 @@ namespace WebApplication1.Models
 								Id = reader.GetInt32(7),
 								Nombre = reader.GetString(8),
 								Apellido = reader.GetString(9),
+							},
+							TipoInmueble = new TipoInmueble
+							{
+								Id = reader.GetInt32(10),
+								Tipo = reader.GetString(11),
 							}
 						};
 					}

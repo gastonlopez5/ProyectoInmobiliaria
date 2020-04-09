@@ -23,14 +23,7 @@ namespace WebApplication1.Models
 		public string Email { get; set; }
 		[Required]
 		public string DireccionTrabajo { get; set; }
-		[Required, StringLength(8)]
-		public string DniGarante { get; set; }
-		[Required]
-		public string NombreCompletoGarante { get; set; }
-		[Required, StringLength(10)]
-		public string TelefonoGarante { get; set; }
-		[DataType(DataType.EmailAddress), Required]
-		public string EmailGarante { get; set; }
+		
 
 	}
 }

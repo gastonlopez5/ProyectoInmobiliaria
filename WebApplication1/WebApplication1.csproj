@@ -16,7 +16,6 @@
 
   <ItemGroup>
     <Folder Include="Data\" />
-    <Folder Include="Views\Inmuebles\" />
   </ItemGroup>
 
 </Project>

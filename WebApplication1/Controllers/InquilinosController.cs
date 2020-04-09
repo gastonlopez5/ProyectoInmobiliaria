@@ -99,10 +99,6 @@ namespace WebApplication1.Controllers
                 p.Telefono = collection["Telefono"];
                 p.Email = collection["Email"];
                 p.DireccionTrabajo = collection["DireccionTrabajo"];
-                p.DniGarante = collection["DniGarante"];
-                p.NombreCompletoGarante = collection["NombreCompletoGarante"];
-                p.TelefonoGarante = collection["TelefonoGarante"];
-                p.EmailGarante = collection["EmailGarante"];
                 repositorioInquilino.Modificacion(p);
                 TempData["Alta"] = "Datos guardados correctamente";
 

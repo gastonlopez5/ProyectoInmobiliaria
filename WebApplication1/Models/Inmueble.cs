@@ -14,11 +14,11 @@ namespace WebApplication1.Models
         [Required]
         public string Direccion { get; set; }
         [Required]
-        public int Ambientes { get; set; }
-        [Required]
         public int Tipo { get; set; }
         [Required]
         public String Uso { get; set; }
+        [Required]
+        public int Ambientes { get; set; }
         [Required]
         public Decimal Costo { get; set; }
         public Boolean Disponible { get; set; }
@@ -26,5 +26,7 @@ namespace WebApplication1.Models
         public int PropietarioId { get; set; }
         [ForeignKey("PropietarioId")]
         public Propietario Duenio { get; set; }
+        [ForeignKey("Tipo")]
+        public TipoInmueble TipoInmueble { get; set; }
     }
 }
