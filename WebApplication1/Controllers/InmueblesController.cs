@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -9,6 +10,7 @@ using WebApplication1.Models;
 
 namespace WebApplication1.Controllers
 {
+    [Authorize]
     public class InmueblesController : Controller
     {
         private readonly IConfiguration configuration;
@@ -30,8 +32,9 @@ namespace WebApplication1.Controllers
             return View(lista);
         }
 
-        
+
         // GET: Inmueble/Create
+        [Authorize(Policy = "EsDeLaCasa")]
         public ActionResult Create()
         {
             ViewBag.Propietarios = repositorioPropietario.ObtenerTodos();
@@ -41,6 +44,7 @@ namespace WebApplication1.Controllers
 
         // POST: Inmueble/Create
         [HttpPost]
+        [Authorize(Policy = "EsDeLaCasa")]
         [ValidateAntiForgeryToken]
         public ActionResult Create(Inmueble p)
         {
@@ -68,6 +72,7 @@ namespace WebApplication1.Controllers
         }
 
         // GET: Inmueble/Edit/5
+        [Authorize(Policy = "EsDeLaCasa")]
         public ActionResult Edit(int id)
         {
             var p = repositorioInmueble.ObtenerPorId(id);
@@ -82,6 +87,7 @@ namespace WebApplication1.Controllers
 
         // POST: Inmueble/Edit/5
         [HttpPost]
+        [Authorize(Policy = "EsDeLaCasa")]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, Inmueble entidad)
         {
@@ -103,6 +109,7 @@ namespace WebApplication1.Controllers
         }
 
         // GET: Inmueble/Delete/5
+        [Authorize(Policy = "EsDeLaCasa")]
         public ActionResult Delete(int id)
         {
             var entidad = repositorioInmueble.ObtenerPorId(id);
@@ -111,6 +118,7 @@ namespace WebApplication1.Controllers
 
         // POST: Inmueble/Delete/5
         [HttpPost]
+        [Authorize(Policy = "EsDeLaCasa")]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, Inmueble entidad)
         {

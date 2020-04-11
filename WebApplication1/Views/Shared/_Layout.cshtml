@@ -41,12 +41,20 @@
             <div class="container d-flex flex-column flex-md-row justify-content-between">
 
                 <a class="py-2" asp-controller="Home" style="color:white"><span class="lnr lnr-home"></span> Inicio</a>
+                <a class="py-2 d-none d-md-inline-block" asp-controller="Usuario" asp-action="Index" style="color:white"><span class="lnr lnr-user"></span> Usuarios</a>
                 <a class="py-2 d-none d-md-inline-block" asp-controller="Propietarios" asp-action="Index" style="color:white"><span class="lnr lnr-user"></span> Propietarios</a>
                 <a class="py-2 d-none d-md-inline-block" asp-controller="Inquilinos" asp-action="Index" style="color:white"><span class="lnr lnr-users"></span> Inquilinos</a>
                 <a class="py-2 d-none d-md-inline-block" asp-controller="Inmuebles" asp-action="Index" style="color:white"><span class="lnr lnr-apartment"></span> Inmuebles</a>
                 <a class="py-2 d-none d-md-inline-block" asp-controller="Contratos" asp-action="Index" style="color:white"><span class="lnr lnr-enter"></span> Alquileres</a>
                 <a class="py-2 d-none d-md-inline-block" asp-controller="Pagos" asp-action="Index" style="color:white"><span class="lnr lnr-paperclip"></span> Pagos</a>
-
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <a class="py-2 d-none d-md-inline-block " asp-controller="Usuario" asp-action="Logout" style="color:orangered"><span class="lnr lnr-user"></span> @User.Identity.Name</a>
+                }
+                else
+                {
+                    <a class="py-2 d-none d-md-inline-block" asp-controller="Usuario" asp-action="Login" style="color:white"><span class="lnr lnr-user"></span> Acceder</a>
+                }
             </div>
         </nav>
     </header>

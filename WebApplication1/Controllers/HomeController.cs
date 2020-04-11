@@ -27,5 +27,10 @@ namespace WebApplication1.Controllers
         {
             return View();
         }
+        
+        public ActionResult Restringido()
+        {
+            return RedirectToAction(nameof(Index), "Home");
+        }
     }
 }
