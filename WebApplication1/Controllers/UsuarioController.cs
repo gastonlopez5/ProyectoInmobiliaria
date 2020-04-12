@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Configuration;
 using WebApplication1.Models;
 
@@ -100,7 +101,11 @@ namespace WebApplication1.Controllers
         [Authorize(Policy = "Administrador")]
         public ActionResult Edit(int id)
         {
-            return View();
+            var p = repositorioUsuario.ObtenerPorId(id);
+            ViewBag.TipoUsuario = repositorioUsuario.ObtenerTiposUsuario();
+            if (TempData.ContainsKey("Error"))
+                ViewBag.Error = TempData["Error"];
+            return View(p);
         }
 
         // POST: Usuario/Edit/5
@@ -109,15 +114,76 @@ namespace WebApplication1.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, IFormCollection collection)
         {
+            Usuario p = null;
             try
             {
-                // TODO: Add update logic here
-
+                p = repositorioUsuario.ObtenerPorId(id);
+                p.Email = collection["Email"];
+                p.RolId = Int32.Parse(collection["RolId"]);
+                repositorioUsuario.Modificacion(p);
+                TempData["Mensaje"] = "Datos guardados correctamente";
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                ViewBag.Error = ex.Message;
+                ViewBag.StackTrate = ex.StackTrace;
+                return View(p);
+            }
+        }
+
+        // POST: Propietario/Edit/5
+        [HttpPost]
+        [Authorize(Policy = "Administrador")]
+        [ValidateAntiForgeryToken]
+        public ActionResult CambiarPass(int id, CambioClaveView cambio)
+        {
+            Usuario usuario = null;
+            try
+            {
+                usuario = repositorioUsuario.ObtenerPorId(id);
+                // verificar clave antigüa
+                var pass = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                        password: cambio.ClaveVieja ?? "",
+                        salt: System.Text.Encoding.ASCII.GetBytes("Salt"),
+                        prf: KeyDerivationPrf.HMACSHA1,
+                        iterationCount: 1000,
+                        numBytesRequested: 256 / 8));
+                if (usuario.Clave != pass)
+                {
+                    TempData["Error"] = "Clave incorrecta";
+                    //se rederige porque no hay vista de cambio de pass, está compartida con Edit
+                    return RedirectToAction("Edit", new { id = id });
+                }
+                if (ModelState.IsValid)
+                {
+                    usuario.Clave = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                        password: cambio.ClaveNueva,
+                        salt: System.Text.Encoding.ASCII.GetBytes("Salt"),
+                        prf: KeyDerivationPrf.HMACSHA1,
+                        iterationCount: 1000,
+                        numBytesRequested: 256 / 8));
+                    repositorioUsuario.Modificacion(usuario);
+                    TempData["Mensaje"] = "Contraseña actualizada correctamente";
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    foreach (ModelStateEntry modelState in ViewData.ModelState.Values)
+                    {
+                        foreach (ModelError error in modelState.Errors)
+                        {
+                            TempData["Error"] += error.ErrorMessage + "\n";
+                        }
+                    }
+                    return RedirectToAction("Edit", new { id = id });
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                TempData["StackTrace"] = ex.StackTrace;
+                return RedirectToAction("Edit", new { id = id });
             }
         }
 
@@ -125,24 +191,29 @@ namespace WebApplication1.Controllers
         [Authorize(Policy = "Administrador")]
         public ActionResult Delete(int id)
         {
-            return View();
+            var p = repositorioUsuario.ObtenerPorId(id);
+            if (TempData.ContainsKey("Error"))
+                ViewBag.Error = TempData["Error"];
+            return View(p);
         }
 
         // POST: Usuario/Delete/5
         [HttpPost]
         [Authorize(Policy = "Administrador")]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(int id, Usuario usuario)
         {
             try
             {
-                // TODO: Add delete logic here
-
+                repositorioUsuario.Baja(id);
+                TempData["Mensaje"] = "Eliminación realizada correctamente";
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                ViewBag.Error = ex.Message;
+                ViewBag.StackTrate = ex.StackTrace;
+                return View(usuario);
             }
         }
 

@@ -71,9 +71,9 @@ namespace WebApplication1.Models
 					command.Parameters.AddWithValue("@email", p.Email);
 					command.Parameters.AddWithValue("@clave", p.Clave);
 					command.Parameters.AddWithValue("@rol", p.RolId);
+					command.Parameters.AddWithValue("@id", p.Id);
 					connection.Open();
-					res = Convert.ToInt32(command.ExecuteScalar());
-					p.Id = res;
+					res = command.ExecuteNonQuery();
 					connection.Close();
 				}
 			}

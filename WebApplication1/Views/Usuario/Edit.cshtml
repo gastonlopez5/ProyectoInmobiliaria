@@ -1,0 +1,66 @@
+﻿@model WebApplication1.Models.Usuario
+
+@{
+    ViewData["Title"] = "Editar Usuario";
+}
+
+<h3>Editar</h3>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Rol</label>
+                <select class="form-control" name="RolId">
+                    @foreach (var item in (IList<TipoUsuario>)ViewBag.TipoUsuario)
+                    {
+                        @:<option @(item.Id == Model.RolId ? "selected" : "") value="@item.Id">@(item.Rol)</option>
+                    }
+                </select>
+                <span asp-validation-for="RolId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Actualizar" class="btn btn-primary" /> |
+                <a class="btn btn-secondary" asp-action="Index">Volver al listado</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<h4>Cambiar contraseña</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="CambiarPass" asp-route-id="@Model.Id" name="CambiarPass">
+            <input type="hidden" name="IdPropietario" value="@Model.Id" />
+            <div class="form-group">
+                <label class="control-label">Clave Antigüa</label>
+                <input type="password" name="ClaveVieja" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">Nueva Clave</label>
+                <input type="password" name="ClaveNueva" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label class="control-label">Repetir Clave Nueva</label>
+                <input type="password" name="ClaveRepeticion" class="form-control" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Cambiar Contraseña" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+
+    @section Scripts {
+        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    }
+
