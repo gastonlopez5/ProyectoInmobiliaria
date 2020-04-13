@@ -103,7 +103,7 @@ namespace WebApplication1.Controllers
                 p.Email = collection["Email"];
                 p.Telefono = collection["Telefono"];
                 repositorioPropietario.Modificacion(p);
-                TempData["Alta"] = "Datos modificados con exito!";
+                TempData["Mensaje"] = "Datos modificados con exito!";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)

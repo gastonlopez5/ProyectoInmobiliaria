@@ -1,49 +1,45 @@
 ﻿@model WebApplication1.Models.Contrato
 
 @{
-    ViewData["Title"] = "Nuevo Alquiler";
-    DateTime fechaInicio = DateTime.Today;
-    DateTime fechaFin = fechaInicio.AddDays(730);
+    ViewData["Title"] = "Editar Contrato";
 }
 
-<h3>Nuevo Contrato de Alquiler</h3>
+<h4>Editar</h4>
 <br />
 <br />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <label asp-for="Inmueble" class="control-label"></label>
-                <select asp-for="InmuebleId" class="form-control">
-                    @foreach (Inmueble item in (IList<Inmueble>)ViewBag.inmueble)
+                <label class="control-label">Inquilino</label>
+                <select class="form-control" name="InquilinoId">
+                    @foreach (var item in (IList<Inquilino>)ViewBag.inquilino)
                     {
-                        if (item.Disponible)
-                        {
-                    <option value=@item.Id>Propietario: @item.Duenio.Apellido @item.Duenio.Nombre, Direccion: @item.Direccion</option>
-                        }
-                    }
-                </select>
-                <span asp-validation-for="InmuebleId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Inquilino" class="control-label"></label>
-                <select asp-for="InquilinoId" class="form-control">
-                    @foreach (Inquilino item in (IList<Inquilino>)ViewBag.inquilino)
-                    {
-                    <option value=@item.Id>@item.Apellido @item.Nombre</option>
+                        @:<option @(item.Id == Model.Inquilino.Id ? "selected" : "") value="@item.Id">@(item.Apellido + " " + item.Nombre)</option>
                     }
                 </select>
                 <span asp-validation-for="InquilinoId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="FechaInicio" class="control-label">Fecha de Inicio</label>
-                <input asp-for="FechaInicio" class="form-control" type="date" value="@fechaInicio.ToString("yyyy-MM-dd")" />
+                <label class="control-label">Inmueble</label>
+                <select class="form-control" name="InmuebleId">
+                    @foreach (var item in (IList<Inmueble>)ViewBag.inmueble)
+                    {
+                        @:<option @(item.Id == Model.Inmueble.Id ? "selected" : "") value="@item.Id">@(item.Direccion)</option>
+                    }
+                </select>
+                <span asp-validation-for="InmuebleId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FechaInicio" class="control-label"></label>
+                <input asp-for="FechaInicio" type="date" class="form-control" />
                 <span asp-validation-for="FechaInicio" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="FechaFin" class="control-label">Fecha de Finalización</label>
-                <input asp-for="FechaFin" class="form-control" type="date" value="@fechaFin.ToString("yyyy-MM-dd")" />
+                <label asp-for="FechaFin" class="control-label"></label>
+                <input asp-for="FechaFin" type="date" class="form-control" />
                 <span asp-validation-for="FechaFin" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -63,7 +59,7 @@
                 <span asp-validation-for="NombreCompletoGarante" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="TelefonoGarante" class="control-label">Telefono</label>
+                <label asp-for="TelefonoGarante" class="control-label">Teléfono</label>
                 <input asp-for="TelefonoGarante" class="form-control" />
                 <span asp-validation-for="TelefonoGarante" class="text-danger"></span>
             </div>
@@ -73,10 +69,14 @@
                 <span asp-validation-for="EmailGarante" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Agregar" class="btn btn-primary" />
-                <a class="btn btn-secondary" asp-action="Index">Volver al listado</a>
+                <input type="submit" value="Actualizar" class="btn btn-primary" />
+                <a class="btn btn-outline-danger" asp-action="Index">Cancelar</a>
             </div>
         </form>
     </div>
 </div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
 

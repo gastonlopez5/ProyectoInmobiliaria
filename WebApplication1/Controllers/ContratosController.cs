@@ -30,10 +30,12 @@ namespace WebApplication1.Controllers
         public ActionResult Index()
         {
             var lista = repositorioContrato.ObtenerTodos();
-            if (TempData.ContainsKey("Alta"))
-                ViewBag.Alta = TempData["Alta"];
-            if (TempData.ContainsKey("Error2"))
-                ViewBag.Error2 = TempData["Error2"];
+            if (TempData.ContainsKey("Id"))
+                ViewBag.Alta = TempData["Id"];
+            if (TempData.ContainsKey("Error"))
+                ViewBag.Error = TempData["Error"];
+            if (TempData.ContainsKey("Mensaje"))
+                ViewBag.Mensaje = TempData["Mensaje"];
             return View(lista);
         }
 
@@ -73,7 +75,7 @@ namespace WebApplication1.Controllers
             }
             else
             {
-                TempData["Error2"] = "No hay inmuebles o inquilinos disponibles";
+                TempData["Error"] = "No hay inmuebles o inquilinos disponibles";
                 return RedirectToAction(nameof(Index));
             }
         }
@@ -89,7 +91,7 @@ namespace WebApplication1.Controllers
                 if (ModelState.IsValid)
                 {
                     repositorioContrato.Alta(contrato);
-                    TempData["Alta"] = "Contrato de alquiler agregado correctamente";
+                    TempData["Id"] = "Contrato de alquiler agregado correctamente";
                     return RedirectToAction(nameof(Index));
                 }
                 else
@@ -114,7 +116,14 @@ namespace WebApplication1.Controllers
         // GET: Contratos/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            var p = repositorioContrato.ObtenerPorId(id);
+            ViewBag.inmueble = repositorioInmueble.ObtenerTodos();
+            ViewBag.inquilino = repositorioInquilino.ObtenerTodos();
+            if (TempData.ContainsKey("Mensaje"))
+                ViewBag.Mensaje = TempData["Mensaje"];
+            if (TempData.ContainsKey("Error"))
+                ViewBag.Error = TempData["Error"];
+            return View(p);
         }
 
         // POST: Contratos/Edit/5
@@ -122,15 +131,28 @@ namespace WebApplication1.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, IFormCollection collection)
         {
+            Contrato p = null;
             try
             {
-                // TODO: Add update logic here
-
+                p = repositorioContrato.ObtenerPorId(id);
+                p.InquilinoId = Int32.Parse(collection["InquilinoId"]);
+                p.InmuebleId = Int32.Parse(collection["InmuebleId"]);
+                p.FechaInicio = DateTime.Parse(collection["FechaInicio"]);
+                p.FechaFin = DateTime.Parse(collection["FechaFin"]);
+                p.Importe = Decimal.Parse(collection["Importe"]);
+                p.DniGarante = collection["DniGarante"];
+                p.NombreCompletoGarante = collection["NombreCompletoGarante"];
+                p.TelefonoGarante = collection["TelefonoGarante"];
+                p.EmailGarante = collection["EmailGarante"];
+                repositorioContrato.Modificacion(p);
+                TempData["Mensaje"] = "Datos modificados con exito!";
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                ViewBag.Error = ex.Message;
+                ViewBag.StackTrate = ex.StackTrace;
+                return View(p);
             }
         }
 
