@@ -12,8 +12,12 @@ namespace WebApplication1.Controllers
     {
         public IActionResult Index()
         {
-            string saludo = "Hola mundo";
-            ViewBag.Saludo = saludo;
+            if (TempData.ContainsKey("Id"))
+                ViewBag.Id = TempData["Id"];
+            if (TempData.ContainsKey("Mensaje"))
+                ViewBag.Mensaje = TempData["Mensaje"];
+            if (TempData.ContainsKey("Error"))
+                ViewBag.Error = TempData["Error"];
             return View();
         }
 

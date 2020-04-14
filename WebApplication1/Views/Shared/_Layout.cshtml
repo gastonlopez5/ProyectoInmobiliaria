@@ -9,6 +9,11 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" />
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css" />
 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+
     <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
     <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/1.6.1/js/dataTables.buttons.min.js"></script>
@@ -40,26 +45,28 @@
         <nav class="site-header sticky-top py-1">
             <div class="container d-flex flex-column flex-md-row justify-content-between">
 
-                <a class="py-2" asp-controller="Home" ><span class="lnr lnr-home"></span> Inicio</a>
+                <a class="py-2" asp-controller="Home"><span class="lnr lnr-home"></span> Inicio</a>
                 @if (User.IsInRole("Administrador"))
                 {
-                    <a class="py-2 d-none d-md-inline-block" asp-controller="Usuario" asp-action="Index" ><span class="lnr lnr-user"></span> Usuarios</a>
+                    <a class="py-2 d-none d-md-inline-block" asp-controller="Usuario" asp-action="Index"><span class="lnr lnr-user"></span> Usuarios</a>
+                    <a class="py-2 d-none d-md-inline-block" asp-controller="Empleados" asp-action="Index"><span class="lnr lnr-user"></span> Empleados</a>
                     <a class="py-2 d-none d-md-inline-block" asp-controller="Propietarios" asp-action="Index"><span class="lnr lnr-user"></span> Propietarios</a>
                     <a class="py-2 d-none d-md-inline-block" asp-controller="Inmuebles" asp-action="Index"><span class="lnr lnr-apartment"></span> Inmuebles</a>
                     <a class="py-2 d-none d-md-inline-block" asp-controller="Contratos" asp-action="Index"><span class="lnr lnr-enter"></span> Alquileres</a>
                 }
                 @if (User.IsInRole("Empleado"))
                 {
+                    <a class="py-2 d-none d-md-inline-block" asp-controller="Empleados" asp-action="Perfil"><span class="lnr lnr-user"></span> Mi Perfil</a>
                     <a class="py-2 d-none d-md-inline-block" asp-controller="Propietarios" asp-action="Index"><span class="lnr lnr-user"></span> Propietarios</a>
                     <a class="py-2 d-none d-md-inline-block" asp-controller="Inmuebles" asp-action="Index"><span class="lnr lnr-apartment"></span> Inmuebles</a>
                     <a class="py-2 d-none d-md-inline-block" asp-controller="Contratos" asp-action="Index"><span class="lnr lnr-enter"></span> Alquileres</a>
                 }
                 @if (User.IsInRole("Propietario"))
                 {
-                    <a class="py-2 d-none d-md-inline-block" asp-controller="Propietarios" asp-action="Perfil"><span class="lnr lnr-user"></span> Mis Datos</a>
+                    <a class="py-2 d-none d-md-inline-block" asp-controller="Propietarios" asp-action="Perfil"><span class="lnr lnr-user"></span> Mis Perfil</a>
                     <a class="py-2 d-none d-md-inline-block" asp-controller="Inmuebles" asp-action="Index"><span class="lnr lnr-apartment"></span> Mis Inmuebles</a>
-                    <a class="py-2 d-none d-md-inline-block" asp-controller="Contratos" asp-action="Index" style="color:white"><span class="lnr lnr-enter"></span> Alquileres</a>
-                    <a class="py-2 d-none d-md-inline-block" asp-controller="Pagos" asp-action="Index" style="color:white"><span class="lnr lnr-paperclip"></span> Pagos</a>
+                    <a class="py-2 d-none d-md-inline-block" asp-controller="Contratos" asp-action="Index"><span class="lnr lnr-enter"></span> Alquileres</a>
+                    <a class="py-2 d-none d-md-inline-block" asp-controller="Pagos" asp-action="Index"><span class="lnr lnr-paperclip"></span> Pagos</a>
                 }
 
 

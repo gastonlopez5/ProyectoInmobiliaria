@@ -61,6 +61,7 @@ namespace WebApplication1.Models
 			}
 			return res;
 		}
+
 		public int Modificacion(Propietario p)
 		{
 			int res = -1;

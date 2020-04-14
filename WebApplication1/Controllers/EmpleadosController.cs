@@ -13,23 +13,23 @@ using WebApplication1.Models;
 namespace WebApplication1.Controllers
 {
     [Authorize(Policy = "EsDeLaCasa")]
-    public class PropietariosController : Controller 
+    public class EmpleadosController : Controller
     {
         private readonly IConfiguration configuration;
-        private readonly RepositorioPropietario repositorioPropietario;
+        private readonly RepositorioEmpleado repositorioEmpleado;
         private readonly RepositorioUsuario repositorioUsuario;
 
-        public PropietariosController(IConfiguration configuration)
+        public EmpleadosController(IConfiguration configuration)
         {
             this.configuration = configuration;
-            repositorioPropietario = new RepositorioPropietario(configuration);
+            repositorioEmpleado = new RepositorioEmpleado(configuration);
             repositorioUsuario = new RepositorioUsuario(configuration);
         }
 
-        // GET: Propietarios
+        [Authorize(Policy = "Administrador")]
         public ActionResult Index()
         {
-            var lista = repositorioPropietario.ObtenerTodos();
+            var lista = repositorioEmpleado.ObtenerTodos();
             if (TempData.ContainsKey("Id"))
                 ViewBag.Id = TempData["Id"];
             if (TempData.ContainsKey("Mensaje"))
@@ -37,59 +37,42 @@ namespace WebApplication1.Controllers
             return View(lista);
         }
 
-        [AllowAnonymous]
+        // GET: Empleados
         public ActionResult Perfil()
         {
-            Propietario propietario= repositorioPropietario.ObtenerPorEmail(User.Identity.Name);
-            return View(propietario);
+            Empleado empleado = repositorioEmpleado.ObtenerPorEmail(User.Identity.Name);
+            return View(empleado);
         }
 
-        // GET: Propietarios/Create
+        // GET: Empleados/Create
+        [Authorize(Policy = "Administrador")]
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: Propietarios/Create
+        // POST: Empleados/Create
         [HttpPost]
+        [Authorize(Policy = "Administrador")]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(Propietario p)
+        public ActionResult Create(IFormCollection collection)
         {
-            ViewBag.propietarios = repositorioPropietario.ObtenerTodos();
-
-            foreach (var item in (IList<Propietario>)ViewBag.propietarios)
-            {
-                if (item.Email == p.Email || item.Dni == p.Dni)
-                {
-                    ViewBag.Error2 = "Error: Ya existe un propietario con ese email o dni";
-                    return View();
-                }
-            }
-
             try
             {
-                TempData["Nombre"] = p.Nombre;
-                if (ModelState.IsValid)
-                {
-                    repositorioPropietario.Alta(p);
-                    TempData["Alta"] = "Propietario agregado exitosamente!";
-                    return RedirectToAction(nameof(Index));
-                }
-                else
-                    return View();
+                // TODO: Add insert logic here
+
+                return RedirectToAction(nameof(Index));
             }
-            catch (Exception ex)
+            catch
             {
-                ViewBag.Error = ex.Message;
-                ViewBag.StackTrate = ex.StackTrace;
                 return View();
             }
         }
-        [AllowAnonymous]
-        // GET: Propietarios/Edit/5
+
+        // GET: Empleados/Edit/5
         public ActionResult Edit(int id)
         {
-            var p = repositorioPropietario.ObtenerPorId(id);
+            var p = repositorioEmpleado.ObtenerPorId(id);
             ViewBag.Usuario = repositorioUsuario.ObtenerPorEmail(p.Email);
             if (TempData.ContainsKey("Error"))
                 ViewBag.Error = TempData["Error"];
@@ -98,23 +81,22 @@ namespace WebApplication1.Controllers
             return View(p);
         }
 
-        // POST: Propietarios/Edit/5
+        // POST: Empleados/Edit/5
         [HttpPost]
-        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, IFormCollection collection)
         {
-            Propietario p = null;
+            Empleado p = null;
             try
             {
-                p = repositorioPropietario.ObtenerPorId(id);
+                p = repositorioEmpleado.ObtenerPorId(id);
                 p.Nombre = collection["Nombre"];
                 p.Apellido = collection["Apellido"];
                 p.Dni = collection["Dni"];
                 p.Email = collection["Email"];
                 p.Telefono = collection["Telefono"];
-                repositorioPropietario.Modificacion(p);
-                TempData["Mensaje"] = "Datos modificados con exito!";
+                repositorioEmpleado.Modificacion(p);
+                TempData["Mensaje"] = "Datos guardados correctamente";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -125,39 +107,32 @@ namespace WebApplication1.Controllers
             }
         }
 
-        // GET: Propietarios/Delete/5
+        // GET: Empleados/Delete/5
+        [Authorize(Policy = "Administrador")]
         public ActionResult Delete(int id)
         {
-            var p = repositorioPropietario.ObtenerPorId(id);
-            if (TempData.ContainsKey("Mensaje"))
-                ViewBag.Mensaje = TempData["Mensaje"];
-            if (TempData.ContainsKey("Error"))
-                ViewBag.Error = TempData["Error"];
-            return View(p);
+            return View();
         }
 
-        // POST: Propietarios/Delete/5
+        // POST: Empleados/Delete/5
         [HttpPost]
+        [Authorize(Policy = "Administrador")]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, Propietario p)
+        public ActionResult Delete(int id, IFormCollection collection)
         {
             try
             {
-                repositorioPropietario.Baja(id);
-                TempData["Alta"] = "Propietario eliminado";
+                // TODO: Add delete logic here
+
                 return RedirectToAction(nameof(Index));
             }
-            catch (Exception ex)
+            catch
             {
-                ViewBag.Error = "Propietario dispone de inmuebles";
-                ViewBag.StackTrate = ex.StackTrace;
-                return View(p);
+                return View();
             }
-
         }
 
         [HttpPost]
-        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public ActionResult CambiarPass(int id, CambioClaveView cambio)
         {
@@ -211,4 +186,3 @@ namespace WebApplication1.Controllers
         }
     }
 }
-

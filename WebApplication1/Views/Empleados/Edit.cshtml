@@ -1,7 +1,7 @@
-﻿@model WebApplication1.Models.Propietario
+﻿@model WebApplication1.Models.Empleado
 
 @{
-    ViewData["Title"] = "Editar propietario";
+    ViewData["Title"] = "Editar Usuario";
 }
 
 <h3>Editar</h3>
@@ -38,7 +38,7 @@
             </div>
             <div class="form-group">
                 <input type="submit" value="Actualizar" class="btn btn-primary" /> |
-                <a class="btn btn-secondary" asp-action="Index">Volver</a>
+                <a class="btn btn-secondary" asp-action="Index">Volver al listado</a>
             </div>
         </form>
     </div>
@@ -68,7 +68,3 @@
         </form>
     </div>
 </div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
