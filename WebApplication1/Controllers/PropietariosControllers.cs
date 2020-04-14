@@ -11,7 +11,7 @@ using WebApplication1.Models;
 namespace WebApplication1.Controllers
 {
     [Authorize(Policy = "EsDeLaCasa")]
-    public class PropietariosController : Controller
+    public class PropietariosController : Controller 
     {
         private readonly IConfiguration configuration;
         private readonly RepositorioPropietario repositorioPropietario;

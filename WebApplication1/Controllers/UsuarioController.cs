@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Configuration;
 using WebApplication1.Models;
+using System.Net.Mail;
 
 namespace WebApplication1.Controllers
 {
@@ -220,6 +221,10 @@ namespace WebApplication1.Controllers
         [AllowAnonymous]
         public ActionResult Login()
         {
+            if (TempData.ContainsKey("Error"))
+                ViewBag.Id = TempData["Error"];
+            if (TempData.ContainsKey("Mensaje"))
+                ViewBag.Mensaje = TempData["Mensaje"];
             return View();
         }
 
@@ -300,7 +305,77 @@ namespace WebApplication1.Controllers
             return RedirectToAction(nameof(Index), "Home");
         }
 
-       
+        [AllowAnonymous]
+        public ActionResult RecuperarPass()
+        {
+            if(TempData.ContainsKey("Error"))
+                ViewBag.Id = TempData["Error"];
+            if (TempData.ContainsKey("Mensaje"))
+                ViewBag.Mensaje = TempData["Mensaje"];
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public ActionResult RecuperarPass(RecuperarClaveView recuperar)
+        {
+            try
+            {
+                var usuarios = repositorioUsuario.ObtenerTodos();
+                var resultado = 0;
+                String body = "";
+
+                foreach (Usuario item in usuarios)
+                {
+                    if(item.Email.ToString() == recuperar.Email.ToString())
+                    {
+                        item.Clave = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                            password: "1234",
+                            salt: System.Text.Encoding.ASCII.GetBytes("Salt"),
+                            prf: KeyDerivationPrf.HMACSHA1,
+                            iterationCount: 1000,
+                            numBytesRequested: 256 / 8));
+                        
+                        repositorioUsuario.Modificacion(item);
+                        body = "1234";
+                        resultado++;
+                    }
+                }
+                if (resultado != 0)
+                {
+                    MailMessage mail = new MailMessage();
+                    mail.From = new MailAddress("gastonlopez5@gmail.com");
+                    mail.To.Add(recuperar.Email.ToString());
+                    mail.Subject = "Inmobiliaria López - Recuperación de Clave Personal";
+                    mail.Body = "Cuando ingrese nuevamente al sistema modifique su contraseña. \n\nContraseña: " + body;
+
+                    SmtpClient smtp = new SmtpClient();
+                    smtp.Host = "smtp.gmail.com";
+                    smtp.Port = 25;
+                    smtp.EnableSsl = true;
+                    smtp.UseDefaultCredentials = true;
+                    smtp.Credentials = new System.Net.NetworkCredential("gastonlopez5@gmail.com", "50110392");
+                    smtp.Send(mail);
+
+                    TempData["Mensaje"] = "Hemos enviado un mail a su correo";
+                    return RedirectToAction("Login");
+                }
+                else
+                {
+                    TempData["Error"] = "El Usuario ingresado no existe";
+                    //se rederige porque no hay vista de cambio de pass, está compartida con Edit
+                    return RedirectToAction("RecuperarPass");
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                TempData["StackTrace"] = ex.StackTrace;
+                return RedirectToAction("Login");
+            }
+        }
+
 
     }
 }
