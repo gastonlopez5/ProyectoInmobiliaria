@@ -16,7 +16,7 @@ using System.Net.Mail;
 
 namespace WebApplication1.Controllers
 {
-    [Authorize]
+    [Authorize(Policy = "Administrador")]
     public class UsuarioController : Controller
     {
         private readonly IConfiguration configuration;
@@ -29,7 +29,6 @@ namespace WebApplication1.Controllers
         }
 
         // GET: Usuario
-        [Authorize(Policy = "Administrador")]
         public ActionResult Index()
         {
             var lista = repositorioUsuario.ObtenerTodos();
@@ -40,14 +39,24 @@ namespace WebApplication1.Controllers
             return View(lista);
         }
 
-        // GET: Usuario/Details/5
-        public ActionResult Details(int id)
+        public ActionResult Perfil()
         {
-            return View();
+            Usuario u = null;
+            string old = User.Identity.Name;
+
+            if(User.Identity.Name == old)
+            {
+               u = repositorioUsuario.ObtenerPorEmail(User.Identity.Name);
+            } 
+            else
+            {
+                u = repositorioUsuario.ObtenerPorEmail(old);
+            }
+            
+            return View(u);
         }
 
         // GET: Usuario/Create
-        [Authorize(Policy = "Administrador")]
         public ActionResult Create()
         {
             ViewBag.TipoUsuario = repositorioUsuario.ObtenerTiposUsuario();
@@ -56,7 +65,6 @@ namespace WebApplication1.Controllers
 
         // POST: Usuario/Create
         [HttpPost]
-        [Authorize(Policy = "Administrador")]
         [ValidateAntiForgeryToken]
         public ActionResult Create(Usuario usuario)
         {
@@ -66,7 +74,7 @@ namespace WebApplication1.Controllers
             {
                 if (item.Email == usuario.Email )
                 {
-                    ViewBag.Error2 = "Error: Ya existe un usuario con ese email";
+                    ViewBag.Error = "Error: Ya existe un usuario con ese email";
                     return View();
                 }
             }
@@ -82,7 +90,7 @@ namespace WebApplication1.Controllers
                         iterationCount: 1000,
                         numBytesRequested: 256 / 8));
                     repositorioUsuario.Alta(usuario);
-                    TempData["Alta"] = "Usuario agregado exitosamente!";
+                    TempData["Id"] = "Usuario agregado exitosamente!";
                     return RedirectToAction(nameof(Index));
                 }
                 else
@@ -99,7 +107,6 @@ namespace WebApplication1.Controllers
             }
 
         // GET: Usuario/Edit/5
-        [Authorize(Policy = "Administrador")]
         public ActionResult Edit(int id)
         {
             var p = repositorioUsuario.ObtenerPorId(id);
@@ -111,7 +118,6 @@ namespace WebApplication1.Controllers
 
         // POST: Usuario/Edit/5
         [HttpPost]
-        [Authorize(Policy = "Administrador")]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, IFormCollection collection)
         {
@@ -120,10 +126,10 @@ namespace WebApplication1.Controllers
             {
                 p = repositorioUsuario.ObtenerPorId(id);
                 p.Email = collection["Email"];
-                p.RolId = Int32.Parse(collection["RolId"]);
+
                 repositorioUsuario.Modificacion(p);
-                TempData["Mensaje"] = "Datos guardados correctamente";
-                return RedirectToAction(nameof(Index));
+                TempData["Mensaje"] = "Email actualizado correctamente. Ingresar nuevamente por favor.";
+                return RedirectToAction("Logout");
             }
             catch (Exception ex)
             {
@@ -135,7 +141,6 @@ namespace WebApplication1.Controllers
 
         // POST: Propietario/Edit/5
         [HttpPost]
-        [Authorize(Policy = "Administrador")]
         [ValidateAntiForgeryToken]
         public ActionResult CambiarPass(int id, CambioClaveView cambio)
         {
@@ -143,19 +148,7 @@ namespace WebApplication1.Controllers
             try
             {
                 usuario = repositorioUsuario.ObtenerPorId(id);
-                // verificar clave antigüa
-                var pass = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-                        password: cambio.ClaveVieja ?? "",
-                        salt: System.Text.Encoding.ASCII.GetBytes("Salt"),
-                        prf: KeyDerivationPrf.HMACSHA1,
-                        iterationCount: 1000,
-                        numBytesRequested: 256 / 8));
-                if (usuario.Clave != pass)
-                {
-                    TempData["Error"] = "Clave incorrecta";
-                    //se rederige porque no hay vista de cambio de pass, está compartida con Edit
-                    return RedirectToAction("Edit", new { id = id });
-                }
+                
                 if (ModelState.IsValid)
                 {
                     usuario.Clave = Convert.ToBase64String(KeyDerivation.Pbkdf2(
@@ -164,9 +157,10 @@ namespace WebApplication1.Controllers
                         prf: KeyDerivationPrf.HMACSHA1,
                         iterationCount: 1000,
                         numBytesRequested: 256 / 8));
+                    
                     repositorioUsuario.Modificacion(usuario);
-                    TempData["Mensaje"] = "Contraseña actualizada correctamente";
-                    return RedirectToAction(nameof(Index));
+                    TempData["Mensaje"] = "Contraseña actualizada correctamente. Ingresar nuevamente por favor";
+                    return RedirectToAction("Logout");
                 }
                 else
                 {
@@ -189,7 +183,6 @@ namespace WebApplication1.Controllers
         }
 
         // GET: Usuario/Delete/5
-        [Authorize(Policy = "Administrador")]
         public ActionResult Delete(int id)
         {
             var p = repositorioUsuario.ObtenerPorId(id);
@@ -200,7 +193,6 @@ namespace WebApplication1.Controllers
 
         // POST: Usuario/Delete/5
         [HttpPost]
-        [Authorize(Policy = "Administrador")]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, Usuario usuario)
         {

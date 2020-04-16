@@ -1,14 +1,15 @@
 ﻿@model WebApplication1.Models.Empleado
 
 @{
-    ViewData["Title"] = "Mi Perfil";
+    ViewData["Title"] = "Eliminar Empleado";
 }
 
-<h3>Mi Perfil</h3>
+<h3>Baja de empleado</h3>
 
+<h6>¿Seguro que desea dar de baja al empleado?</h6>
 <div>
-    <hr />
 
+    <hr />
     <dl class="row">
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Dni)
@@ -41,8 +42,10 @@
             @Html.DisplayFor(model => model.Telefono)
         </dd>
     </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Editar Perfil y Contraseña</a> |
-    <a asp-action="Index" class="btn btn-secondary">Volver</a>
+
+    <form asp-action="Delete">
+        <input type="submit" value="Eliminar" class="btn btn-danger" /> |
+        <a class="btn btn-secondary" asp-action="Index">Volver al listado</a>
+    </form>
+    
 </div>

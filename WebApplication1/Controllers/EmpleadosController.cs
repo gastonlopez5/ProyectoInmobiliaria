@@ -55,16 +55,47 @@ namespace WebApplication1.Controllers
         [HttpPost]
         [Authorize(Policy = "Administrador")]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(Empleado p)
         {
+            ViewBag.empleados = repositorioEmpleado.ObtenerTodos();
+
+            foreach (var item in (IList<Empleado>)ViewBag.empleados)
+            {
+                if (item.Email == p.Email || item.Dni == p.Dni)
+                {
+                    ViewBag.Error = "Error: Ya existe un empleado con ese email o dni";
+                    return View();
+                }
+            }
+
             try
             {
-                // TODO: Add insert logic here
+                if (ModelState.IsValid)
+                {
+                    p.Clave = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                        password: p.Clave,
+                        salt: System.Text.Encoding.ASCII.GetBytes("Salt"),
+                        prf: KeyDerivationPrf.HMACSHA1,
+                        iterationCount: 1000,
+                        numBytesRequested: 256 / 8));
 
-                return RedirectToAction(nameof(Index));
+                    Usuario u = new Usuario();
+                    u.Email = p.Email;
+                    u.RolId = 2;
+                    u.Clave = p.Clave;
+
+                    repositorioUsuario.Alta(u);
+                    repositorioEmpleado.Alta(p);
+                    TempData["Id"] = "Empleado agregado exitosamente!";
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                    return View();
             }
-            catch
+            catch (Exception ex)
             {
+                ViewBag.Error = ex.Message;
+                ViewBag.StackTrate = ex.StackTrace;
                 return View();
             }
         }
@@ -87,17 +118,24 @@ namespace WebApplication1.Controllers
         public ActionResult Edit(int id, IFormCollection collection)
         {
             Empleado p = null;
+            Usuario u = null;
             try
             {
                 p = repositorioEmpleado.ObtenerPorId(id);
+                u = repositorioUsuario.ObtenerPorEmail(p.Email);
+                
                 p.Nombre = collection["Nombre"];
                 p.Apellido = collection["Apellido"];
                 p.Dni = collection["Dni"];
                 p.Email = collection["Email"];
                 p.Telefono = collection["Telefono"];
+
+                u.Email = p.Email;
+
+                repositorioUsuario.Modificacion(u);
                 repositorioEmpleado.Modificacion(p);
-                TempData["Mensaje"] = "Datos guardados correctamente";
-                return RedirectToAction(nameof(Index));
+                TempData["Mensaje"] = "Datos guardados correctamente. Ingresar nuevamente por favor.";
+                return RedirectToAction("Logout", "Usuario");
             }
             catch (Exception ex)
             {
@@ -111,24 +149,37 @@ namespace WebApplication1.Controllers
         [Authorize(Policy = "Administrador")]
         public ActionResult Delete(int id)
         {
-            return View();
+            var p = repositorioEmpleado.ObtenerPorId(id);
+            if (TempData.ContainsKey("Mensaje"))
+                ViewBag.Mensaje = TempData["Mensaje"];
+            if (TempData.ContainsKey("Error"))
+                ViewBag.Error = TempData["Error"];
+            return View(p);
         }
 
         // POST: Empleados/Delete/5
         [HttpPost]
         [Authorize(Policy = "Administrador")]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(int id, Empleado p)
         {
+            Usuario u = null;
+
             try
             {
-                // TODO: Add delete logic here
+                p = repositorioEmpleado.ObtenerPorId(id);
+                u = repositorioUsuario.ObtenerPorEmail(p.Email);
 
+                repositorioUsuario.Baja(u.Id);
+                repositorioEmpleado.Baja(id);
+                TempData["Mensaje"] = "Empleado eliminado";
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                ViewBag.Error = ex.Message;
+                ViewBag.StackTrate = ex.StackTrace;
+                return View(p);
             }
         }
 
@@ -137,22 +188,30 @@ namespace WebApplication1.Controllers
         public ActionResult CambiarPass(int id, CambioClaveView cambio)
         {
             Usuario usuario = null;
+            Empleado empleado = null;
+
             try
             {
-                usuario = repositorioUsuario.ObtenerPorEmail(User.Identity.Name);
-                // verificar clave antigüa
-                var pass = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-                        password: cambio.ClaveVieja ?? "",
-                        salt: System.Text.Encoding.ASCII.GetBytes("Salt"),
-                        prf: KeyDerivationPrf.HMACSHA1,
-                        iterationCount: 1000,
-                        numBytesRequested: 256 / 8));
-                if (usuario.Clave != pass)
+                empleado = repositorioEmpleado.ObtenerPorId(id);
+                usuario = repositorioUsuario.ObtenerPorEmail(empleado.Email);
+
+                if (User.IsInRole("Empleado"))
                 {
-                    TempData["Error"] = "Clave incorrecta";
-                    //se rederige porque no hay vista de cambio de pass, está compartida con Edit
-                    return RedirectToAction("Edit", new { id = id });
+                    // verificar clave antigüa
+                    var pass = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                            password: cambio.ClaveVieja ?? "",
+                            salt: System.Text.Encoding.ASCII.GetBytes("Salt"),
+                            prf: KeyDerivationPrf.HMACSHA1,
+                            iterationCount: 1000,
+                            numBytesRequested: 256 / 8));
+                    if (usuario.Clave != pass)
+                    {
+                        TempData["Error"] = "Clave incorrecta";
+                        //se rederige porque no hay vista de cambio de pass, está compartida con Edit
+                        return RedirectToAction("Edit", new { id = id });
+                    }
                 }
+               
                 if (ModelState.IsValid)
                 {
                     usuario.Clave = Convert.ToBase64String(KeyDerivation.Pbkdf2(
@@ -161,9 +220,10 @@ namespace WebApplication1.Controllers
                         prf: KeyDerivationPrf.HMACSHA1,
                         iterationCount: 1000,
                         numBytesRequested: 256 / 8));
+                    
                     repositorioUsuario.Modificacion(usuario);
-                    TempData["Mensaje"] = "Contraseña actualizada correctamente";
-                    return RedirectToAction(nameof(Index));
+                    TempData["Mensaje"] = "Contraseña actualizada correctamente. Ingresar nuevamente por favor";
+                    return RedirectToAction("Logout", "Usuario");
                 }
                 else
                 {

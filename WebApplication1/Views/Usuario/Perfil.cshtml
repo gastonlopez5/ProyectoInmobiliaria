@@ -1,0 +1,25 @@
+﻿@model WebApplication1.Models.Usuario
+
+@{
+    ViewData["Title"] = "Mi Perfil";
+}
+
+<h3>Mi Perfil</h3>
+
+<div>
+   
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Editar Perfil y Contraseña</a> |
+    <a asp-action="Index" class="btn btn-secondary">Volver</a>
+</div>

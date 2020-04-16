@@ -19,6 +19,34 @@ namespace WebApplication1.Models
 			connectionString = configuration["ConnectionStrings:DefaultConnection"];
 		}
 
+		public int Alta(Empleado p)
+		{
+			int res = -1;
+			using (var connection = new MySqlConnection(connectionString))
+			{
+				string sql = $"INSERT INTO empleados (Nombre, Apellido, Telefono, Email, Dni) " +
+					$"VALUES (@nombre, @apellido, @telefono, @email, @dni);" +
+					$"SELECT LAST_INSERT_ID();";//devuelve el id insertado
+
+				using (MySqlCommand command = new MySqlCommand(sql, connection))
+				{
+					command.CommandType = CommandType.Text;
+					command.Parameters.AddWithValue("@nombre", p.Nombre);
+					command.Parameters.AddWithValue("@apellido", p.Apellido);
+					command.Parameters.AddWithValue("@telefono", p.Telefono);
+					command.Parameters.AddWithValue("@email", p.Email);
+					command.Parameters.AddWithValue("@dni", p.Dni);
+					connection.Open();
+					res = Convert.ToInt32(command.ExecuteScalar());
+					p.Id = res;
+					connection.Close();
+				}
+
+				
+			}
+			return res;
+		}
+
 		public IList<Empleado> ObtenerTodos()
 		{
 			IList<Empleado> res = new List<Empleado>();
@@ -51,6 +79,24 @@ namespace WebApplication1.Models
 			return res;
 		}
 
+		public int Baja(int id)
+		{
+			int res = -1;
+			using (var connection = new MySqlConnection(connectionString))
+			{
+				string sql = $"DELETE FROM empleados WHERE Id = @id";
+				using (var command = new MySqlCommand(sql, connection))
+				{
+					command.CommandType = CommandType.Text;
+					command.Parameters.AddWithValue("@id", id);
+					connection.Open();
+					res = command.ExecuteNonQuery();
+					connection.Close();
+				}
+			}
+			return res;
+		}
+
 		public int Modificacion(Empleado p)
 		{
 			int res = -1;
@@ -71,6 +117,7 @@ namespace WebApplication1.Models
 					res = command.ExecuteNonQuery();
 					connection.Close();
 				}
+
 			}
 			return res;
 		}

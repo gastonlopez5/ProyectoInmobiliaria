@@ -18,6 +18,8 @@ namespace WebApplication1.Models
         public string Apellido { get; set; }
         [DataType(DataType.EmailAddress), Required]
         public string Email { get; set; }
+        [Required, DataType(DataType.Password)]
+        public string Clave { get; set; }
         [Required]
         public string Telefono { get; set; }
     }

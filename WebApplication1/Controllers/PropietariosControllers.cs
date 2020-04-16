@@ -61,7 +61,7 @@ namespace WebApplication1.Controllers
             {
                 if (item.Email == p.Email || item.Dni == p.Dni)
                 {
-                    ViewBag.Error2 = "Error: Ya existe un propietario con ese email o dni";
+                    ViewBag.Error = "Error: Ya existe un propietario con ese email o dni";
                     return View();
                 }
             }
@@ -72,7 +72,7 @@ namespace WebApplication1.Controllers
                 if (ModelState.IsValid)
                 {
                     repositorioPropietario.Alta(p);
-                    TempData["Alta"] = "Propietario agregado exitosamente!";
+                    TempData["Id"] = "Propietario agregado exitosamente!";
                     return RedirectToAction(nameof(Index));
                 }
                 else
@@ -85,6 +85,7 @@ namespace WebApplication1.Controllers
                 return View();
             }
         }
+
         [AllowAnonymous]
         // GET: Propietarios/Edit/5
         public ActionResult Edit(int id)
@@ -144,7 +145,7 @@ namespace WebApplication1.Controllers
             try
             {
                 repositorioPropietario.Baja(id);
-                TempData["Alta"] = "Propietario eliminado";
+                TempData["Mensaje"] = "Propietario eliminado";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
