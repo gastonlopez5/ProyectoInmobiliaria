@@ -301,7 +301,7 @@ namespace WebApplication1.Controllers
         public ActionResult RecuperarPass()
         {
             if(TempData.ContainsKey("Error"))
-                ViewBag.Id = TempData["Error"];
+                ViewBag.Error = TempData["Error"];
             if (TempData.ContainsKey("Mensaje"))
                 ViewBag.Mensaje = TempData["Mensaje"];
             return View();

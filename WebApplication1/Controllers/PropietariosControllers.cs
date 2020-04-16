@@ -71,6 +71,19 @@ namespace WebApplication1.Controllers
                 TempData["Nombre"] = p.Nombre;
                 if (ModelState.IsValid)
                 {
+                    p.Clave = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                        password: p.Clave,
+                        salt: System.Text.Encoding.ASCII.GetBytes("Salt"),
+                        prf: KeyDerivationPrf.HMACSHA1,
+                        iterationCount: 1000,
+                        numBytesRequested: 256 / 8));
+
+                    Usuario u = new Usuario();
+                    u.Email = p.Email;
+                    u.RolId = 3;
+                    u.Clave = p.Clave;
+
+                    repositorioUsuario.Alta(u);
                     repositorioPropietario.Alta(p);
                     TempData["Id"] = "Propietario agregado exitosamente!";
                     return RedirectToAction(nameof(Index));
@@ -106,17 +119,24 @@ namespace WebApplication1.Controllers
         public ActionResult Edit(int id, IFormCollection collection)
         {
             Propietario p = null;
+            Usuario u = null;
             try
             {
                 p = repositorioPropietario.ObtenerPorId(id);
+                u = repositorioUsuario.ObtenerPorEmail(p.Email);
+
                 p.Nombre = collection["Nombre"];
                 p.Apellido = collection["Apellido"];
                 p.Dni = collection["Dni"];
                 p.Email = collection["Email"];
                 p.Telefono = collection["Telefono"];
+
+                u.Email = p.Email;
+
+                repositorioUsuario.Modificacion(u);
                 repositorioPropietario.Modificacion(p);
-                TempData["Mensaje"] = "Datos modificados con exito!";
-                return RedirectToAction(nameof(Index));
+                TempData["Mensaje"] = "Datos guardados correctamente. Ingresar nuevamente por favor.";
+                return RedirectToAction("Logout", "Usuario");
             }
             catch (Exception ex)
             {
@@ -127,6 +147,7 @@ namespace WebApplication1.Controllers
         }
 
         // GET: Propietarios/Delete/5
+        [Authorize(Policy = "EsDeLaCasa")]
         public ActionResult Delete(int id)
         {
             var p = repositorioPropietario.ObtenerPorId(id);
@@ -139,11 +160,18 @@ namespace WebApplication1.Controllers
 
         // POST: Propietarios/Delete/5
         [HttpPost]
+        [Authorize(Policy = "EsDeLaCasa")]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, Propietario p)
         {
+            Usuario u = null;
+
             try
             {
+                p = repositorioPropietario.ObtenerPorId(id);
+                u = repositorioUsuario.ObtenerPorEmail(p.Email);
+
+                repositorioUsuario.Baja(u.Id);
                 repositorioPropietario.Baja(id);
                 TempData["Mensaje"] = "Propietario eliminado";
                 return RedirectToAction(nameof(Index));
@@ -163,21 +191,28 @@ namespace WebApplication1.Controllers
         public ActionResult CambiarPass(int id, CambioClaveView cambio)
         {
             Usuario usuario = null;
+            Propietario p = null;
+
             try
             {
-                usuario = repositorioUsuario.ObtenerPorEmail(User.Identity.Name);
-                // verificar clave antigüa
-                var pass = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                p = repositorioPropietario.ObtenerPorId(id);
+                usuario = repositorioUsuario.ObtenerPorEmail(p.Email);
+
+                if (User.IsInRole("Propietario"))
+                {
+                    // verificar clave antigüa
+                    var pass = Convert.ToBase64String(KeyDerivation.Pbkdf2(
                         password: cambio.ClaveVieja ?? "",
                         salt: System.Text.Encoding.ASCII.GetBytes("Salt"),
                         prf: KeyDerivationPrf.HMACSHA1,
                         iterationCount: 1000,
                         numBytesRequested: 256 / 8));
-                if (usuario.Clave != pass)
-                {
-                    TempData["Error"] = "Clave incorrecta";
-                    //se rederige porque no hay vista de cambio de pass, está compartida con Edit
-                    return RedirectToAction("Edit", new { id = id });
+                    if (usuario.Clave != pass)
+                    {
+                        TempData["Error"] = "Clave incorrecta";
+                        //se rederige porque no hay vista de cambio de pass, está compartida con Edit
+                        return RedirectToAction("Edit", new { id = id });
+                    }
                 }
                 if (ModelState.IsValid)
                 {
@@ -188,8 +223,8 @@ namespace WebApplication1.Controllers
                         iterationCount: 1000,
                         numBytesRequested: 256 / 8));
                     repositorioUsuario.Modificacion(usuario);
-                    TempData["Mensaje"] = "Contraseña actualizada correctamente";
-                    return RedirectToAction(nameof(Index));
+                    TempData["Mensaje"] = "Contraseña actualizada correctamente. Ingresar nuevamente por favor";
+                    return RedirectToAction("Logout", "Usuario");
                 }
                 else
                 {

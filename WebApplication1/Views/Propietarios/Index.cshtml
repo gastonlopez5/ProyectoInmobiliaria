@@ -59,7 +59,11 @@
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id" title="Editar"><span class="lnr lnr-pencil" style="font-weight:bold"></span></a>&nbsp; |
-                    <a asp-action="Delete" asp-route-id="@item.Id" title="Eliminar"><span class="lnr lnr-cross" style="color:#fa0202; font-weight:bold"></span></a>
+                    
+                    @if (User.IsInRole("Administrador"))
+                    {
+                       <a asp-action="Delete" asp-route-id="@item.Id" title="Eliminar"><span class="lnr lnr-cross" style="color:#fa0202; font-weight:bold"></span></a>
+                    }
                 </td>
             </tr>
         }
