@@ -27,8 +27,10 @@ namespace WebApplication1.Controllers
         public ActionResult Index()
         {
             var lista = repositorioInmueble.ObtenerTodos();
-            if (TempData.ContainsKey("Alta"))
-                ViewBag.Alta = TempData["Alta"];
+            if (TempData.ContainsKey("Id"))
+                ViewBag.Id = TempData["Id"];
+            if (TempData.ContainsKey("Mensaje"))
+                ViewBag.Mensaje = TempData["Mensaje"];
             return View(lista);
         }
 
@@ -53,7 +55,7 @@ namespace WebApplication1.Controllers
                 if (ModelState.IsValid)
                 {
                     repositorioInmueble.Alta(p);
-                    TempData["Alta"] = "Inmueble agregado exitosamente!";
+                    TempData["Id"] = "Inmueble agregado exitosamente!";
                     return RedirectToAction(nameof(Index));
                 }
                 else
@@ -95,7 +97,7 @@ namespace WebApplication1.Controllers
             {
                 entidad.Id = id;
                 repositorioInmueble.Modificacion(entidad);
-                TempData["Alta"] = "Datos guardados correctamente";
+                TempData["Mensaje"] = "Datos guardados correctamente";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)

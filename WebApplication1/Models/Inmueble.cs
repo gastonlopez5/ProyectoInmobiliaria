@@ -11,7 +11,8 @@ namespace WebApplication1.Models
     {
         [Key, Display(Name = "Código")]
         public int Id { get; set; }
-        [Required]
+        [Required(ErrorMessage = "La dirección es requerida")]
+        [StringLength(50, ErrorMessage = "La dirección debe tener entre 3 y 50 caracteres", MinimumLength = 3)]
         public string Direccion { get; set; }
         [Required]
         public int Tipo { get; set; }
