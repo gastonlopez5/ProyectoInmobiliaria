@@ -91,9 +91,12 @@ namespace WebApplication1.Models
 			int res = -1;
 			using (var connection = new MySqlConnection(connectionString))
 			{
-				string sql = $"UPDATE inmuebles SET Disponible='{resp}' WHERE Id = {p}";
+				string sql = $"UPDATE inmuebles SET Disponible=@disponible WHERE Id =@id";
+
 				using (var command = new MySqlCommand(sql, connection))
 				{
+					command.Parameters.Add("@disponible", MySqlDbType.VarChar).Value = resp;
+					command.Parameters.Add("@id", MySqlDbType.Int32).Value = p;
 					command.CommandType = CommandType.Text;
 					connection.Open();
 					res = command.ExecuteNonQuery();

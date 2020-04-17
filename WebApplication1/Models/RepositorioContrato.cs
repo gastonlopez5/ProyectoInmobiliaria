@@ -171,7 +171,9 @@ namespace WebApplication1.Models
                             {
                                 Id = reader.GetInt32(9),
                                 Direccion = reader.GetString(12)
-                            }
+                            },
+                            InmuebleId = reader.GetInt32(9),
+                            InquilinoId = reader.GetInt32(8)
                         };
                         return p;
                     }

@@ -185,8 +185,8 @@ namespace WebApplication1.Controllers
             DateTime d1 = c.FechaInicio;
             TimeSpan diff = d2 - d1;
             double totalDias = diff.TotalDays;
-            //double cantidadPagos = Math.Round(totalDias / 30);
-            double cantidadPagos = 2;
+            double cantidadPagos = Math.Round(totalDias / 30);
+            //double cantidadPagos = 2;
 
             int nroPagoMax = 0;
             foreach (Pago pago in p)
@@ -199,15 +199,21 @@ namespace WebApplication1.Controllers
 
             if (nroPagoMax < cantidadPagos)
             {
-                double pagosFaltantes = cantidadPagos - nroPagoMax;
-                TempData["Error"] = "Faltan " + pagosFaltantes +" pagos por realizar";
-                return RedirectToAction(nameof(Index));
+                if (nroPagoMax < cantidadPagos / 2)
+                {
+                    TempData["Error"] = "Debe abonar " + c.Importe*2 + " (2 meses de alquiler) por finalizar el contrato antes del " + c.FechaFin.ToString("dd-MM-yyyy") + " y haber abonado menos de la mitad del total de pagos";
+                }
+                else
+                {
+                    TempData["Error"] = "Debe abonar " + c.Importe + " (1 mes de alquiler) por finalizar el contrato antes del " + c.FechaFin.ToString("dd-MM-yyyy") + " y haber abonado más de la mitad del total de pagos"; ;
+                }
             }
-            else
-            {
-                var entidad = repositorioContrato.ObtenerPorId(id);
-                return View(entidad);
-            }
+            
+            var entidad = repositorioContrato.ObtenerPorId(id);
+            if (TempData.ContainsKey("Error"))
+                ViewBag.Error = TempData["Error"];
+            
+            return View(entidad);
         }
 
         // POST: Contratos/Delete/5
@@ -222,7 +228,7 @@ namespace WebApplication1.Controllers
             {
                 c = repositorioContrato.ObtenerPorId(id);
 
-                repositorioInmueble.CambioDisponible(c.InmuebleId, "true");
+                repositorioInmueble.CambioDisponible(c.InmuebleId, "1");
                 repositorioPago.EliminarPagosPorContrato(id);
                 repositorioContrato.Baja(id);
                 TempData["Mensaje"] = "Contrato y pagos relacionados eliminados correctamente";
