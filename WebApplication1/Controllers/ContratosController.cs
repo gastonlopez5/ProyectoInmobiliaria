@@ -56,7 +56,7 @@ namespace WebApplication1.Controllers
         {
             //ViewBag.inmueble = repositorioInmueble.ObtenerTodos();
             ViewBag.inquilino = repositorioInquilino.ObtenerTodos();
-            ViewBag.inmueble = id;
+            ViewBag.inmueble = repositorioInmueble.ObtenerPorId(id);
             //int resultado = 0;
             int resultado2 = 0;
 
@@ -214,8 +214,13 @@ namespace WebApplication1.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, Contrato entidad)
         {
+            Contrato c = null;
+
             try
             {
+                c = repositorioContrato.ObtenerPorId(id);
+
+                repositorioInmueble.CambioDisponible(c.InmuebleId, "true");
                 repositorioPago.EliminarPagosPorContrato(id);
                 repositorioContrato.Baja(id);
                 TempData["Mensaje"] = "Contrato y pagos relacionados eliminados correctamente";
