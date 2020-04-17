@@ -25,9 +25,19 @@ namespace WebApplication1.Controllers
         }
 
         // GET: Pagos
-        public ActionResult Index()
+        public ActionResult Index(int id)
         {
-            return View();
+            var lista = repositorioPago.ObtenerTodosPorContratoId(id);
+            ViewBag.ContratoId = lista[0].Contrato.Id;
+            if (lista == null)
+            {
+                TempData["Mensaje"] = "No se registran pagos realizados para este contrato";
+                return RedirectToAction("Index", "Contratos");
+            }
+            else
+            {
+                return View(lista);
+            }
         }
 
         // GET: Pagos/Details/5
@@ -56,7 +66,7 @@ namespace WebApplication1.Controllers
             }
             else
             {
-                int nroPagoMax = 1;
+                int nroPagoMax = 0;
                 foreach (Pago pago in p)
                 {
                     if (pago.NroPago > nroPagoMax)
@@ -65,26 +75,39 @@ namespace WebApplication1.Controllers
                     }
                 }
 
-                ViewBag.NroPago = nroPagoMax;
-                ViewBag.Contrato = c;
-                return View();
+                nroPagoMax++;
+
+                if (nroPagoMax > cantidadPagos)
+                {
+                    TempData["Mensaje"] = "Se realizaron todos los pagos del contrato vigente";
+                    return RedirectToAction("Index", "Contratos");
+                }
+                else
+                {
+                    ViewBag.NroPago = nroPagoMax;
+                    ViewBag.Contrato = c;
+                    return View();
+                }
             }
         }
 
         // POST: Pagos/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(Pago pago)
         {
             try
             {
-                // TODO: Add insert logic here
-
-                return RedirectToAction(nameof(Index));
+                repositorioPago.Alta(pago);
+                TempData["Id"] = "Pago realizado correctamente";
+                return RedirectToAction("Index", "Contratos");
             }
-            catch
+            catch (Exception ex)
             {
+                ViewBag.Error = ex.Message;
+                ViewBag.StackTrate = ex.StackTrace;
                 return View();
+
             }
         }
 

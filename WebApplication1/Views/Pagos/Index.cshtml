@@ -1,0 +1,49 @@
+﻿@model IEnumerable<WebApplication1.Models.Pago>
+
+@{
+    ViewData["Title"] = "Lista de Pagos";
+}
+
+<h1>Lista de Pagos Realizados</h1>
+<br />
+<h3>Código del contrato: @ViewBag.ContratoId</h3>
+<br />
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Pago Nro.
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Fecha)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Importe)
+            </th>
+            <th>
+                Eliminar Pago
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.NroPago)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Fecha)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Importe)
+            </td>
+            <td>
+                @if (User.IsInRole("Administrador") || User.IsInRole("Empleado"))
+                {
+                    <a asp-action="Delete" asp-route-id="@item.Id" title="Eliminar"><span class="lnr lnr-cross" style="color:#fa0202; font-weight:bold"></span></a>
+                }
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

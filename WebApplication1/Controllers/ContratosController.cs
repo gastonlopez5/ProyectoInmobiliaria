@@ -200,5 +200,10 @@ namespace WebApplication1.Controllers
         {
             return RedirectToAction("Create", "Pagos", new { id = id });
         }
+
+        public ActionResult ListaPagos(int id)
+        {
+            return RedirectToAction("Index", "Pagos", new { id = id });
+        }
     }
 }

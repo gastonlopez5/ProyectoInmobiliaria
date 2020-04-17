@@ -16,7 +16,7 @@ namespace WebApplication1.Models
 		[Required]
 		public int ContratoId { get; set; }
 		[Required, DataType(DataType.Date)]
-		public string Fecha { get; set; }
+		public DateTime Fecha { get; set; }
 		[Required]
 		public decimal Importe { get; set; }
 		[ForeignKey("ContratoId")]

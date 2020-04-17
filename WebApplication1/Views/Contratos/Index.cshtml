@@ -28,36 +28,38 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.FechaInicio)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FechaFin)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Importe)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Inquilino.Apellido)
-                @Html.DisplayFor(modelItem => item.Inquilino.Nombre)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Inmueble.Direccion)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id" title="Editar"><span class="lnr lnr-pencil" style="font-weight:bold"></span></a>&nbsp; |
-                <a asp-action="Details" asp-route-id="@item.Id" title="Detalles"><span class="lnr lnr-text-align-justify" style="font-weight:bold"></span></a>&nbsp; |
-                <a asp-action="Pago" asp-route-id="@item.Id" title="Pago"><span class="lnr lnr-checkmark-circle" style="font-weight:bold"></span></a>&nbsp; |
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FechaInicio)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FechaFin)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Importe)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Inquilino.Apellido)
+                    @Html.DisplayFor(modelItem => item.Inquilino.Nombre)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Inmueble.Direccion)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" title="Editar"><span class="lnr lnr-pencil" style="font-weight:bold"></span></a>&nbsp; |
+                    <a asp-action="Details" asp-route-id="@item.Id" title="Detalles"><span class="lnr lnr-text-align-justify" style="font-weight:bold"></span></a>&nbsp; |
+                    <a asp-action="Pago" asp-route-id="@item.Id" title="Pago"><span class="lnr lnr-checkmark-circle" style="font-weight:bold"></span></a>&nbsp; |
+                    <a asp-action="ListaPagos" asp-route-id="@item.Id" title="Pagos Realizados"><span class="lnr lnr-list" style="font-weight:bold"></span></a>&nbsp; |
 
-                @if (User.IsInRole("Administrador"))
-                {
-                    <a asp-action="Delete" asp-route-id="@item.Id" title="Eliminar"><span class="lnr lnr-cross" style="color:#fa0202; font-weight:bold"></span></a>
+                    @if (User.IsInRole("Administrador"))
+                    {
+                        <a asp-action="Delete" asp-route-id="@item.Id" title="Eliminar"><span class="lnr lnr-cross" style="color:#fa0202; font-weight:bold"></span></a>
 
-                }
-            </td>
-        </tr>
-}
+                    }
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

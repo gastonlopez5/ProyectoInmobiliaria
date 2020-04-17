@@ -25,7 +25,7 @@ namespace WebApplication1.Models
             using (var connection = new MySqlConnection(connectionString))
             {
                 string sql = $"INSERT INTO Pago (NroPago, Fecha, Importe, ContratoId) " +
-                    $"VALUES (@nroPago, @fecha, @importe, @contratoId)" +
+                    $"VALUES (@nroPago, @fecha, @importe, @contratoId);" +
                     $"SELECT LAST_INSERT_ID();"; ;
 
                 using (var command = new MySqlCommand(sql, connection))
@@ -112,7 +112,7 @@ namespace WebApplication1.Models
                                     Apellido = reader.GetString(7)
                                 }
                             },
-                            Fecha = reader.GetString(8),
+                            Fecha = reader.GetDateTime(8),
                             Importe = reader.GetDecimal(9)
                         };
                         res.Add(i);
@@ -157,7 +157,7 @@ namespace WebApplication1.Models
                                     Apellido = reader.GetString(7)
                                 }
                             },
-                            Fecha = reader.GetString(8),
+                            Fecha = reader.GetDateTime(8),
                             Importe = reader.GetDecimal(9)
                         };
                     }
@@ -166,13 +166,14 @@ namespace WebApplication1.Models
             }
             return p;
         }
-
+        
+        /*
         public IList<Pago> ObtenerTodosPorContratoId(int id)
         {
             IList<Pago> res = new List<Pago>();
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = $"SELECT Pago.Id, NroPago, Pago.ContratoId, Contrato.InmuebleId, Inmuebles.Direccion, Contrato.InquilinoId, Inquilinos.Nombre, Inquilinos.Apellido, Fecha, Pago.Importe FROM Pago INNER JOIN Contrato ON (Contrato.Id=Pago.Id) INNER JOIN Inmuebles ON (Inmuebles.Id = Contrato.Id) INNER JOIN Inquilinos ON (Inquilinos.Id = Contrato.Id) WHERE Contrato.Id=@id";
+                string sql = $"SELECT pago.Id, NroPago, Pago.ContratoId, contrato.InmuebleId, Inmuebles.Direccion, Contrato.InquilinoId, Inquilinos.Nombre, Inquilinos.Apellido, Fecha, Pago.Importe FROM Pago INNER JOIN Contrato ON (Contrato.Id=Pago.ContratoId) INNER JOIN Inmuebles ON (Inmuebles.Id = Contrato.InmuebleId) INNER JOIN Inquilinos ON (Inquilinos.Id = Contrato.InquilinoId) WHERE Pago.ContratoId=@id";
 
                 using (var command = new MySqlCommand(sql, connection))
                 {
@@ -201,8 +202,54 @@ namespace WebApplication1.Models
                                     Apellido = reader.GetString(7)
                                 }
                             },
-                            Fecha = reader.GetString(8),
+                            Fecha = reader.GetDateTime(8),
                             Importe = reader.GetDecimal(9)
+                        };
+                        res.Add(i);
+                    }
+                    connection.Close();
+                }
+            }
+            return res;
+        }
+        */
+
+        public IList<Pago> ObtenerTodosPorContratoId(int id)
+        {
+            IList<Pago> res = new List<Pago>();
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                string sql = $"SELECT pago.Id, NroPago, Pago.ContratoId, contrato.InmuebleId, Contrato.InquilinoId, Contrato.FechaInicio, Contrato.FechaFin, Contrato.Importe, Contrato.NombreCompletoGarante, Contrato.TelefonoGarante, Contrato.EmailGarante, Contrato.DniGarante, Fecha, Pago.Importe FROM Pago INNER JOIN Contrato ON (Contrato.Id=Pago.ContratoId) WHERE Pago.ContratoId=@id";
+
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    command.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
+                    command.CommandType = CommandType.Text;
+                    connection.Open();
+                    var reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        Pago i = new Pago
+                        {
+                            Id = reader.GetInt32(0),
+                            NroPago = reader.GetInt32(1),
+                            ContratoId = reader.GetInt32(2),
+                            Contrato = new Contrato
+                            {
+                                Id = reader.GetInt32(2),
+                                InmuebleId = reader.GetInt32(3),
+                                InquilinoId = reader.GetInt32(4),
+                                FechaInicio = reader.GetDateTime(5),
+                                FechaFin = reader.GetDateTime(6),
+                                Importe = reader.GetDecimal(7),
+                                NombreCompletoGarante = reader.GetString(8),
+                                TelefonoGarante = reader.GetString(9),
+                                EmailGarante = reader.GetString(10),
+                                DniGarante = reader.GetString(11),
+
+                            },
+                            Fecha = reader.GetDateTime(12),
+                            Importe = reader.GetDecimal(13)
                         };
                         res.Add(i);
                     }

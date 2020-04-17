@@ -84,12 +84,12 @@
         <div class="container mt-3">
             @if (ViewBag.Id != null)
             {//alta exitosa
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <strong>¡Éxito!</strong> La entidad fue dada de alta exitosamente!
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true"><span class="lnr lnr-cross-circle"></span></span>
-                    </button>
-                </div>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <strong>¡Éxito!</strong> @ViewBag.Id
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true"><span class="lnr lnr-cross-circle"></span></span>
+                </button>
+            </div>
             }
             else if (ViewBag.Mensaje != null)
             {//cartel general
