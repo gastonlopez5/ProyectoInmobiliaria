@@ -31,7 +31,7 @@ namespace WebApplication1.Controllers
         {
             var lista = repositorioContrato.ObtenerTodos();
             if (TempData.ContainsKey("Id"))
-                ViewBag.Alta = TempData["Id"];
+                ViewBag.Id = TempData["Id"];
             if (TempData.ContainsKey("Error"))
                 ViewBag.Error = TempData["Error"];
             if (TempData.ContainsKey("Mensaje"))
@@ -42,17 +42,23 @@ namespace WebApplication1.Controllers
         // GET: Contratos/Details/5
         public ActionResult Details(int id)
         {
-            return View();
+            var p = repositorioContrato.ObtenerPorId(id);
+            ViewBag.inmueble = p.Inmueble;
+            ViewBag.inquilino = p.Inquilino;
+            return View(p);
         }
 
+
         // GET: Contratos/Create
-        public ActionResult Create()
+        public ActionResult Create(int id)
         {
-            ViewBag.inmueble = repositorioInmueble.ObtenerTodos();
+            //ViewBag.inmueble = repositorioInmueble.ObtenerTodos();
             ViewBag.inquilino = repositorioInquilino.ObtenerTodos();
-            int resultado = 0;
+            ViewBag.inmueble = id;
+            //int resultado = 0;
             int resultado2 = 0;
 
+            /*
             foreach (var item in (IList<Inmueble>)ViewBag.inmueble)
             {
                 if (item.Disponible)
@@ -60,6 +66,7 @@ namespace WebApplication1.Controllers
                     resultado++;
                 }
             }
+            */
 
             foreach (var item in (IList<Inquilino>)ViewBag.inquilino)
             {
@@ -68,15 +75,22 @@ namespace WebApplication1.Controllers
                     resultado2++;
                 }
             }
-
+            
+            /*
             if (resultado > 0 && resultado2 > 0)
+            {
+                return View();
+            }
+            */
+
+            if (resultado2 > 0)
             {
                 return View();
             }
             else
             {
-                TempData["Error"] = "No hay inmuebles o inquilinos disponibles";
-                return RedirectToAction(nameof(Index));
+                TempData["Error"] = "No hay inquilinos disponibles";
+                return RedirectToAction("Index", "Inmuebles");
             }
         }
 
@@ -180,6 +194,11 @@ namespace WebApplication1.Controllers
                 ViewBag.StackTrate = ex.StackTrace;
                 return View(entidad);
             }
+        }
+
+        public ActionResult Pago(int id)
+        {
+            return RedirectToAction("Create", "Pagos", new { id = id });
         }
     }
 }

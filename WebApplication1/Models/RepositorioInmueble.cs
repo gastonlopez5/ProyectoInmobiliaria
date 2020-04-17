@@ -148,6 +148,53 @@ namespace WebApplication1.Models
 			return res;
 		}
 
+		public IList<Inmueble> ObtenerTodosDisponibles()
+		{
+			IList<Inmueble> res = new List<Inmueble>();
+			using (var connection = new MySqlConnection(connectionString))
+			{
+				string sql = $"SELECT i.Id, Direccion, i.Tipo, Uso, Ambientes, Costo, Disponible, PropietarioId, p.Nombre, p.apellido, t.Id, t.Tipo " +
+					$" FROM inmuebles i JOIN propietarios p ON(i.PropietarioId = p.Id)" +
+					$" JOIN tipoinmueble t ON(i.Tipo = t.Id)" +
+					$" WHERE Disponible = true";
+
+				using (var command = new MySqlCommand(sql, connection))
+				{
+					command.CommandType = CommandType.Text;
+					connection.Open();
+					var reader = command.ExecuteReader();
+					while (reader.Read())
+					{
+						Inmueble p = new Inmueble
+						{
+							Id = reader.GetInt32(0),
+							Direccion = reader.GetString(1),
+							Tipo = reader.GetInt32(2),
+							Uso = reader.GetString(3),
+							Ambientes = reader.GetInt32(4),
+							Costo = reader.GetDecimal(5),
+							Disponible = reader.GetBoolean(6),
+							PropietarioId = reader.GetInt32(7),
+							Duenio = new Propietario
+							{
+								Id = reader.GetInt32(7),
+								Nombre = reader.GetString(8),
+								Apellido = reader.GetString(9),
+							},
+							TipoInmueble = new TipoInmueble
+							{
+								Id = reader.GetInt32(10),
+								Tipo = reader.GetString(11),
+							}
+						};
+						res.Add(p);
+					}
+					connection.Close();
+				}
+			}
+			return res;
+		}
+
 		public IList<TipoInmueble> ObtenerTodosTipos()
 		{
 			IList<TipoInmueble> res = new List<TipoInmueble>();

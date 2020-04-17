@@ -49,15 +49,15 @@
                 @if (User.IsInRole("Administrador"))
                 {
                     <a class="py-2 d-none d-md-inline-block" asp-controller="Usuario" asp-action="Perfil"><span class="lnr lnr-user"></span> Mi Perfil</a>
-                    <a class="py-2 d-none d-md-inline-block" asp-controller="Empleados" asp-action="Index"><span class="lnr lnr-user"></span> Empleados</a>
-                    <a class="py-2 d-none d-md-inline-block" asp-controller="Propietarios" asp-action="Index"><span class="lnr lnr-user"></span> Propietarios</a>
+                    <a class="py-2 d-none d-md-inline-block" asp-controller="Empleados" asp-action="Index"><span class="lnr lnr-users"></span> Empleados</a>
+                    <a class="py-2 d-none d-md-inline-block" asp-controller="Propietarios" asp-action="Index"><span class="lnr lnr-users"></span> Propietarios</a>
                     <a class="py-2 d-none d-md-inline-block" asp-controller="Inmuebles" asp-action="Index"><span class="lnr lnr-apartment"></span> Inmuebles</a>
                     <a class="py-2 d-none d-md-inline-block" asp-controller="Contratos" asp-action="Index"><span class="lnr lnr-enter"></span> Alquileres</a>
                 }
                 @if (User.IsInRole("Empleado"))
                 {
                     <a class="py-2 d-none d-md-inline-block" asp-controller="Empleados" asp-action="Perfil"><span class="lnr lnr-user"></span> Mi Perfil</a>
-                    <a class="py-2 d-none d-md-inline-block" asp-controller="Propietarios" asp-action="Index"><span class="lnr lnr-user"></span> Propietarios</a>
+                    <a class="py-2 d-none d-md-inline-block" asp-controller="Propietarios" asp-action="Index"><span class="lnr lnr-users"></span> Propietarios</a>
                     <a class="py-2 d-none d-md-inline-block" asp-controller="Inmuebles" asp-action="Index"><span class="lnr lnr-apartment"></span> Inmuebles</a>
                     <a class="py-2 d-none d-md-inline-block" asp-controller="Contratos" asp-action="Index"><span class="lnr lnr-enter"></span> Alquileres</a>
                 }

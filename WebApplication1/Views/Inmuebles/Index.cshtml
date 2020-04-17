@@ -4,7 +4,7 @@
     ViewData["Title"] = "Inmuebles";
 }
 
-<h1>Listado de Inmuebles</h1>
+<h1>Listado de Inmuebles Disponibles</h1>
 
 <p>
     <a class="btn btn-info" asp-action="Create">Agregar Nuevo</a>
@@ -26,9 +26,6 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Costo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Disponible)
             </th>
             <th>
                Propietario
@@ -56,14 +53,13 @@
                     @Html.DisplayFor(modelItem => item.Costo)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Disponible)
-                </td>
-                <td>
                     @Html.DisplayFor(modelItem => item.Duenio.Apellido)
                     @Html.DisplayFor(modelItem => item.Duenio.Nombre)
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id" title="Editar"><span class="lnr lnr-pencil" style="font-weight:bold"></span></a>&nbsp; |
+                    <a asp-action="GenerarContrato" asp-route-id="@item.Id" title="GenerarContrato"><span class="lnr lnr-file-add" style="font-weight:bold"></span></a>&nbsp; |
+
                     @if (User.IsInRole("Administrador"))
                     {
                         <a asp-action="Delete" asp-route-id="@item.Id" title="Eliminar"><span class="lnr lnr-cross" style="color:#fa0202; font-weight:bold"></span></a>

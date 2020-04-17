@@ -26,11 +26,13 @@ namespace WebApplication1.Controllers
         // GET: Inmueble
         public ActionResult Index()
         {
-            var lista = repositorioInmueble.ObtenerTodos();
+            var lista = repositorioInmueble.ObtenerTodosDisponibles();
             if (TempData.ContainsKey("Id"))
                 ViewBag.Id = TempData["Id"];
             if (TempData.ContainsKey("Mensaje"))
                 ViewBag.Mensaje = TempData["Mensaje"];
+            if (TempData.ContainsKey("Error"))
+                ViewBag.Error = TempData["Error"];
             return View(lista);
         }
 
@@ -136,6 +138,13 @@ namespace WebApplication1.Controllers
                 ViewBag.StackTrate = ex.StackTrace;
                 return View(entidad);
             }
+        }
+
+        // GET: Inmueble/Delete/5
+        [Authorize(Policy = "EsDeLaCasa")]
+        public ActionResult GenerarContrato(int id)
+        {
+            return RedirectToAction("Create", "Contratos", new { id = id });
         }
     }
 }

@@ -1,0 +1,78 @@
+﻿@model WebApplication1.Models.Contrato
+
+@{
+    ViewData["Title"] = "Detalles del Contrato";
+}
+
+<h2>Detalles del Contrato</h2>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            Fecha de Inicio
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.FechaInicio)
+        </dd>
+        <dt class="col-sm-2">
+            Fecha de Finalización
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.FechaFin)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Importe)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Importe)
+        </dd>
+        <dt class="col-sm-2">
+            Inquilino
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Inquilino.Apellido)
+            @Html.DisplayFor(model => model.Inquilino.Nombre)
+        </dd>
+        <dt class="col-sm-2">
+            Dirección del Inmueble
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Inmueble.Direccion)
+        </dd>
+    </dl>
+
+    <h3>Datos del Garante</h3>
+
+    <dl class="row">
+        <dt class="col-sm-2">
+            Dni
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DniGarante)
+        </dd>
+        <dt class="col-sm-2">
+            Nombre Completo
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.NombreCompletoGarante)
+        </dd>
+        <dt class="col-sm-2">
+            Teléfono
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.TelefonoGarante)
+        </dd>
+        <dt class="col-sm-2">
+            Email
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.EmailGarante)
+        </dd>
+        
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Editar</a> |
+    <a asp-action="Index" class="btn btn-secondary">Volver</a>
+</div>

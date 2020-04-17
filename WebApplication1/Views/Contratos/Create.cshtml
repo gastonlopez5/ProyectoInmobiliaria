@@ -13,36 +13,24 @@
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Inmueble" class="control-label"></label>
-                <select asp-for="InmuebleId" class="form-control">
-                    @foreach (Inmueble item in (IList<Inmueble>)ViewBag.inmueble)
-                    {
-                        if (item.Disponible)
-                        {
-                    <option value=@item.Id>Propietario: @item.Duenio.Apellido @item.Duenio.Nombre, Direccion: @item.Direccion</option>
-                        }
-                    }
-                </select>
-                <span asp-validation-for="InmuebleId" class="text-danger"></span>
-            </div>
+            <input type="hidden" asp-for="InmuebleId" value=@ViewBag.inmueble />
             <div class="form-group">
                 <label asp-for="Inquilino" class="control-label"></label>
                 <select asp-for="InquilinoId" class="form-control">
                     @foreach (Inquilino item in (IList<Inquilino>)ViewBag.inquilino)
                     {
-                    <option value=@item.Id>@item.Apellido @item.Nombre</option>
+                        <option value=@item.Id>@item.Apellido @item.Nombre</option>
                     }
                 </select>
                 <span asp-validation-for="InquilinoId" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="FechaInicio" class="control-label">Fecha de Inicio</label>
+                <label asp-for="FechaInicio" class="control-label"></label>
                 <input asp-for="FechaInicio" class="form-control" type="date" value="@fechaInicio.ToString("yyyy-MM-dd")" />
                 <span asp-validation-for="FechaInicio" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="FechaFin" class="control-label">Fecha de Finalización</label>
+                <label asp-for="FechaFin" class="control-label"></label>
                 <input asp-for="FechaFin" class="form-control" type="date" value="@fechaFin.ToString("yyyy-MM-dd")" />
                 <span asp-validation-for="FechaFin" class="text-danger"></span>
             </div>
@@ -51,24 +39,23 @@
                 <input asp-for="Importe" class="form-control" />
                 <span asp-validation-for="Importe" class="text-danger"></span>
             </div>
-            <h4>Datos del Garante</h4>
             <div class="form-group">
-                <label asp-for="DniGarante" class="control-label">DNI</label>
+                <label asp-for="DniGarante" class="control-label"></label>
                 <input asp-for="DniGarante" class="form-control" />
                 <span asp-validation-for="DniGarante" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="NombreCompletoGarante" class="control-label">Nombre Completo</label>
+                <label asp-for="NombreCompletoGarante" class="control-label"></label>
                 <input asp-for="NombreCompletoGarante" class="form-control" />
                 <span asp-validation-for="NombreCompletoGarante" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="TelefonoGarante" class="control-label">Telefono</label>
+                <label asp-for="TelefonoGarante" class="control-label"></label>
                 <input asp-for="TelefonoGarante" class="form-control" />
                 <span asp-validation-for="TelefonoGarante" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="EmailGarante" class="control-label">Email</label>
+                <label asp-for="EmailGarante" class="control-label"></label>
                 <input asp-for="EmailGarante" class="form-control" />
                 <span asp-validation-for="EmailGarante" class="text-danger"></span>
             </div>
@@ -79,4 +66,5 @@
         </form>
     </div>
 </div>
+
 

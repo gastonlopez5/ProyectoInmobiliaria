@@ -1,0 +1,42 @@
+﻿@model WebApplication1.Models.Pago
+
+@{
+    ViewData["Title"] = "Nuevo Pago";
+    DateTime fecha = DateTime.Today;
+}
+
+<h4>Nuevo Pago</h4>
+<br />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="NroPago" class="control-label">Pago Nro.</label>
+                <input asp-for="NroPago" class="form-control" value=@ViewBag.NroPago />
+                <span asp-validation-for="NroPago" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ContratoId" class="control-label">Código del Contrato</label>
+                <input asp-for="ContratoId" class="form-control" value=@ViewBag.Contrato.Id/>
+                <span asp-validation-for="ContratoId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Fecha" class="control-label"></label>
+                <input asp-for="Fecha" class="form-control" type="date" value=@fecha.ToString("yyyy-MM-dd")/>
+                <span asp-validation-for="Fecha" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Importe" class="control-label"></label>
+                <input asp-for="Importe" class="form-control" value=@ViewBag.Contrato.Importe/>
+                <span asp-validation-for="Importe" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Crear" class="btn btn-primary" /> |
+                <a class="btn btn-secondary" asp-action="Index">Volver</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+
