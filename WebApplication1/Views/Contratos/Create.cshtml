@@ -6,14 +6,14 @@
     DateTime fechaFin = fechaInicio.AddDays(730);
 }
 
-<h3>Nuevo Contrato de Alquiler</h3>
+<h2>Nuevo Contrato de Alquiler</h2>
 <br />
-<br />
+
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="InmuebleId" value=@ViewBag.inmueble />
+            <input type="hidden" asp-for="InmuebleId" value=@ViewBag.inmuebleId />
             <div class="form-group">
                 <label asp-for="Inquilino" class="control-label"></label>
                 <select asp-for="InquilinoId" class="form-control">
@@ -36,26 +36,29 @@
             </div>
             <div class="form-group">
                 <label asp-for="Importe" class="control-label"></label>
-                <input asp-for="Importe" class="form-control" value="@ViewBag.inmueble.Costo"/>
+                <input asp-for="Importe" class="form-control" value=@ViewBag.inmuebleImporte />
                 <span asp-validation-for="Importe" class="text-danger"></span>
             </div>
+
+            <h3>Datos del Garante</h3>
+
             <div class="form-group">
-                <label asp-for="DniGarante" class="control-label"></label>
+                <label asp-for="DniGarante" class="control-label">DNI</label>
                 <input asp-for="DniGarante" class="form-control" />
                 <span asp-validation-for="DniGarante" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="NombreCompletoGarante" class="control-label"></label>
+                <label asp-for="NombreCompletoGarante" class="control-label">Nombre Completo</label>
                 <input asp-for="NombreCompletoGarante" class="form-control" />
                 <span asp-validation-for="NombreCompletoGarante" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="TelefonoGarante" class="control-label"></label>
+                <label asp-for="TelefonoGarante" class="control-label">Telefono</label>
                 <input asp-for="TelefonoGarante" class="form-control" />
                 <span asp-validation-for="TelefonoGarante" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="EmailGarante" class="control-label"></label>
+                <label asp-for="EmailGarante" class="control-label">Email</label>
                 <input asp-for="EmailGarante" class="form-control" />
                 <span asp-validation-for="EmailGarante" class="text-danger"></span>
             </div>

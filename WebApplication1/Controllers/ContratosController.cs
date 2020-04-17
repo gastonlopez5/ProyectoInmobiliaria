@@ -54,9 +54,11 @@ namespace WebApplication1.Controllers
         // GET: Contratos/Create
         public ActionResult Create(int id)
         {
+            Inmueble i = repositorioInmueble.ObtenerPorId(id);
             //ViewBag.inmueble = repositorioInmueble.ObtenerTodos();
             ViewBag.inquilino = repositorioInquilino.ObtenerTodos();
-            ViewBag.inmueble = repositorioInmueble.ObtenerPorId(id);
+            ViewBag.inmuebleId = i.Id;
+            ViewBag.inmuebleImporte = i.Costo;
             //int resultado = 0;
             int resultado2 = 0;
 
