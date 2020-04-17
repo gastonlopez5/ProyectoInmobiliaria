@@ -17,6 +17,7 @@ namespace WebApplication1.Controllers
         private readonly RepositorioContrato repositorioContrato;
         private readonly RepositorioInmueble repositorioInmueble;
         private readonly RepositorioInquilino repositorioInquilino;
+        private readonly RepositorioPago repositorioPago;
 
         public ContratosController(IConfiguration configuration)
         {
@@ -24,6 +25,7 @@ namespace WebApplication1.Controllers
             repositorioContrato = new RepositorioContrato(configuration);
             repositorioInquilino = new RepositorioInquilino(configuration);
             repositorioInmueble = new RepositorioInmueble(configuration);
+            repositorioPago = new RepositorioPago(configuration);
         }
 
         // GET: Contratos
@@ -171,21 +173,52 @@ namespace WebApplication1.Controllers
         }
 
         // GET: Contratos/Delete/5
+        [Authorize(Policy = "Administrador")]
         public ActionResult Delete(int id)
         {
-            var entidad = repositorioContrato.ObtenerPorId(id);
-            return View(entidad);
+            IList<Pago> p = repositorioPago.ObtenerTodosPorContratoId(id);
+            Contrato c = repositorioContrato.ObtenerPorId(id);
+
+            DateTime d2 = c.FechaFin;
+            DateTime d1 = c.FechaInicio;
+            TimeSpan diff = d2 - d1;
+            double totalDias = diff.TotalDays;
+            //double cantidadPagos = Math.Round(totalDias / 30);
+            double cantidadPagos = 2;
+
+            int nroPagoMax = 0;
+            foreach (Pago pago in p)
+            {
+                if (pago.NroPago > nroPagoMax)
+                {
+                    nroPagoMax = pago.NroPago;
+                }
+            }
+
+            if (nroPagoMax < cantidadPagos)
+            {
+                double pagosFaltantes = cantidadPagos - nroPagoMax;
+                TempData["Error"] = "Faltan " + pagosFaltantes +" pagos por realizar";
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                var entidad = repositorioContrato.ObtenerPorId(id);
+                return View(entidad);
+            }
         }
 
         // POST: Contratos/Delete/5
         [HttpPost]
+        [Authorize(Policy = "Administrador")]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, Contrato entidad)
         {
             try
             {
+                repositorioPago.EliminarPagosPorContrato(id);
                 repositorioContrato.Baja(id);
-                TempData["Alta"] = "Se eliminó correctamente";
+                TempData["Mensaje"] = "Contrato y pagos relacionados eliminados correctamente";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
