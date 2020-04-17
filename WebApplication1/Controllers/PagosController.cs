@@ -28,14 +28,15 @@ namespace WebApplication1.Controllers
         public ActionResult Index(int id)
         {
             var lista = repositorioPago.ObtenerTodosPorContratoId(id);
-            ViewBag.ContratoId = lista[0].Contrato.Id;
-            if (lista == null)
+            
+            if (lista.Count() == 0)
             {
                 TempData["Mensaje"] = "No se registran pagos realizados para este contrato";
                 return RedirectToAction("Index", "Contratos");
             }
             else
             {
+                ViewBag.ContratoId = lista[0].Contrato.Id;
                 return View(lista);
             }
         }

@@ -52,6 +52,7 @@
                     <a asp-action="Details" asp-route-id="@item.Id" title="Detalles"><span class="lnr lnr-text-align-justify" style="font-weight:bold"></span></a>&nbsp; |
                     <a asp-action="Pago" asp-route-id="@item.Id" title="Pago"><span class="lnr lnr-checkmark-circle" style="font-weight:bold"></span></a>&nbsp; |
                     <a asp-action="ListaPagos" asp-route-id="@item.Id" title="Pagos Realizados"><span class="lnr lnr-list" style="font-weight:bold"></span></a>&nbsp; |
+                    <a asp-action="RenovarContrato" asp-route-id="@item.Id" title="Renovar Contrato"><span class="lnr lnr-sync" style="font-weight:bold"></span></a>&nbsp; |
 
                     @if (User.IsInRole("Administrador"))
                     {

@@ -251,5 +251,71 @@ namespace WebApplication1.Controllers
         {
             return RedirectToAction("Index", "Pagos", new { id = id });
         }
+
+        public ActionResult RenovarContrato(int id)
+        {
+            IList<Pago> p = repositorioPago.ObtenerTodosPorContratoId(id);
+            Contrato c = repositorioContrato.ObtenerPorId(id);
+
+            DateTime d2 = c.FechaFin;
+            DateTime d1 = c.FechaInicio;
+            TimeSpan diff = d2 - d1;
+            double totalDias = diff.TotalDays;
+            double cantidadPagos = Math.Round(totalDias / 30);
+            //double cantidadPagos = 3;
+
+            int nroPagoMax = 0;
+            foreach (Pago pago in p)
+            {
+                if (pago.NroPago > nroPagoMax)
+                {
+                    nroPagoMax = pago.NroPago;
+                }
+            }
+
+            if (nroPagoMax <= cantidadPagos)
+            {
+                double a = cantidadPagos - nroPagoMax;
+                TempData["Mensaje"] = "Debe finalizar el contrato antes de poder renovar el mismo. Faltan "+ a +" pagos por realizar";
+                return RedirectToAction("Index");
+            }
+
+            ViewBag.Contrato = repositorioContrato.ObtenerPorId(id);
+
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult RenovarContrato(Contrato contrato)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    repositorioPago.EliminarPagosPorContrato(contrato.Id);
+                    repositorioContrato.Baja(contrato.Id);
+
+                    repositorioContrato.Alta(contrato);
+                    TempData["Id"] = "Contrato de alquiler renovado correctamente!";
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    TempData["Error"] = "No se pudo renovar correctamente el contrato";
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewBag.inmueble = repositorioInmueble.ObtenerTodos();
+                ViewBag.inquilino = repositorioInquilino.ObtenerTodos();
+                ViewBag.Error = ex.Message;
+                ViewBag.StackTrate = ex.StackTrace;
+                return View();
+
+            }
+        }
+
     }
 }
