@@ -199,19 +199,19 @@ namespace WebApplication1.Controllers
 
             if (nroPagoMax < cantidadPagos)
             {
-                //c.FechaFin = DateTime.Today;
-                c.FechaFin = c.FechaInicio.AddDays(90);
+                c.FechaFin = DateTime.Today;
+                //c.FechaFin = c.FechaInicio.AddDays(90);
                 TimeSpan diff2 = c.FechaFin - c.FechaInicio;
                 double nroPagos = Math.Round(diff2.TotalDays / 30);
                 double nroPagosDeuda = nroPagos - nroPagoMax;
 
                 if (nroPagoMax < cantidadPagos / 2)
                 {
-                    TempData["Error"] = "Debe abonar " + c.Importe*2 + " (2 meses de alquiler) por finalizar el contrato antes del " + d2.ToString("dd-MM-yyyy") + " y haber abonado menos de la mitad del nro. total de pagos. Registra "+ nroPagosDeuda +" pagos adeudados.";
+                    TempData["Error"] = "Debe abonar " + c.Importe*2 + " (2 meses de alquiler) de multa por haber abonado menos de la mitad del Nº total de pagos. Registra "+ nroPagosDeuda +" pagos adeudados.";
                 }
                 else
                 {
-                    TempData["Error"] = "Debe abonar " + c.Importe + " (1 mes de alquiler) por finalizar el contrato antes del " + c.FechaFin.ToString("dd-MM-yyyy") + " y haber abonado más de la mitad del total de pagos. Registra " + nroPagosDeuda + " pagos adeudados."; ;
+                    TempData["Error"] = "Debe abonar " + c.Importe + " (1 mes de alquiler) de multa. Registra " + nroPagosDeuda + " pagos adeudados."; 
                 }
             }
             
@@ -233,8 +233,8 @@ namespace WebApplication1.Controllers
             try
             {
                 c = repositorioContrato.ObtenerPorId(id);
-                //c.FechaFin = DateTime.Today;
-                c.FechaFin = c.FechaInicio.AddDays(90);
+                c.FechaFin = DateTime.Today;
+                //c.FechaFin = c.FechaInicio.AddDays(90);
 
                 repositorioInmueble.CambioDisponible(c.InmuebleId, "1");
                 repositorioContrato.Modificacion(c);
@@ -282,7 +282,7 @@ namespace WebApplication1.Controllers
                 }
             }
 
-            if (nroPagoMax <= cantidadPagos)
+            if (nroPagoMax < cantidadPagos)
             {
                 double a = cantidadPagos - nroPagoMax;
                 TempData["Mensaje"] = "Debe finalizar el contrato antes de poder renovar el mismo. Faltan "+ a +" pagos por realizar";
@@ -302,8 +302,8 @@ namespace WebApplication1.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    repositorioPago.EliminarPagosPorContrato(contrato.Id);
-                    repositorioContrato.Baja(contrato.Id);
+                    //repositorioPago.EliminarPagosPorContrato(contrato.Id);
+                    //repositorioContrato.Baja(contrato.Id);
 
                     repositorioContrato.Alta(contrato);
                     TempData["Id"] = "Contrato de alquiler renovado correctamente!";
