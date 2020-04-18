@@ -115,6 +115,7 @@ namespace WebApplication1.Controllers
         }
 
         // GET: Inquilinos/Delete/5
+        [Authorize(Policy = "Administrador")]
         public ActionResult Delete(int id)
         {
             var p = repositorioInquilino.ObtenerPorId(id);
@@ -124,6 +125,7 @@ namespace WebApplication1.Controllers
 
         // POST: Inquilinos/Delete/5
         [HttpPost]
+        [Authorize(Policy = "Administrador")]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, Inquilino p)
         {

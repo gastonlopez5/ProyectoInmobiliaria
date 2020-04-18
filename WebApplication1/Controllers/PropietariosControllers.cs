@@ -147,7 +147,7 @@ namespace WebApplication1.Controllers
         }
 
         // GET: Propietarios/Delete/5
-        [Authorize(Policy = "EsDeLaCasa")]
+        [Authorize(Policy = "Administrador")]
         public ActionResult Delete(int id)
         {
             var p = repositorioPropietario.ObtenerPorId(id);
@@ -160,7 +160,7 @@ namespace WebApplication1.Controllers
 
         // POST: Propietarios/Delete/5
         [HttpPost]
-        [Authorize(Policy = "EsDeLaCasa")]
+        [Authorize(Policy = "Administrador")]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, Propietario p)
         {

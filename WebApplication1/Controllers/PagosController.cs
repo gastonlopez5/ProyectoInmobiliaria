@@ -136,6 +136,7 @@ namespace WebApplication1.Controllers
         }
 
         // GET: Pagos/Delete/5
+        [Authorize(Policy = "Administrador")]
         public ActionResult Delete(int id)
         {
             return View();
@@ -143,6 +144,7 @@ namespace WebApplication1.Controllers
 
         // POST: Pagos/Delete/5
         [HttpPost]
+        [Authorize(Policy = "Administrador")]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, IFormCollection collection)
         {
