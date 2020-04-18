@@ -199,21 +199,27 @@ namespace WebApplication1.Controllers
 
             if (nroPagoMax < cantidadPagos)
             {
+                //c.FechaFin = DateTime.Today;
+                c.FechaFin = c.FechaInicio.AddDays(90);
+                TimeSpan diff2 = c.FechaFin - c.FechaInicio;
+                double nroPagos = Math.Round(diff2.TotalDays / 30);
+                double nroPagosDeuda = nroPagos - nroPagoMax;
+
                 if (nroPagoMax < cantidadPagos / 2)
                 {
-                    TempData["Error"] = "Debe abonar " + c.Importe*2 + " (2 meses de alquiler) por finalizar el contrato antes del " + c.FechaFin.ToString("dd-MM-yyyy") + " y haber abonado menos de la mitad del total de pagos";
+                    TempData["Error"] = "Debe abonar " + c.Importe*2 + " (2 meses de alquiler) por finalizar el contrato antes del " + d2.ToString("dd-MM-yyyy") + " y haber abonado menos de la mitad del nro. total de pagos. Registra "+ nroPagosDeuda +" pagos adeudados.";
                 }
                 else
                 {
-                    TempData["Error"] = "Debe abonar " + c.Importe + " (1 mes de alquiler) por finalizar el contrato antes del " + c.FechaFin.ToString("dd-MM-yyyy") + " y haber abonado más de la mitad del total de pagos"; ;
+                    TempData["Error"] = "Debe abonar " + c.Importe + " (1 mes de alquiler) por finalizar el contrato antes del " + c.FechaFin.ToString("dd-MM-yyyy") + " y haber abonado más de la mitad del total de pagos. Registra " + nroPagosDeuda + " pagos adeudados."; ;
                 }
             }
             
-            var entidad = repositorioContrato.ObtenerPorId(id);
+            
             if (TempData.ContainsKey("Error"))
                 ViewBag.Error = TempData["Error"];
             
-            return View(entidad);
+            return View(c);
         }
 
         // POST: Contratos/Delete/5
@@ -227,11 +233,14 @@ namespace WebApplication1.Controllers
             try
             {
                 c = repositorioContrato.ObtenerPorId(id);
+                //c.FechaFin = DateTime.Today;
+                c.FechaFin = c.FechaInicio.AddDays(90);
 
                 repositorioInmueble.CambioDisponible(c.InmuebleId, "1");
-                repositorioPago.EliminarPagosPorContrato(id);
-                repositorioContrato.Baja(id);
-                TempData["Mensaje"] = "Contrato y pagos relacionados eliminados correctamente";
+                repositorioContrato.Modificacion(c);
+                //repositorioPago.EliminarPagosPorContrato(id);
+                //repositorioContrato.Baja(id);
+                TempData["Mensaje"] = "Contrato terminado correctamente!";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
