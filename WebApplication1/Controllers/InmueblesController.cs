@@ -10,7 +10,7 @@ using WebApplication1.Models;
 
 namespace WebApplication1.Controllers
 {
-    [Authorize]
+    [Authorize(Policy = "EsDeLaCasa")]
     public class InmueblesController : Controller
     {
         private readonly IConfiguration configuration;
@@ -38,7 +38,6 @@ namespace WebApplication1.Controllers
 
 
         // GET: Inmueble/Create
-        [Authorize(Policy = "EsDeLaCasa")]
         public ActionResult Create()
         {
             ViewBag.Propietarios = repositorioPropietario.ObtenerTodos();
@@ -48,7 +47,6 @@ namespace WebApplication1.Controllers
 
         // POST: Inmueble/Create
         [HttpPost]
-        [Authorize(Policy = "EsDeLaCasa")]
         [ValidateAntiForgeryToken]
         public ActionResult Create(Inmueble p)
         {
@@ -76,7 +74,6 @@ namespace WebApplication1.Controllers
         }
 
         // GET: Inmueble/Edit/5
-        [Authorize(Policy = "EsDeLaCasa")]
         public ActionResult Edit(int id)
         {
             var p = repositorioInmueble.ObtenerPorId(id);
@@ -91,7 +88,6 @@ namespace WebApplication1.Controllers
 
         // POST: Inmueble/Edit/5
         [HttpPost]
-        [Authorize(Policy = "EsDeLaCasa")]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, Inmueble entidad)
         {
@@ -141,7 +137,6 @@ namespace WebApplication1.Controllers
         }
 
         // GET: Inmueble/Delete/5
-        [Authorize(Policy = "EsDeLaCasa")]
         public ActionResult GenerarContrato(int id)
         {
             return RedirectToAction("Create", "Contratos", new { id = id });
