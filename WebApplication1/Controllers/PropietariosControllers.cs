@@ -68,7 +68,6 @@ namespace WebApplication1.Controllers
 
             try
             {
-                TempData["Nombre"] = p.Nombre;
                 if (ModelState.IsValid)
                 {
                     p.Clave = Convert.ToBase64String(KeyDerivation.Pbkdf2(
