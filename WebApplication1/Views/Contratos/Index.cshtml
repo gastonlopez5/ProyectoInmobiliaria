@@ -54,9 +54,9 @@
                     <a asp-action="ListaPagos" asp-route-id="@item.Id" title="Pagos Realizados"><span class="lnr lnr-list" style="font-weight:bold"></span></a>&nbsp; |
                     <a asp-action="RenovarContrato" asp-route-id="@item.Id" title="Renovar Contrato"><span class="lnr lnr-sync" style="font-weight:bold"></span></a>&nbsp; |
 
-                    @if (User.IsInRole("Administrador"))
+                    @if (User.IsInRole("Administrador") || User.IsInRole("Empleado"))
                     {
-                        <a asp-action="Delete" asp-route-id="@item.Id" title="Eliminar"><span class="lnr lnr-cross" style="color:#fa0202; font-weight:bold"></span></a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" title="Terminar Contrato"><span class="lnr lnr-cross" style="color:#fa0202; font-weight:bold"></span></a>
 
                     }
                 </td>
