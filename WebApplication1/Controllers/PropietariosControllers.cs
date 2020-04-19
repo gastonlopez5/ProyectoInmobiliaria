@@ -12,7 +12,7 @@ using WebApplication1.Models;
 
 namespace WebApplication1.Controllers
 {
-    [Authorize(Policy = "EsDeLaCasa")]
+    [Authorize]
     public class PropietariosController : Controller 
     {
         private readonly IConfiguration configuration;
@@ -37,7 +37,7 @@ namespace WebApplication1.Controllers
             return View(lista);
         }
 
-        [AllowAnonymous]
+      
         public ActionResult Perfil()
         {
             Propietario propietario= repositorioPropietario.ObtenerPorEmail(User.Identity.Name);
@@ -45,6 +45,7 @@ namespace WebApplication1.Controllers
         }
 
         // GET: Propietarios/Create
+        [Authorize(Policy ="EsDeLaCasa")]
         public ActionResult Create()
         {
             return View();
@@ -52,6 +53,7 @@ namespace WebApplication1.Controllers
 
         // POST: Propietarios/Create
         [HttpPost]
+        [Authorize(Policy = "EsDeLaCasa")]
         [ValidateAntiForgeryToken]
         public ActionResult Create(Propietario p)
         {
@@ -98,7 +100,7 @@ namespace WebApplication1.Controllers
             }
         }
 
-        [AllowAnonymous]
+       
         // GET: Propietarios/Edit/5
         public ActionResult Edit(int id)
         {
@@ -113,7 +115,7 @@ namespace WebApplication1.Controllers
 
         // POST: Propietarios/Edit/5
         [HttpPost]
-        [AllowAnonymous]
+    
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, IFormCollection collection)
         {
@@ -185,7 +187,7 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
+      
         [ValidateAntiForgeryToken]
         public ActionResult CambiarPass(int id, CambioClaveView cambio)
         {
