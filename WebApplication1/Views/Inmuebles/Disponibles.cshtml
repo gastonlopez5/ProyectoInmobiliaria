@@ -1,13 +1,13 @@
 ﻿@model IEnumerable<WebApplication1.Models.Inmueble>
 
 @{
-    ViewData["Title"] = "Inmuebles Disponibles";
+    ViewData["Title"] = "Disponibles";
 }
 
-<h1>Listado de Inmuebles Disponibles</h1>
+<h1>Listado de Inmuebles de la Busqueda</h1>
 
 <p>
-    <a class="btn btn-info" asp-action="Create">Agregar Nuevo</a>
+    <a class="btn btn-info" asp-action="Index">Ver Disponibles</a>
     <a class="btn btn-info" asp-action="NoDisponibles">Ver NO Disponibles</a>
 </p>
 <table class="table">
@@ -29,7 +29,7 @@
                 @Html.DisplayNameFor(model => model.Costo)
             </th>
             <th>
-               Propietario
+                Propietario
             </th>
             <th></th>
         </tr>

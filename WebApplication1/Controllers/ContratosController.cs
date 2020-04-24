@@ -31,7 +31,7 @@ namespace WebApplication1.Controllers
         // GET: Contratos
         public ActionResult Index()
         {
-            var lista = repositorioContrato.ObtenerTodos();
+            var lista = repositorioContrato.ObtenerTodosVigentes();
             if (TempData.ContainsKey("Id"))
                 ViewBag.Id = TempData["Id"];
             if (TempData.ContainsKey("Error"))
@@ -324,6 +324,21 @@ namespace WebApplication1.Controllers
                 return View();
 
             }
+        }
+
+        public ActionResult ContratosVencidos()
+        {
+            var lista = repositorioContrato.ObtenerTodosVencidos();
+            if (lista.Count != 0)
+            {
+                return View(lista);
+            }
+            else
+            {
+                TempData["Mensaje"] = "No se registran contratos vencidos en el sistema";
+                return RedirectToAction("Index");
+            }
+            
         }
 
     }

@@ -198,6 +198,53 @@ namespace WebApplication1.Models
 			return res;
 		}
 
+		public IList<Inmueble> ObtenerTodosNoDisponibles()
+		{
+			IList<Inmueble> res = new List<Inmueble>();
+			using (var connection = new MySqlConnection(connectionString))
+			{
+				string sql = $"SELECT i.Id, Direccion, i.Tipo, Uso, Ambientes, Costo, Disponible, PropietarioId, p.Nombre, p.apellido, t.Id, t.Tipo " +
+					$" FROM inmuebles i JOIN propietarios p ON(i.PropietarioId = p.Id)" +
+					$" JOIN tipoinmueble t ON(i.Tipo = t.Id)" +
+					$" WHERE Disponible = false";
+
+				using (var command = new MySqlCommand(sql, connection))
+				{
+					command.CommandType = CommandType.Text;
+					connection.Open();
+					var reader = command.ExecuteReader();
+					while (reader.Read())
+					{
+						Inmueble p = new Inmueble
+						{
+							Id = reader.GetInt32(0),
+							Direccion = reader.GetString(1),
+							Tipo = reader.GetInt32(2),
+							Uso = reader.GetString(3),
+							Ambientes = reader.GetInt32(4),
+							Costo = reader.GetDecimal(5),
+							Disponible = reader.GetBoolean(6),
+							PropietarioId = reader.GetInt32(7),
+							Duenio = new Propietario
+							{
+								Id = reader.GetInt32(7),
+								Nombre = reader.GetString(8),
+								Apellido = reader.GetString(9),
+							},
+							TipoInmueble = new TipoInmueble
+							{
+								Id = reader.GetInt32(10),
+								Tipo = reader.GetString(11),
+							}
+						};
+						res.Add(p);
+					}
+					connection.Close();
+				}
+			}
+			return res;
+		}
+
 		public IList<TipoInmueble> ObtenerTodosTipos()
 		{
 			IList<TipoInmueble> res = new List<TipoInmueble>();
@@ -282,6 +329,51 @@ namespace WebApplication1.Models
 				using (var command = new MySqlCommand(sql, connection))
 				{
 					command.Parameters.Add("@idPropietario", MySqlDbType.Int32).Value = idPropietario;
+					command.CommandType = CommandType.Text;
+					connection.Open();
+					var reader = command.ExecuteReader();
+					while (reader.Read())
+					{
+						p = new Inmueble
+						{
+							Id = reader.GetInt32(0),
+							Direccion = reader.GetString(1),
+							Tipo = reader.GetInt32(2),
+							Uso = reader.GetString(3),
+							Ambientes = reader.GetInt32(4),
+							Costo = reader.GetDecimal(5),
+							Disponible = reader.GetBoolean(6),
+							PropietarioId = reader.GetInt32(7),
+							Duenio = new Propietario
+							{
+								Id = reader.GetInt32(7),
+								Nombre = reader.GetString(8),
+								Apellido = reader.GetString(9),
+							}
+						};
+						res.Add(p);
+					}
+					connection.Close();
+				}
+			}
+			return res;
+		}
+
+		public IList<Inmueble> BuscarDisponibles(int tipo, string uso, int ambientes, decimal costo)
+		{
+			List<Inmueble> res = new List<Inmueble>();
+			Inmueble p = null;
+			using (var connection = new MySqlConnection(connectionString))
+			{
+				string sql = $"SELECT i.Id, Direccion, Tipo, Uso, Ambientes, Costo, Disponible, PropietarioId, p.Nombre, p.Apellido " +
+					$" FROM Inmuebles i INNER JOIN Propietarios p ON i.PropietarioId = p.Id" +
+					$" WHERE Tipo=@tipo AND Uso=@uso AND Ambientes=@ambientes AND Costo<=@costo";
+				using (var command = new MySqlCommand(sql, connection))
+				{
+					command.Parameters.Add("@tipo", MySqlDbType.String).Value = tipo;
+					command.Parameters.Add("@uso", MySqlDbType.String).Value = uso;
+					command.Parameters.Add("@ambientes", MySqlDbType.Int32).Value = ambientes;
+					command.Parameters.Add("@costo", MySqlDbType.Decimal).Value = costo;
 					command.CommandType = CommandType.Text;
 					connection.Open();
 					var reader = command.ExecuteReader();

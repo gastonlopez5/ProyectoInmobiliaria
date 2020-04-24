@@ -246,6 +246,11 @@ namespace WebApplication1.Controllers
                 return RedirectToAction("Edit", new { id = id });
             }
         }
+
+        public ActionResult Propiedades(int id)
+        {
+            return RedirectToAction("InmueblesPorPropietario", "Inmuebles", new { id = id });
+        }
     }
 }
 
