@@ -41,90 +41,29 @@ namespace WebApplication1.Controllers
         }
 
         [Authorize(Policy = "EsDeLaCasa")]
-        public ActionResult NoDisponibles()
+        public ActionResult TodosNoDisponibles()
         {
             var lista = repositorioInmueble.ObtenerTodosDisponibles();
             if (lista.Count != 0)
             {
-                return View(lista);
+                return View("NoDisponibles", lista);
             }
             else
             {
                 TempData["Mensaje"] = "No hay Inmuebles no disponibles";
                 return RedirectToAction(nameof(Index));
             }
-            
+
         }
 
         
-
-        [Authorize(Policy = "EsDeLaCasa")]
-        public ActionResult DisponibilidadPorFecha(int id)
-        {
-            ViewBag.InmuebleId = id;
-            return View();
-        }
-
-        [HttpPost]
-        [Authorize(Policy = "EsDeLaCasa")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DisponibilidadPorFecha(Contrato p)
-        {
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    var lista = repositorioContrato.ObtenerTodosPorInmueble(p.InmuebleId);
-                    DateTime d1 = p.FechaInicio;
-                    DateTime d2 = p.FechaFin;
-
-                    if (lista.Count != 0)
-                    {
-                        bool disponible = true;
-
-                        foreach (Contrato c in lista)
-                        {
-                            if (c.FechaInicio >= d1 || d2 <= c.FechaFin)
-                            {
-                                disponible = false;
-                            }
-                        }
-
-                        if (disponible)
-                        {
-                            TempData["Mensaje"] = "Inmueble disponible para alquilar";
-                        }
-                        else
-                        {
-                            TempData["Error"] = "Inmueble NO disponible para alquilar";
-                        }
-                    }
-                    else
-                    {
-                        TempData["Mensaje"] = "El Inmueble no tiene contratos registrados en el sistema";
-                        return RedirectToAction("Disponibles", new { lista = TempData["Lista"] });
-                    }
-                   
-                    return RedirectToAction("Disponibles", new { lista = TempData["Lista"] });
-                }
-                else
-                {
-                    return View();
-                }
-            }
-            catch (Exception ex)
-            {
-                ViewBag.Error = ex.Message;
-                ViewBag.StackTrate = ex.StackTrace;
-                return View();
-            }
-        }
-
         // GET: Inmueble/Create
         [Authorize(Policy = "EsDeLaCasa")]
         public ActionResult Busqueda()
         {
             ViewBag.TipoInmueble = repositorioInmueble.ObtenerTodosTipos();
+            if (TempData.ContainsKey("Mensaje"))
+                ViewBag.Mensaje = TempData["Mensaje"];
             return View();
         }
 
@@ -133,8 +72,8 @@ namespace WebApplication1.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Busqueda(BusquedaInmuebleView p)
         {
-            IList<Inmueble> disponibles = new List<Inmueble>();
-            int count = 0;
+            List<Inmueble> noDisponibles = new List<Inmueble>();
+            List<Inmueble> disponibles = new List<Inmueble>();
 
             try
             {
@@ -144,22 +83,13 @@ namespace WebApplication1.Controllers
                 {
                     foreach (Inmueble i in listaInmuebles)
                     {
-                        var listaContratos = repositorioContrato.ObtenerTodosPorInmueble(i.Id);
+                        var listaContratos = repositorioContrato.ObtenerTodosPorInmueble(i.Id, p.FechaInicio, p.FechaFin);
 
                         if (listaContratos.Count != 0)
                         {
-                            foreach (Contrato c in listaContratos)
-                            {
-                                if (c.FechaInicio < p.FechaInicio && c.FechaFin > p.FechaInicio && c.FechaFin < p.FechaFin || 
-                                    c.FechaInicio > p.FechaInicio && c.FechaInicio < p.FechaFin && c.FechaFin > p.FechaFin || 
-                                    c.FechaInicio < p.FechaInicio && c.FechaInicio < p.FechaFin 
-                                    && c.FechaFin > p.FechaInicio && c.FechaFin > p.FechaFin)
-                                {
-                                    count++;
-                                }
-                            }
-
-                            if (count == 0) { disponibles.Add(i); }
+                            
+                            noDisponibles.Add(i);
+                            
                         } 
                         else
                         {
@@ -167,15 +97,21 @@ namespace WebApplication1.Controllers
                         }
                     }
 
-                    //TempData["Lista"] = disponibles;
-                    //return RedirectToAction("Disponibles", disponibles);
-                    Disponibles((List<Inmueble>)disponibles);
+                    if (disponibles.Count != 0)
+                    {
+                        return View("Disponibles", disponibles);
+                    }
+                    else if (noDisponibles.Count != 0)
+                    {
+                        ViewBag.Mensaje = "Existen Inmuebles con contratos vigentes";
+                        return View("Disponibles", noDisponibles);
+                    }
                 }
                 else
                 {
                     ViewBag.TipoInmueble = repositorioInmueble.ObtenerTodosTipos();
-                    TempData["Mensaje"] = "No hay Inmuebles disponibles";
-                    return RedirectToAction(nameof(Busqueda));
+                    TempData["Mensaje"] = "No hay Inmuebles disponibles.";
+                    return RedirectToAction("Busqueda");
                 }
                 
                 return View();
@@ -191,7 +127,8 @@ namespace WebApplication1.Controllers
         [Authorize(Policy = "EsDeLaCasa")]
         public ActionResult Disponibles(List<Inmueble> lista)
         {
-            //var lista = TempData["Lista"];
+            if (TempData.ContainsKey("Mensaje"))
+                ViewBag.Mensaje = TempData["Mensaje"];
             return View(lista);
         }
 

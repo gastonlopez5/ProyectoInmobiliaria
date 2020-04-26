@@ -34,6 +34,7 @@ namespace WebApplication1.Controllers
         
         public ActionResult Restringido()
         {
+            TempData["Error"] = "No posse los permisos necesarios para navegar en esta página.";
             return RedirectToAction(nameof(Index), "Home");
         }
     }

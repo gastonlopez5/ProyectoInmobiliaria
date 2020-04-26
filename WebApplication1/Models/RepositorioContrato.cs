@@ -274,16 +274,23 @@ namespace WebApplication1.Models
             return res;
         }
 
-        public IList<Contrato> ObtenerTodosPorInmueble(int id)
+        public IList<Contrato> ObtenerTodosPorInmueble(int id, DateTime fi, DateTime ff)
         {
             IList<Contrato> res = new List<Contrato>();
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = $"SELECT contrato.Id, FechaInicio, FechaFin, Importe, DniGarante, NombreCompletoGarante, TelefonoGarante, EmailGarante, InquilinoId, InmuebleId, inquilinos.Nombre, inquilinos.Apellido, inmuebles.Direccion FROM contrato JOIN inquilinos ON(inquilinos.Id = contrato.InquilinoId) JOIN inmuebles ON(inmuebles.Id = contrato.InmuebleId) WHERE contrato.InmuebleId = @id";
+                string sql = $"SELECT contrato.Id, FechaInicio, FechaFin, Importe, DniGarante, NombreCompletoGarante, TelefonoGarante, EmailGarante, InquilinoId, InmuebleId, inquilinos.Nombre, inquilinos.Apellido, inmuebles.Direccion " +
+                    $"FROM contrato JOIN inquilinos ON(inquilinos.Id = contrato.InquilinoId) JOIN inmuebles ON(inmuebles.Id = contrato.InmuebleId) " +
+                    $"WHERE contrato.InmuebleId = @id " +
+                    $"AND FechaInicio < @fi AND FechaFin > @fi AND FechaFin < @ff " +
+                    $"OR FechaInicio > @fi AND FechaFin < @fi AND FechaFin > @ff " +
+                    $"OR FechaInicio < @fi AND FechaFin > @ff AND FechaFin > @fi AND FechaFin > @ff";
 
                 using (var command = new MySqlCommand(sql, connection))
                 {
                     command.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
+                    command.Parameters.Add("@fi", MySqlDbType.DateTime).Value = fi;
+                    command.Parameters.Add("@ff", MySqlDbType.DateTime).Value = ff;
                     command.CommandType = CommandType.Text;
                     connection.Open();
                     var reader = command.ExecuteReader();
