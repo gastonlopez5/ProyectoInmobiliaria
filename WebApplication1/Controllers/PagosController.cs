@@ -36,7 +36,7 @@ namespace WebApplication1.Controllers
             }
             else
             {
-                ViewBag.ContratoId = lista[0].Contrato.Id;
+                ViewBag.Contrato = lista[0].Contrato;
                 return View(lista);
             }
         }
@@ -68,12 +68,20 @@ namespace WebApplication1.Controllers
             else
             {
                 int nroPagoMax = 0;
+                int cantidadPagosRealizados = p.Count; // Mostrar
+
                 foreach (Pago pago in p)
                 {
                     if (pago.NroPago > nroPagoMax)
                     {
                         nroPagoMax = pago.NroPago;
                     }
+                }
+
+                // Mostrar
+                if (nroPagoMax != cantidadPagosRealizados)
+                {
+                    ViewBag.Mensaje = "Se registran pagos adeudados";
                 }
 
                 nroPagoMax++;

@@ -229,12 +229,14 @@ namespace WebApplication1.Models
             return res;
         }
 
-        public IList<Contrato> ObtenerTodosPorId(int id)
+        public IList<Contrato> ObtenerTodosPorInmuebleId(int id)
         {
             IList<Contrato> res = new List<Contrato>();
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = $"SELECT contrato.Id, FechaInicio, FechaFin, Importe, DniGarante, NombreCompletoGarante, TelefonoGarante, EmailGarante, InquilinoId, InmuebleId, inquilinos.Nombre, inquilinos.Apellido, inmuebles.Direccion FROM contrato JOIN inquilinos ON(inquilinos.Id = contrato.InquilinoId) JOIN inmuebles ON(inmuebles.Id = contrato.InmuebleId) WHERE contrato.Id = @id";
+                string sql = $"SELECT contrato.Id, FechaInicio, FechaFin, Importe, DniGarante, NombreCompletoGarante, TelefonoGarante, EmailGarante, InquilinoId, InmuebleId, p.Nombre, p.Apellido, inmuebles.Direccion, p.Id" +
+                    $" FROM contrato JOIN inmuebles ON(inmuebles.Id = contrato.InmuebleId) JOIN propietarios p ON(p.Id = inmuebles.PropietarioId)" +
+                    $" WHERE contrato.InmuebleId = @id AND FechaFin > CURDATE()";
 
                 using (var command = new MySqlCommand(sql, connection))
                 {
@@ -254,16 +256,16 @@ namespace WebApplication1.Models
                             NombreCompletoGarante = reader.GetString(5),
                             TelefonoGarante = reader.GetString(6),
                             EmailGarante = reader.GetString(7),
-                            Inquilino = new Inquilino
-                            {
-                                Id = reader.GetInt32(8),
-                                Nombre = reader.GetString(10),
-                                Apellido = reader.GetString(11),
-                            },
                             Inmueble = new Inmueble
                             {
                                 Id = reader.GetInt32(9),
-                                Direccion = reader.GetString(12)
+                                Direccion = reader.GetString(12),
+                                Duenio = new Propietario 
+                                {
+                                    Id = reader.GetInt32(13),
+                                    Nombre = reader.GetString(10),
+                                    Apellido = reader.GetString(11),
+                                }
                             }
                         };
                         res.Add(a);

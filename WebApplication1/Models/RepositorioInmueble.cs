@@ -367,7 +367,7 @@ namespace WebApplication1.Models
 			{
 				string sql = $"SELECT i.Id, Direccion, Tipo, Uso, Ambientes, Costo, Disponible, PropietarioId, p.Nombre, p.Apellido " +
 					$" FROM Inmuebles i INNER JOIN Propietarios p ON i.PropietarioId = p.Id" +
-					$" WHERE Tipo=@tipo AND Uso=@uso AND Ambientes=@ambientes AND Costo<=@costo";
+					$" WHERE Tipo=@tipo AND Uso=@uso AND Ambientes=@ambientes AND Costo<=@costo AND Disponible=true";
 				using (var command = new MySqlCommand(sql, connection))
 				{
 					command.Parameters.Add("@tipo", MySqlDbType.String).Value = tipo;
@@ -402,6 +402,54 @@ namespace WebApplication1.Models
 				}
 			}
 			return res;
+		}
+
+		public Contrato ObtenerTodosPorInmuebleId(int id)
+		{
+			Contrato p = null;
+			using (var connection = new MySqlConnection(connectionString))
+			{
+				string sql = $"SELECT contrato.Id, FechaInicio, FechaFin, Importe, DniGarante, NombreCompletoGarante, TelefonoGarante, EmailGarante, InquilinoId, InmuebleId, p.Nombre, p.Apellido, inmuebles.Direccion " +
+					$"FROM contrato JOIN inmuebles ON(inmuebles.Id = contrato.InmuebleId) JOIN propietarios p ON(propietarios.Id = inmuebles.PropietarioId)" +
+					$" WHERE contrato.Id=@id";
+				using (var command = new MySqlCommand(sql, connection))
+				{
+					command.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
+					command.CommandType = CommandType.Text;
+					connection.Open();
+					var reader = command.ExecuteReader();
+					while (reader.Read())
+					{
+						p = new Contrato
+						{
+							Id = reader.GetInt32(0),
+							FechaInicio = reader.GetDateTime(1),
+							FechaFin = reader.GetDateTime(2),
+							Importe = reader.GetDecimal(3),
+							DniGarante = reader.GetString(4),
+							NombreCompletoGarante = reader.GetString(5),
+							TelefonoGarante = reader.GetString(6),
+							EmailGarante = reader.GetString(7),
+							Inquilino = new Inquilino
+							{
+								Id = reader.GetInt32(8),
+								Nombre = reader.GetString(10),
+								Apellido = reader.GetString(11),
+							},
+							Inmueble = new Inmueble
+							{
+								Id = reader.GetInt32(9),
+								Direccion = reader.GetString(12)
+							},
+							InmuebleId = reader.GetInt32(9),
+							InquilinoId = reader.GetInt32(8)
+						};
+						return p;
+					}
+					connection.Close();
+				}
+			}
+			return p;
 		}
 	}
 }

@@ -6,7 +6,7 @@
 
 <h1>Lista de Pagos Realizados</h1>
 <br />
-<h3>Código del contrato: @ViewBag.ContratoId</h3>
+<h3>Referencia del contrato: @ViewBag.Contrato.Propietario.Apellido (Propietario) - @ViewBag.Contrato.Inquilino.Apellido (Inquilino)</h3>
 <br />
 <table class="table">
     <thead>
@@ -20,10 +20,13 @@
             <th>
                 @Html.DisplayNameFor(model => model.Importe)
             </th>
-            <th>
-                Eliminar Pago
-            </th>
-        </tr>
+            @if (User.IsInRole("Administrador"))
+            {
+                <th>
+                    Eliminar Pago
+                </th>
+            }
+            </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
@@ -37,13 +40,15 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Importe)
             </td>
-            <td>
-                @if (User.IsInRole("Administrador"))
-                {
+            @if (User.IsInRole("Administrador"))
+            {
+                <td>
+
                     <a asp-action="Delete" asp-route-id="@item.Id" title="Eliminar"><span class="lnr lnr-cross" style="color:#fa0202; font-weight:bold"></span></a>
-                }
-            </td>
-        </tr>
+                   
+                </td>
+            }
+            </tr>
 }
     </tbody>
 </table>

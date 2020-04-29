@@ -103,7 +103,7 @@ namespace WebApplication1.Controllers
                     }
                     else if (noDisponibles.Count != 0)
                     {
-                        ViewBag.Mensaje = "Existen Inmuebles con contratos vigentes";
+                        ViewBag.Mensaje = "Existen Inmuebles con contratos vigentes";  // Mostrar
                         return View("Disponibles", noDisponibles);
                     }
                 }
@@ -271,11 +271,11 @@ namespace WebApplication1.Controllers
 
         public ActionResult ListarContratos(int id)
         {
-            var lista = repositorioContrato.ObtenerTodosPorId(id);
+            var lista = repositorioContrato.ObtenerTodosPorInmuebleId(id);
 
             if (lista.Count != 0)
             {
-                ViewBag.Inmueble = lista[0].Inmueble;
+                ViewBag.Contrato = lista[0];
                 return View(lista);
             }
             else

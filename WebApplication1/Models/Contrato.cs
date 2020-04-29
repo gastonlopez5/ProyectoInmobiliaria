@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 
 namespace WebApplication1.Models
 {
-    public class Contrato
+    public class Contrato : IValidatableObject
     {
+		DateTime fechaActual = DateTime.Now;
+
 		[Key, Display(Name = "Codigo")]
 		public int Id { get; set; }
 		[Required, DataType(DataType.Date)]
@@ -33,5 +35,14 @@ namespace WebApplication1.Models
 		public Inquilino Inquilino { get; set; }
 		[ForeignKey("InmuebleId")]
 		public Inmueble Inmueble { get; set; }
+		public Propietario Propietario { get; set; }
+
+		IEnumerable<ValidationResult> IValidatableObject.Validate(ValidationContext validationContext)
+		{
+			if (FechaFin <= FechaInicio)
+			{
+				yield return new ValidationResult("Fecha final no puede anterior a la fecha de inicio del contrato");
+			} 
+		}
 	}
 }

@@ -105,7 +105,7 @@ namespace WebApplication1.Controllers
         {
             try
             {
-                repositorioInmueble.CambioDisponible(contrato.InmuebleId, "false");
+                //repositorioInmueble.CambioDisponible(contrato.InmuebleId, "false");
                 if (ModelState.IsValid)
                 {
                     repositorioContrato.Alta(contrato);
@@ -114,7 +114,7 @@ namespace WebApplication1.Controllers
                 }
                 else
                 {
-                    repositorioInmueble.CambioDisponible(contrato.Id, "true");
+                    //repositorioInmueble.CambioDisponible(contrato.Id, "true");
                     ViewBag.inmueble = repositorioInmueble.ObtenerTodos();
                     ViewBag.inquilino = repositorioInquilino.ObtenerTodos();
                     return View();
@@ -135,7 +135,7 @@ namespace WebApplication1.Controllers
         public ActionResult Edit(int id)
         {
             var p = repositorioContrato.ObtenerPorId(id);
-            ViewBag.inmueble = repositorioInmueble.ObtenerTodos();
+            ViewBag.inmueble = repositorioInmueble.ObtenerTodosDisponibles();
             ViewBag.inquilino = repositorioInquilino.ObtenerTodos();
             if (TempData.ContainsKey("Mensaje"))
                 ViewBag.Mensaje = TempData["Mensaje"];
@@ -147,30 +147,54 @@ namespace WebApplication1.Controllers
         // POST: Contratos/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(int id, Contrato p)
         {
-            Contrato p = null;
+            //Mostrar. Se consideró que si se modifica el inmueble disponible se verifique si existen contratos.
+
+            var c = repositorioContrato.ObtenerPorId(id);
             try
             {
-                p = repositorioContrato.ObtenerPorId(id);
-                p.InquilinoId = Int32.Parse(collection["InquilinoId"]);
-                p.InmuebleId = Int32.Parse(collection["InmuebleId"]);
-                p.FechaInicio = DateTime.Parse(collection["FechaInicio"]);
-                p.FechaFin = DateTime.Parse(collection["FechaFin"]);
-                p.Importe = Decimal.Parse(collection["Importe"]);
-                p.DniGarante = collection["DniGarante"];
-                p.NombreCompletoGarante = collection["NombreCompletoGarante"];
-                p.TelefonoGarante = collection["TelefonoGarante"];
-                p.EmailGarante = collection["EmailGarante"];
-                repositorioContrato.Modificacion(p);
-                TempData["Mensaje"] = "Datos modificados con exito!";
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    //listaContratos.Contains(c);
+
+                    if (c.InmuebleId == p.InquilinoId)
+                    {
+                        repositorioContrato.Modificacion(p);
+                        TempData["Mensaje"] = "Datos modificados con exito!";
+                        return RedirectToAction(nameof(Index));
+                    }
+                    else
+                    {
+                        var listaContratos = repositorioContrato.ObtenerTodosPorInmueble(p.InmuebleId, p.FechaInicio, p.FechaFin);
+
+                        if (listaContratos.Count != 0)
+                        {
+                            TempData["Mensaje"] = "Inmueble NO disponible para el período de fechas elegidas";
+                            ViewBag.inmueble = repositorioInmueble.ObtenerTodosDisponibles();
+                            ViewBag.inquilino = repositorioInquilino.ObtenerTodos();
+                            return View(c);
+                        }
+                        else
+                        {
+                            repositorioContrato.Modificacion(p);
+                            TempData["Mensaje"] = "Datos modificados con exito!";
+                            return RedirectToAction(nameof(Index));
+                        }
+                    }
+                } 
+                else
+                {
+                    ViewBag.inmueble = repositorioInmueble.ObtenerTodosDisponibles();
+                    ViewBag.inquilino = repositorioInquilino.ObtenerTodos();
+                    return View(c);
+                }
             }
             catch (Exception ex)
             {
                 ViewBag.Error = ex.Message;
                 ViewBag.StackTrate = ex.StackTrace;
-                return View(p);
+                return View(c);
             }
         }
 
@@ -178,47 +202,7 @@ namespace WebApplication1.Controllers
         [Authorize(Policy = "Administrador")]
         public ActionResult Delete(int id)
         {
-            IList<Pago> p = repositorioPago.ObtenerTodosPorContratoId(id);
             Contrato c = repositorioContrato.ObtenerPorId(id);
-
-            DateTime d2 = c.FechaFin;
-            DateTime d1 = c.FechaInicio;
-            TimeSpan diff = d2 - d1;
-            double totalDias = diff.TotalDays;
-            double cantidadPagos = Math.Round(totalDias / 30);
-            //double cantidadPagos = 2;
-
-            int nroPagoMax = 0;
-            foreach (Pago pago in p)
-            {
-                if (pago.NroPago > nroPagoMax)
-                {
-                    nroPagoMax = pago.NroPago;
-                }
-            }
-
-            if (nroPagoMax < cantidadPagos)
-            {
-                c.FechaFin = DateTime.Today;
-                //c.FechaFin = c.FechaInicio.AddDays(90);
-                TimeSpan diff2 = c.FechaFin - c.FechaInicio;
-                double nroPagos = Math.Round(diff2.TotalDays / 30);
-                double nroPagosDeuda = nroPagos - nroPagoMax;
-
-                if (nroPagoMax < cantidadPagos / 2)
-                {
-                    TempData["Error"] = "Debe abonar " + c.Importe*2 + " (2 meses de alquiler) de multa por haber abonado menos de la mitad del Nº total de pagos. Registra "+ nroPagosDeuda +" pagos adeudados.";
-                }
-                else
-                {
-                    TempData["Error"] = "Debe abonar " + c.Importe + " (1 mes de alquiler) de multa. Registra " + nroPagosDeuda + " pagos adeudados."; 
-                }
-            }
-            
-            
-            if (TempData.ContainsKey("Error"))
-                ViewBag.Error = TempData["Error"];
-            
             return View(c);
         }
 
@@ -233,14 +217,9 @@ namespace WebApplication1.Controllers
             try
             {
                 c = repositorioContrato.ObtenerPorId(id);
-                c.FechaFin = DateTime.Today;
-                //c.FechaFin = c.FechaInicio.AddDays(90);
-
-                repositorioInmueble.CambioDisponible(c.InmuebleId, "1");
-                repositorioContrato.Modificacion(c);
-                //repositorioPago.EliminarPagosPorContrato(id);
-                //repositorioContrato.Baja(id);
-                TempData["Mensaje"] = "Contrato terminado correctamente!";
+                repositorioPago.EliminarPagosPorContrato(id);
+                repositorioContrato.Baja(id);
+                TempData["Mensaje"] = "Contrato eliminado correctamente!";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -339,6 +318,77 @@ namespace WebApplication1.Controllers
                 return RedirectToAction("Index");
             }
             
+        }
+
+        public ActionResult TerminarContrato(int id)
+        {
+            IList<Pago> p = repositorioPago.ObtenerTodosPorContratoId(id);
+            Contrato c = repositorioContrato.ObtenerPorId(id);
+
+            DateTime d2 = c.FechaFin;
+            DateTime d1 = c.FechaInicio;
+            TimeSpan diff = d2 - d1;
+            double totalDias = diff.TotalDays;
+            double cantidadPagos = Math.Round(totalDias / 30);
+            //double cantidadPagos = 2;
+
+            int nroPagoMax = 0;
+            foreach (Pago pago in p)
+            {
+                if (pago.NroPago > nroPagoMax)
+                {
+                    nroPagoMax = pago.NroPago;
+                }
+            }
+
+            int cantidadPagosRealizados = p.Count;
+
+            if (cantidadPagosRealizados < cantidadPagos)
+            {
+                double nroPagosDeuda = nroPagoMax - cantidadPagosRealizados;
+
+                if (cantidadPagosRealizados < cantidadPagos / 2)
+                {
+                    TempData["Error"] = "Debe abonar " + c.Importe * 2 + " (2 meses de alquiler) de multa por haber abonado menos de la mitad del Nº total de pagos. Registra " + nroPagosDeuda + " pagos adeudados.";
+                }
+                else
+                {
+                    TempData["Error"] = "Debe abonar " + c.Importe + " (1 mes de alquiler) de multa. Registra " + nroPagosDeuda + " pagos adeudados.";
+                }
+            }
+
+            if (TempData.ContainsKey("Error"))
+                ViewBag.Error = TempData["Error"];
+
+            return View(c);
+        }
+
+        // POST: Contratos/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult TerminarContrato(int id, Contrato entidad)
+        {
+            Contrato c = null;
+
+            try
+            {
+                c = repositorioContrato.ObtenerPorId(id);
+                c.FechaFin = DateTime.Today;
+                //c.FechaFin = c.FechaInicio.AddDays(90);
+
+                repositorioInmueble.CambioDisponible(c.InmuebleId, "1");
+                repositorioContrato.Modificacion(c);
+                //repositorioPago.EliminarPagosPorContrato(id);
+                //repositorioContrato.Baja(id);
+                TempData["Mensaje"] = "Contrato terminado correctamente!";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = "Hay pagos relacionados a este alquiler";
+                ViewBag.StackTrate = ex.StackTrace;
+                return View(entidad);
+            }
         }
 
     }
