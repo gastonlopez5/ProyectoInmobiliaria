@@ -20,35 +20,33 @@
             <th>
                 @Html.DisplayNameFor(model => model.Importe)
             </th>
-            @if (User.IsInRole("Administrador"))
-            {
-                <th>
-                    Eliminar Pago
-                </th>
-            }
-            </tr>
+            <th></th>
+        </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.NroPago)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Fecha)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Importe)
-            </td>
-            @if (User.IsInRole("Administrador"))
-            {
+        @foreach (var item in Model)
+        {
+            <tr>
                 <td>
-
-                    <a asp-action="Delete" asp-route-id="@item.Id" title="Eliminar"><span class="lnr lnr-cross" style="color:#fa0202; font-weight:bold"></span></a>
-                   
+                    @Html.DisplayFor(modelItem => item.NroPago)
                 </td>
-            }
+                <td>
+                    @Html.DisplayFor(modelItem => item.Fecha)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Importe)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" title="Editar"><span class="lnr lnr-pencil" style="font-weight:bold"></span></a>&nbsp; |
+
+                    @if (User.IsInRole("Administrador"))
+                    {
+
+                        <a asp-action="Delete" asp-route-id="@item.Id" title="Eliminar"><span class="lnr lnr-cross" style="color:#fa0202; font-weight:bold"></span></a>
+
+                    }
+                </td>
             </tr>
-}
+        }
     </tbody>
 </table>

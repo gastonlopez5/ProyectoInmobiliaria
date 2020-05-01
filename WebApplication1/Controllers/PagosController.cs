@@ -36,6 +36,11 @@ namespace WebApplication1.Controllers
             }
             else
             {
+                if (TempData.ContainsKey("Error"))
+                    ViewBag.Error = TempData["Error"];
+                if (TempData.ContainsKey("Mensaje"))
+                    ViewBag.Mensaje = TempData["Mensaje"];
+
                 ViewBag.Contrato = lista[0].Contrato;
                 return View(lista);
             }
@@ -68,7 +73,6 @@ namespace WebApplication1.Controllers
             else
             {
                 int nroPagoMax = 0;
-                int cantidadPagosRealizados = p.Count; // Mostrar
 
                 foreach (Pago pago in p)
                 {
@@ -76,12 +80,6 @@ namespace WebApplication1.Controllers
                     {
                         nroPagoMax = pago.NroPago;
                     }
-                }
-
-                // Mostrar
-                if (nroPagoMax != cantidadPagosRealizados)
-                {
-                    ViewBag.Mensaje = "Se registran pagos adeudados";
                 }
 
                 nroPagoMax++;
@@ -123,23 +121,34 @@ namespace WebApplication1.Controllers
         // GET: Pagos/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            var p = repositorioPago.ObtenerPorId(id);
+            return View(p);
         }
 
         // POST: Pagos/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(int id, Pago p)
         {
             try
             {
-                // TODO: Add update logic here
-
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    repositorioPago.Modificacion(p);
+                    TempData["Mensaje"] = "Datos modificados con exito!";
+                    return RedirectToAction("Index", new { id = p.ContratoId });
+                }
+                else
+                {
+                    TempData["Error"] = "No se pudieron almacenar corectamente los datos";
+                    return View(p);
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                ViewBag.Error = ex.Message;
+                ViewBag.StackTrate = ex.StackTrace;
+                return View(p);
             }
         }
 
@@ -147,25 +156,38 @@ namespace WebApplication1.Controllers
         [Authorize(Policy = "Administrador")]
         public ActionResult Delete(int id)
         {
-            return View();
+            var p = repositorioPago.ObtenerPorId(id);
+            return View(p);
         }
 
         // POST: Pagos/Delete/5
         [HttpPost]
         [Authorize(Policy = "Administrador")]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(int id, Pago p)
         {
+            var c = repositorioPago.ObtenerPorId(id);
             try
             {
-                // TODO: Add delete logic here
-
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    repositorioPago.Baja(id);
+                    TempData["Mensaje"] = "Pago eliminado correctamente!";
+                    return RedirectToAction("Index", new { id = c.ContratoId });
+                }
+                else
+                {
+                    TempData["Error"] = "No se pudo eliminar el pago correctamente";
+                    return View(c);
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                ViewBag.Error = ex.Message;
+                ViewBag.StackTrate = ex.StackTrace;
+                return View(c);
             }
         }
+
     }
 }

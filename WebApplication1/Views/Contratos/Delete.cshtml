@@ -8,6 +8,7 @@
 
 <h3>¿Seguro que desea eliminar el contrato?</h3>
 <div>
+    <hr />
     <dl class="row">
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.FechaInicio)
@@ -71,6 +72,6 @@
 
     <form asp-action="Delete">
         <input type="submit" value="Eliminar Contrato" class="btn btn-danger" />
-        <a class="btn btn-secondary" asp-action="Index">Volver</a>
+        <a class="btn btn-secondary" asp-action="Index" asp-route-id="@Model.Id">Volver</a>
     </form>
 </div>
