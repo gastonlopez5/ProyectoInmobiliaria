@@ -16,6 +16,10 @@ body {
     background-color: #fff;
 }
 
+main {
+    min-height: calc(100vh - 130px);
+}
+
 .site-header {
     background-color: rgba(0, 0, 0, .85);
     -webkit-backdrop-filter: saturate(180%) blur(20px);
@@ -64,8 +68,7 @@ body {
 
 
 .footer {
-    position: absolute;
-    bottom: 0;
+    
     width: 100%;
     /* Set the fixed height of the footer here */
     height: 60px;
