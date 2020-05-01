@@ -54,6 +54,7 @@
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id" title="Editar"><span class="lnr lnr-pencil" style="font-weight:bold"></span></a>&nbsp; |
                     <a asp-action="Propiedades" asp-route-id="@item.Id" title="Propiedades"><span class="lnr lnr-list" style="font-weight:bold"></span></a>&nbsp; |
+                    <a asp-action="Create" asp-controller="Inmuebles" asp-route-id="@item.Id" title="Agregar Propiedad"><span class="lnr lnr-home" style="font-weight:bold"></span></a>&nbsp; |
 
                     @if (User.IsInRole("Administrador"))
                     {

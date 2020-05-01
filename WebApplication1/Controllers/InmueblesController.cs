@@ -135,9 +135,9 @@ namespace WebApplication1.Controllers
 
         // GET: Inmueble/Create
         [Authorize(Policy = "EsDeLaCasa")]
-        public ActionResult Create()
+        public ActionResult Create(int id)
         {
-            ViewBag.Propietarios = repositorioPropietario.ObtenerTodos();
+            ViewBag.PropietarioId = id;
             ViewBag.TipoInmueble = repositorioInmueble.ObtenerTodosTipos();
             return View();
         }
@@ -154,11 +154,11 @@ namespace WebApplication1.Controllers
                 {
                     repositorioInmueble.Alta(p);
                     TempData["Id"] = "Inmueble agregado exitosamente!";
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction("Index", "Propietarios");
                 }
                 else
                 {
-                    ViewBag.Propietarios = repositorioPropietario.ObtenerTodos();
+                    ViewBag.PropietarioId = p.PropietarioId;
                     ViewBag.TipoInmueble = repositorioInmueble.ObtenerTodosTipos();
                     return View();
                 }
