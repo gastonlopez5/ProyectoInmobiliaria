@@ -19,8 +19,8 @@ namespace WebApplication1.Models
 		public DateTime FechaFin { get; set; }
 
 		[Required(ErrorMessage = "Importe requerido")]
-		[Range(1, 1000000, ErrorMessage = "Ingrese un valor distinto de cero")]
-		[RegularExpression(@"^[0-9]{1,100}$", ErrorMessage = "Ingrese un número")]
+		[Range(1000, 1000000, ErrorMessage = "Ingrese un valor entre 1000 y 1000000")]
+		[RegularExpression(@"^[0-9]{1,1000000}$", ErrorMessage = "Ingrese un número")]
 		public decimal Importe { get; set; }
 		
 		public int Tipo { get; set; }

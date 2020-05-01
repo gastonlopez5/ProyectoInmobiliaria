@@ -11,14 +11,18 @@ namespace WebApplication1.Models
     {
 		[Key]
 		public int Id { get; set; }
-		[Required, Display(Name = "Nº de Pago")]
+		
 		public int NroPago { get; set; }
-		[Required]
+		
 		public int ContratoId { get; set; }
-		[Required, DataType(DataType.Date)]
+		
 		public DateTime Fecha { get; set; }
-		[Required]
+
+		[Required(ErrorMessage = "Importe requerido")]
+		[Range(1000, 1000000, ErrorMessage = "Ingrese un valor entre 1000 y 1000000")]
+		[RegularExpression(@"^[0-9]{1,1000000}$", ErrorMessage = "Ingrese un número")]
 		public decimal Importe { get; set; }
+		
 		[ForeignKey("ContratoId")]
 		public Contrato Contrato { get; set; }
 	}
