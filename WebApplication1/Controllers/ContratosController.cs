@@ -10,7 +10,7 @@ using WebApplication1.Models;
 
 namespace WebApplication1.Controllers
 {
-    [Authorize(Policy = "EsDeLaCasa")]
+    [Authorize]
     public class ContratosController : Controller
     {
         private readonly IConfiguration configuration;
@@ -29,6 +29,7 @@ namespace WebApplication1.Controllers
         }
 
         // GET: Contratos
+        [Authorize(Policy = "EsDeLaCasa")]
         public ActionResult Index()
         {
             var lista = repositorioContrato.ObtenerTodosVigentes();
@@ -52,6 +53,7 @@ namespace WebApplication1.Controllers
 
 
         // GET: Contratos/Create
+        [Authorize(Policy = "EsDeLaCasa")]
         public ActionResult Create(int id)
         {
             Inmueble i = repositorioInmueble.ObtenerPorId(id);
@@ -100,6 +102,7 @@ namespace WebApplication1.Controllers
 
         // POST: Contratos/Create
         [HttpPost]
+        [Authorize(Policy = "EsDeLaCasa")]
         [ValidateAntiForgeryToken]
         public ActionResult Create(Contrato contrato)
         {
@@ -132,6 +135,7 @@ namespace WebApplication1.Controllers
         }
 
         // GET: Contratos/Edit/5
+        [Authorize(Policy = "EsDeLaCasa")]
         public ActionResult Edit(int id)
         {
             var p = repositorioContrato.ObtenerPorId(id);
@@ -146,6 +150,7 @@ namespace WebApplication1.Controllers
 
         // POST: Contratos/Edit/5
         [HttpPost]
+        [Authorize(Policy = "EsDeLaCasa")]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, Contrato p)
         {
@@ -158,7 +163,7 @@ namespace WebApplication1.Controllers
                 {
                     //listaContratos.Contains(c);
 
-                    if (c.InmuebleId == p.InquilinoId)
+                    if (c.InmuebleId == p.InmuebleId)
                     {
                         repositorioContrato.Modificacion(p);
                         TempData["Mensaje"] = "Datos modificados con exito!";
@@ -230,6 +235,7 @@ namespace WebApplication1.Controllers
             }
         }
 
+        [Authorize(Policy = "EsDeLaCasa")]
         public ActionResult Pago(int id)
         {
             return RedirectToAction("Create", "Pagos", new { id = id });
@@ -240,6 +246,7 @@ namespace WebApplication1.Controllers
             return RedirectToAction("Index", "Pagos", new { id = id });
         }
 
+        [Authorize(Policy = "EsDeLaCasa")]
         public ActionResult RenovarContrato(int id)
         {
             IList<Pago> p = repositorioPago.ObtenerTodosPorContratoId(id);
@@ -274,6 +281,7 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "EsDeLaCasa")]
         [ValidateAntiForgeryToken]
         public ActionResult RenovarContrato(Contrato contrato)
         {
@@ -305,6 +313,7 @@ namespace WebApplication1.Controllers
             }
         }
 
+        [Authorize(Policy = "EsDeLaCasa")]
         public ActionResult ContratosVencidos()
         {
             var lista = repositorioContrato.ObtenerTodosVencidos();
@@ -320,6 +329,7 @@ namespace WebApplication1.Controllers
             
         }
 
+        [Authorize(Policy = "EsDeLaCasa")]
         public ActionResult TerminarContrato(int id)
         {
             IList<Pago> p = repositorioPago.ObtenerTodosPorContratoId(id);
@@ -365,6 +375,7 @@ namespace WebApplication1.Controllers
 
         // POST: Contratos/Delete/5
         [HttpPost]
+        [Authorize(Policy = "EsDeLaCasa")]
         [ValidateAntiForgeryToken]
         public ActionResult TerminarContrato(int id, Contrato entidad)
         {

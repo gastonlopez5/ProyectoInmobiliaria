@@ -10,7 +10,7 @@ using WebApplication1.Models;
 
 namespace WebApplication1.Controllers
 {
-    [Authorize(Policy = "EsDeLaCasa")]
+    [Authorize]
     public class PagosController : Controller
     {
         private readonly IConfiguration configuration;
@@ -53,6 +53,7 @@ namespace WebApplication1.Controllers
         }
 
         // GET: Pagos/Create
+        [Authorize(Policy = "EsDeLaCasa")]
         public ActionResult Create(int id)
         {
             IList<Pago> p = repositorioPago.ObtenerTodosPorContratoId(id);
@@ -100,6 +101,7 @@ namespace WebApplication1.Controllers
 
         // POST: Pagos/Create
         [HttpPost]
+        [Authorize(Policy = "EsDeLaCasa")]
         [ValidateAntiForgeryToken]
         public ActionResult Create(Pago pago)
         {

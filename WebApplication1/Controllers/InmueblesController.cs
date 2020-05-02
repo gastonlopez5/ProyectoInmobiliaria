@@ -43,10 +43,11 @@ namespace WebApplication1.Controllers
         [Authorize(Policy = "EsDeLaCasa")]
         public ActionResult TodosNoDisponibles()
         {
-            var lista = repositorioInmueble.ObtenerTodosDisponibles();
+            var lista = repositorioInmueble.ObtenerTodosNoDisponibles();
             if (lista.Count != 0)
             {
-                return View("NoDisponibles", lista);
+                ViewBag.Mensaje = "Listado de inmuebles NO disponibles";
+                return View("Disponibles", lista);
             }
             else
             {

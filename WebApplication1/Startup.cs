@@ -45,6 +45,7 @@ namespace WebApplication1
             {
                 options.AddPolicy("EsDeLaCasa", policy => policy.RequireClaim(ClaimTypes.Role, "Administrador", "Empleado"));
                 options.AddPolicy("Propietario", policy => policy.RequireClaim(ClaimTypes.Role, "Propietario"));
+                options.AddPolicy("Empleado", policy => policy.RequireClaim(ClaimTypes.Role, "Empleado"));
                 options.AddPolicy("Administrador", policy => policy.RequireClaim(ClaimTypes.Role, "Administrador"));
             });
 

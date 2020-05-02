@@ -27,6 +27,7 @@ namespace WebApplication1.Controllers
         }
 
         // GET: Propietarios
+        [Authorize(Policy = "EsDeLaCasa")]
         public ActionResult Index()
         {
             var lista = repositorioPropietario.ObtenerTodos();
@@ -187,7 +188,6 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost]
-      
         [ValidateAntiForgeryToken]
         public ActionResult CambiarPass(int id, CambioClaveView cambio)
         {

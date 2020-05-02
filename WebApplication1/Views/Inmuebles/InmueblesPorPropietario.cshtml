@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<WebApplication1.Models.Inmueble>
 
 @{
-    ViewData["Title"] = "InmueblesPorPropietario";
+    ViewData["Title"] = "Inmuebles por Propietario";
 }
 
 <h1>Lista de Inmuebles</h1>
@@ -40,7 +40,7 @@
                     @Html.DisplayFor(modelItem => item.Direccion)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Tipo)
+                    @Html.DisplayFor(modelItem => item.TipoInmueble.Tipo)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Uso)
@@ -55,10 +55,15 @@
                     @Html.DisplayFor(modelItem => item.Disponible)
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id" title="Editar"><span class="lnr lnr-pencil" style="font-weight:bold"></span></a>&nbsp; |
-                    <a asp-action="GenerarContrato" asp-route-id="@item.Id" title="GenerarContrato"><span class="lnr lnr-file-add" style="font-weight:bold"></span></a>&nbsp; |
+                    @if (User.IsInRole("Administrador") || User.IsInRole("Empleado"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Id" title="Editar"><span class="lnr lnr-pencil" style="font-weight:bold"></span></a><span>|</span>
+                        <a asp-action="GenerarContrato" asp-route-id="@item.Id" title="GenerarContrato"><span class="lnr lnr-file-add" style="font-weight:bold"></span></a><span>|</span>
+
+                    }
+
                     <a asp-action="ListarContratos" asp-route-id="@item.Id" title="ContratosRealizados"><span class="lnr lnr-list" style="font-weight:bold"></span></a>&nbsp; |
-                    
+
                     @if (User.IsInRole("Administrador"))
                     {
                         <a asp-action="Delete" asp-route-id="@item.Id" title="Eliminar"><span class="lnr lnr-cross" style="color:#fa0202; font-weight:bold"></span></a>

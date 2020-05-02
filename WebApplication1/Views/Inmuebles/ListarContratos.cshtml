@@ -50,12 +50,17 @@
                     @Html.DisplayFor(modelItem => item.Inmueble.Direccion)
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-controller="Contratos" asp-route-id="@item.Id" title="Editar"><span class="lnr lnr-pencil" style="font-weight:bold"></span></a>&nbsp; |
+                    @if (User.IsInRole("EsDeLaCasa"))
+                    {
+                        <a asp-action="Edit" asp-controller="Contratos" asp-route-id="@item.Id" title="Editar"><span class="lnr lnr-pencil" style="font-weight:bold"></span></a>
+                        <a asp-action="Pago" asp-controller="Contratos" asp-route-id="@item.Id" title="Realizar Pago"><span class="lnr lnr-checkmark-circle" style="font-weight:bold"></span></a>
+                        <a asp-action="RenovarContrato" asp-controller="Contratos" asp-route-id="@item.Id" title="Renovar Contrato"><span class="lnr lnr-sync" style="font-weight:bold"></span></a>
+                        <a asp-action="TerminarContrato" asp-controller="Contratos" asp-route-id="@item.Id" title="Terminar Contrato"><span class="lnr lnr-flag" style="font-weight:bold"></span></a>
+
+                    }
+
                     <a asp-action="Details" asp-controller="Contratos" asp-route-id="@item.Id" title="Detalles"><span class="lnr lnr-text-align-justify" style="font-weight:bold"></span></a>&nbsp; |
-                    <a asp-action="Pago" asp-controller="Contratos" asp-route-id="@item.Id" title="Realizar Pago"><span class="lnr lnr-checkmark-circle" style="font-weight:bold"></span></a>&nbsp; |
                     <a asp-action="ListaPagos" asp-controller="Contratos" asp-route-id="@item.Id" title="Pagos Realizados"><span class="lnr lnr-list" style="font-weight:bold"></span></a>&nbsp; |
-                    <a asp-action="RenovarContrato" asp-controller="Contratos" asp-route-id="@item.Id" title="Renovar Contrato"><span class="lnr lnr-sync" style="font-weight:bold"></span></a>&nbsp; |
-                    <a asp-action="TerminarContrato" asp-controller="Contratos" asp-route-id="@item.Id" title="Terminar Contrato"><span class="lnr lnr-flag" style="font-weight:bold"></span></a>&nbsp; |
 
                     @if (User.IsInRole("Administrador"))
                     {

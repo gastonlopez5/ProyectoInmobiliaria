@@ -20,7 +20,7 @@ namespace WebApplication1.Models
 
 		[Required(ErrorMessage = "Importe requerido")]
 		[Range(1000, 1000000, ErrorMessage = "Ingrese un valor entre 1000 y 1000000")]
-		[RegularExpression(@"^[0-9]{1,1000000}$", ErrorMessage = "Ingrese un número")]
+		[RegularExpression(@"^[0-9]{1,1000000}$", ErrorMessage = "Ingrese un número entero")]
 		public decimal Importe { get; set; }
 		
 		[ForeignKey("ContratoId")]

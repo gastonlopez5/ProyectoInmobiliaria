@@ -189,7 +189,11 @@ namespace WebApplication1.Models
             IList<Contrato> res = new List<Contrato>();
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = $"SELECT contrato.Id, FechaInicio, FechaFin, Importe, DniGarante, NombreCompletoGarante, TelefonoGarante, EmailGarante, InquilinoId, InmuebleId, inquilinos.Nombre, inquilinos.Apellido, inmuebles.Direccion FROM contrato JOIN inquilinos ON(inquilinos.Id = contrato.InquilinoId) JOIN inmuebles ON(inmuebles.Id = contrato.InmuebleId) WHERE FechaFin < @fecha";
+                string sql = $"SELECT contrato.Id, FechaInicio, FechaFin, Importe, DniGarante, " +
+                    $"NombreCompletoGarante, TelefonoGarante, EmailGarante, InquilinoId, InmuebleId, " +
+                    $"inquilinos.Nombre, inquilinos.Apellido, inmuebles.Direccion " +
+                    $"FROM contrato JOIN inquilinos ON(inquilinos.Id = contrato.InquilinoId) " +
+                    $"JOIN inmuebles ON(inmuebles.Id = contrato.InmuebleId) WHERE FechaFin < @fecha";
 
                 using (var command = new MySqlCommand(sql, connection))
                 {

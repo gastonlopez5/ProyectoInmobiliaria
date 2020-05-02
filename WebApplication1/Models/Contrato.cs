@@ -27,7 +27,7 @@ namespace WebApplication1.Models
 		
 		[Required(ErrorMessage = "DNI requerido")]
 		[StringLength(8, ErrorMessage = "Ingrese un DNI válido")]
-		[RegularExpression(@"^[0-9]{1,8}$", ErrorMessage = "Ingrese un número")]
+		[RegularExpression(@"^[0-9]{1,8}$", ErrorMessage = "Ingrese un número entero")]
 		public string DniGarante { get; set; }
 		
 		[Required(ErrorMessage = "Campo requerido")]
