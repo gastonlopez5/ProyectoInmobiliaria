@@ -57,22 +57,10 @@ namespace WebApplication1.Controllers
         public ActionResult Create(int id)
         {
             Inmueble i = repositorioInmueble.ObtenerPorId(id);
-            //ViewBag.inmueble = repositorioInmueble.ObtenerTodos();
             ViewBag.inquilino = repositorioInquilino.ObtenerTodos();
-            ViewBag.inmuebleId = i.Id;
+            ViewBag.inmueble = i;
             ViewBag.inmuebleImporte = i.Costo;
-            //int resultado = 0;
             int resultado2 = 0;
-
-            /*
-            foreach (var item in (IList<Inmueble>)ViewBag.inmueble)
-            {
-                if (item.Disponible)
-                {
-                    resultado++;
-                }
-            }
-            */
 
             foreach (var item in (IList<Inquilino>)ViewBag.inquilino)
             {
@@ -82,13 +70,6 @@ namespace WebApplication1.Controllers
                 }
             }
             
-            /*
-            if (resultado > 0 && resultado2 > 0)
-            {
-                return View();
-            }
-            */
-
             if (resultado2 > 0)
             {
                 return View();
@@ -108,25 +89,41 @@ namespace WebApplication1.Controllers
         {
             try
             {
-                //repositorioInmueble.CambioDisponible(contrato.InmuebleId, "false");
                 if (ModelState.IsValid)
                 {
-                    repositorioContrato.Alta(contrato);
-                    TempData["Id"] = "Contrato de alquiler agregado correctamente";
-                    return RedirectToAction(nameof(Index));
+                    var listaContratos = repositorioContrato.ObtenerTodosPorInmueble(contrato.InmuebleId, contrato.FechaInicio, contrato.FechaFin);
+                    
+                    if (listaContratos.Count != 0)
+                    {
+                        ViewBag.Mensaje = "Inmueble NO disponible entre las fechas indicadas";
+                        Inmueble i = repositorioInmueble.ObtenerPorId(contrato.InmuebleId);
+                        ViewBag.inmueble = i;
+                        ViewBag.inquilino = repositorioInquilino.ObtenerTodos();
+                        ViewBag.inmuebleImporte = i.Costo;
+                        return View();
+                    }
+                    else
+                    {
+                        repositorioContrato.Alta(contrato);
+                        TempData["Id"] = "Contrato de alquiler agregado correctamente";
+                        return RedirectToAction(nameof(Index));
+                    }
                 }
                 else
                 {
-                    //repositorioInmueble.CambioDisponible(contrato.Id, "true");
-                    ViewBag.inmueble = repositorioInmueble.ObtenerTodos();
+                    Inmueble i = repositorioInmueble.ObtenerPorId(contrato.InmuebleId);
+                    ViewBag.inmueble = i;
                     ViewBag.inquilino = repositorioInquilino.ObtenerTodos();
+                    ViewBag.inmuebleImporte = i.Costo;
                     return View();
                 }
             }
             catch (Exception ex)
             {
-                ViewBag.inmueble = repositorioInmueble.ObtenerTodos();
+                Inmueble i = repositorioInmueble.ObtenerPorId(contrato.InmuebleId);
+                ViewBag.inmueble = i;
                 ViewBag.inquilino = repositorioInquilino.ObtenerTodos();
+                ViewBag.inmuebleImporte = i.Costo;
                 ViewBag.Error = ex.Message;
                 ViewBag.StackTrate = ex.StackTrace;
                 return View();
@@ -222,7 +219,7 @@ namespace WebApplication1.Controllers
             try
             {
                 c = repositorioContrato.ObtenerPorId(id);
-                repositorioPago.EliminarPagosPorContrato(id);
+                //repositorioPago.EliminarPagosPorContrato(id);
                 repositorioContrato.Baja(id);
                 TempData["Mensaje"] = "Contrato eliminado correctamente!";
                 return RedirectToAction(nameof(Index));

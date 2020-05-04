@@ -8,12 +8,13 @@
 
 <h2>Nuevo Contrato de Alquiler</h2>
 <br />
-
+<h4>Código del Inmueble: @ViewBag.inmueble.Id   Propietario: @ViewBag.inmueble.Duenio.Apellido @ViewBag.inmueble.Duenio.Nombre</h4>
+<br />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="InmuebleId" value=@ViewBag.inmuebleId />
+            <input type="hidden" asp-for="InmuebleId" value=@ViewBag.inmueble.Id />
             <div class="form-group">
                 <label asp-for="Inquilino" class="control-label"></label>
                 <select asp-for="InquilinoId" class="form-control">
@@ -40,7 +41,7 @@
                 <span asp-validation-for="Importe" class="text-danger"></span>
             </div>
 
-            <h3>Datos del Garante</h3>
+            <h4>Datos del Garante</h4>
 
             <div class="form-group">
                 <label asp-for="DniGarante" class="control-label">DNI</label>

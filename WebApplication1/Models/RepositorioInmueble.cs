@@ -323,8 +323,8 @@ namespace WebApplication1.Models
 			Inmueble p = null;
 			using (var connection = new MySqlConnection(connectionString))
 			{
-				string sql = $"SELECT i.Id, Direccion, Tipo, Uso, Ambientes, Costo, Disponible, PropietarioId, p.Nombre, p.Apellido " +
-					$" FROM Inmuebles i INNER JOIN Propietarios p ON i.PropietarioId = p.Id" +
+				string sql = $"SELECT i.Id, Direccion, i.Tipo, Uso, Ambientes, Costo, Disponible, PropietarioId, p.Nombre, p.Apellido, t.Id, t.Tipo " +
+					$" FROM Inmuebles i INNER JOIN Propietarios p ON i.PropietarioId = p.Id JOIN tipoinmueble t ON(i.Tipo = t.Id) " +
 					$" WHERE PropietarioId=@idPropietario";
 				using (var command = new MySqlCommand(sql, connection))
 				{
@@ -344,6 +344,11 @@ namespace WebApplication1.Models
 							Costo = reader.GetDecimal(5),
 							Disponible = reader.GetBoolean(6),
 							PropietarioId = reader.GetInt32(7),
+							TipoInmueble = new TipoInmueble
+							{
+								Id = reader.GetInt32(10),
+								Tipo = reader.GetString(11),
+							},
 							Duenio = new Propietario
 							{
 								Id = reader.GetInt32(7),
@@ -359,7 +364,7 @@ namespace WebApplication1.Models
 			return res;
 		}
 
-		public IList<Inmueble> BuscarDisponibles(int tipo, string uso, int ambientes, decimal costo)
+		public IList<Inmueble> BuscarDisponibles(string uso, decimal costo)
 		{
 			List<Inmueble> res = new List<Inmueble>();
 			Inmueble p = null;
@@ -367,12 +372,10 @@ namespace WebApplication1.Models
 			{
 				string sql = $"SELECT i.Id, Direccion, Tipo, Uso, Ambientes, Costo, Disponible, PropietarioId, p.Nombre, p.Apellido " +
 					$" FROM Inmuebles i INNER JOIN Propietarios p ON i.PropietarioId = p.Id" +
-					$" WHERE Tipo=@tipo AND Uso=@uso AND Ambientes=@ambientes AND Costo<=@costo AND Disponible=true";
+					$" WHERE Uso=@uso AND Costo<=@costo AND Disponible=true";
 				using (var command = new MySqlCommand(sql, connection))
 				{
-					command.Parameters.Add("@tipo", MySqlDbType.String).Value = tipo;
 					command.Parameters.Add("@uso", MySqlDbType.String).Value = uso;
-					command.Parameters.Add("@ambientes", MySqlDbType.Int32).Value = ambientes;
 					command.Parameters.Add("@costo", MySqlDbType.Decimal).Value = costo;
 					command.CommandType = CommandType.Text;
 					connection.Open();

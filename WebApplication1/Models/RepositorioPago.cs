@@ -60,6 +60,24 @@ namespace WebApplication1.Models
             return res;
         }
 
+        public int EliminarPorContratoId(int id)
+        {
+            int res = -1;
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                string sql = $"DELETE FROM Pago p WHERE p.ContratoId=@id";
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    command.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
+                    command.CommandType = CommandType.Text;
+                    connection.Open();
+                    res = command.ExecuteNonQuery();
+                    connection.Close();
+                }
+            }
+            return res;
+        }
+
         public int EliminarPagosPorContrato(int id)
         {
             int res = -1;

@@ -23,14 +23,9 @@ namespace WebApplication1.Models
 		[RegularExpression(@"^[0-9]{1,1000000}$", ErrorMessage = "Ingrese un número entero")]
 		public decimal Importe { get; set; }
 		
-		public int Tipo { get; set; }
-		
 		[Required(ErrorMessage = "Debe elegir entre Residencial o Privado")]
 		[RegularExpression(@"^[a-zA-Z]{1,100}$", ErrorMessage = "Valores numéricos no permitidos")]
 		public String Uso { get; set; }
 		
-		[Required(ErrorMessage = "Ingrese un valor distinto de cero")]
-		[Range(1, 1000000, ErrorMessage = "Ingrese un valor distinto de cero")]
-		public int Ambientes { get; set; }
 	}
 }

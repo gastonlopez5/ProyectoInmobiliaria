@@ -28,7 +28,7 @@ namespace WebApplication1.Controllers
         public ActionResult Index(int id)
         {
             var lista = repositorioPago.ObtenerTodosPorContratoId(id);
-            
+
             if (lista.Count() == 0)
             {
                 TempData["Mensaje"] = "No se registran pagos realizados para este contrato";
@@ -191,5 +191,33 @@ namespace WebApplication1.Controllers
             }
         }
 
+        // GET: Pagos/Delete/5
+        [Authorize(Policy = "Administrador")]
+        public ActionResult EliminarPagos(int id)
+        {
+            var p = repositorioContrato.ObtenerPorId(id);
+            ViewBag.Contrato = p;
+            return View(p);
+        }
+
+        // POST: Pagos/Delete/5
+        [HttpPost]
+        [Authorize(Policy = "Administrador")]
+        [ValidateAntiForgeryToken]
+        public ActionResult EliminarPagos(Contrato c)
+        {
+            try
+            {
+                repositorioPago.EliminarPagosPorContrato(c.Id);
+                TempData["Mensaje"] = "Pagos eliminado correctamente!";
+                return RedirectToAction("Index", "Contratos");
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Error = ex.Message;
+                ViewBag.StackTrate = ex.StackTrace;
+                return View("Index", c.Id);
+            }
+        }
     }
 }

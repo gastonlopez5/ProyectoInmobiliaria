@@ -17,7 +17,7 @@ namespace WebApplication1.Models
         public string Dni { get; set; }
 
         [Required(ErrorMessage = "Campo requerido")]
-        [MinLength(4, ErrorMessage = "Escriba al menos 5 caracteres")]
+        [MinLength(3, ErrorMessage = "Escriba al menos 4 caracteres")]
         [MaxLength(50, ErrorMessage = "Escriba un máximo de 50 caracteres")]
         [RegularExpression(@"^[a-zA-Z]{1,50}$", ErrorMessage = "Valores numéricos no permitidos")]
         public string Nombre { get; set; }

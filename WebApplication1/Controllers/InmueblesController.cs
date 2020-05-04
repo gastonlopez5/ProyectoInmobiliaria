@@ -78,7 +78,7 @@ namespace WebApplication1.Controllers
 
             try
             {
-                var listaInmuebles = repositorioInmueble.BuscarDisponibles(p.Tipo, p.Uso, p.Ambientes, p.Importe);
+                var listaInmuebles = repositorioInmueble.BuscarDisponibles(p.Uso, p.Importe);
 
                 if (listaInmuebles.Count != 0)
                 {
@@ -226,7 +226,7 @@ namespace WebApplication1.Controllers
             try
             {
                 repositorioInmueble.Baja(id);
-                TempData["Alta"] = "Inmueble eliminado";
+                TempData["Mensaje"] = "Inmueble eliminado correctamente";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)

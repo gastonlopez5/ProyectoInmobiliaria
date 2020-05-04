@@ -1,0 +1,16 @@
+﻿@model WebApplication1.Models.Contrato
+
+@{
+    ViewData["Title"] = "Eliminar Pagos";
+}
+
+<h1>Eliminar Pagos</h1>
+
+<h3>¿Seguro que desea eliminar todos los pagos relacionados al contrato?</h3>
+<br />
+<div>
+    <form asp-action="EliminarPagos">
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a class="btn btn-secondary" asp-action="Index" asp-route-id="@ViewBag.Contrato.Id">Volver</a>
+    </form>
+</div>

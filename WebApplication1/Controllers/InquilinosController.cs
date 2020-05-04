@@ -26,8 +26,12 @@ namespace WebApplication1.Controllers
         public ActionResult Index()
         {
             var lista = repositorioInquilino.ObtenerTodos();
-            if (TempData.ContainsKey("Alta"))
-                ViewBag.Alta = TempData["Alta"];
+            if (TempData.ContainsKey("Id"))
+                ViewBag.Id = TempData["Id"];
+            if (TempData.ContainsKey("Mensaje"))
+                ViewBag.Mensaje = TempData["Mensaje"];
+            if (TempData.ContainsKey("Error"))
+                ViewBag.Error = TempData["Error"];
             return View(lista);
         }
 
@@ -54,7 +58,7 @@ namespace WebApplication1.Controllers
             {
                 if (item.Dni == p.Dni)
                 {
-                    ViewBag.Error2 = "Error: Ya existe un inquilino con ese DNI";
+                    ViewBag.Error = "Error: Ya existe un inquilino con ese DNI";
                     return View();
                 }
             }
@@ -64,7 +68,7 @@ namespace WebApplication1.Controllers
                 if (ModelState.IsValid)
                 {
                     repositorioInquilino.Alta(p);
-                    TempData["Alta"] = "Inquilino agregado exitosamente!";
+                    TempData["Id"] = "Inquilino agregado exitosamente!";
                     return RedirectToAction(nameof(Index));
                 }
                 else
@@ -89,22 +93,22 @@ namespace WebApplication1.Controllers
         // POST: Inquilinos/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(int id, Inquilino p)
         {
-            Inquilino p = null;
             try
             {
-                p = repositorioInquilino.ObtenerPorId(id);
-                p.Nombre = collection["Nombre"];
-                p.Apellido = collection["Apellido"];
-                p.Dni = collection["Dni"];
-                p.Telefono = collection["Telefono"];
-                p.Email = collection["Email"];
-                p.DireccionTrabajo = collection["DireccionTrabajo"];
-                repositorioInquilino.Modificacion(p);
-                TempData["Alta"] = "Datos guardados correctamente";
+                if (ModelState.IsValid)
+                {
+                    repositorioInquilino.Modificacion(p);
+                    TempData["Mensaje"] = "Datos guardados correctamente";
 
-                return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    TempData["Error"] = "Datos no se guardaron correctamente";
+                    return View(p);
+                }
             }
             catch (Exception ex)
             {
@@ -132,7 +136,7 @@ namespace WebApplication1.Controllers
             try
             {
                 repositorioInquilino.Baja(id);
-                TempData["Alta"] = "Inquilino eliminado";
+                TempData["Mensaje"] = "Inquilino eliminado";
 
                 return RedirectToAction(nameof(Index));
             }

@@ -5,51 +5,58 @@
 }
 
 <h1>Lista de Pagos Realizados</h1>
-<br />
 <h3>Referencia del contrato: @ViewBag.Contrato.Propietario.Apellido (Propietario) - @ViewBag.Contrato.Inquilino.Apellido (Inquilino)</h3>
 <br />
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Pago Nro.
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Fecha)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Importe)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+
+@if (User.IsInRole("Administrador"))
+{
+    <p>
+        <a class="btn btn-danger" asp-action="EliminarPagos" asp-route-id="@ViewBag.Contrato.Id">Eliminar Pagos</a>
+    </p>
+}
+    <hr />
+    <table class="table">
+        <thead>
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.NroPago)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Fecha)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Importe)
-                </td>
-                <td>
-                    @if (User.IsInRole("Administrador") || User.IsInRole("Empleado"))
-                    {
-                        <a asp-action="Edit" asp-route-id="@item.Id" title="Editar"><span class="lnr lnr-pencil" style="font-weight:bold"></span></a><span>|</span>
-                    }
-
-                    @if (User.IsInRole("Administrador"))
-                    {
-
-                        <a asp-action="Delete" asp-route-id="@item.Id" title="Eliminar"><span class="lnr lnr-cross" style="color:#fa0202; font-weight:bold"></span></a>
-
-                    }
-                </td>
+                <th>
+                    Pago Nro.
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Fecha)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Importe)
+                </th>
+                <th></th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.NroPago)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Fecha)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Importe)
+                    </td>
+                    <td>
+                        @if (User.IsInRole("Administrador") || User.IsInRole("Empleado"))
+                        {
+                            <a asp-action="Edit" asp-route-id="@item.Id" title="Editar"><span class="lnr lnr-pencil" style="font-weight:bold"></span></a><span>|</span>
+                        }
+
+                        @if (User.IsInRole("Administrador"))
+                        {
+
+                            <a asp-action="Delete" asp-route-id="@item.Id" title="Eliminar"><span class="lnr lnr-cross" style="color:#fa0202; font-weight:bold"></span></a>
+
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>

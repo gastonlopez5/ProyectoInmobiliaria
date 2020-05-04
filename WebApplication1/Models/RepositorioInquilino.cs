@@ -109,7 +109,7 @@ namespace WebApplication1.Models
 			Inquilino p = null;
 			using (var connection = new MySqlConnection(connectionString))
 			{
-				string sql = $"SELECT Id, Nombre, Apellido, Dni, Telefono, Email, DireccionTrabajo, DniGarante FROM inquilinos" +
+				string sql = $"SELECT Id, Nombre, Apellido, Dni, Telefono, Email, DireccionTrabajo FROM inquilinos" +
 					$" WHERE Id=@id";
 				using (var command = new MySqlCommand(sql, connection))
 				{
