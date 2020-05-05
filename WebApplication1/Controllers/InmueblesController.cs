@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -17,13 +19,17 @@ namespace WebApplication1.Controllers
         private readonly RepositorioInmueble repositorioInmueble;
         private readonly RepositorioPropietario repositorioPropietario;
         private readonly RepositorioContrato repositorioContrato;
+        private readonly RepositorioGaleria repositorioGaleria;
+        private readonly IHostingEnvironment environment;
 
-        public InmueblesController(IConfiguration configuration)
+        public InmueblesController(IConfiguration configuration, IHostingEnvironment environment)
         {
             this.configuration = configuration;
             repositorioInmueble = new RepositorioInmueble(configuration);
             repositorioPropietario = new RepositorioPropietario(configuration);
             repositorioContrato = new RepositorioContrato(configuration);
+            repositorioGaleria = new RepositorioGaleria(configuration);
+            this.environment = environment;
         }
 
         // GET: Inmueble
@@ -57,7 +63,7 @@ namespace WebApplication1.Controllers
 
         }
 
-        
+
         // GET: Inmueble/Create
         [Authorize(Policy = "EsDeLaCasa")]
         public ActionResult Busqueda()
@@ -88,10 +94,10 @@ namespace WebApplication1.Controllers
 
                         if (listaContratos.Count != 0)
                         {
-                            
+
                             noDisponibles.Add(i);
-                            
-                        } 
+
+                        }
                         else
                         {
                             disponibles.Add(i);
@@ -114,7 +120,7 @@ namespace WebApplication1.Controllers
                     TempData["Mensaje"] = "No hay Inmuebles disponibles.";
                     return RedirectToAction("Busqueda");
                 }
-                
+
                 return View();
             }
             catch (Exception ex)
@@ -154,14 +160,78 @@ namespace WebApplication1.Controllers
                 if (ModelState.IsValid)
                 {
                     repositorioInmueble.Alta(p);
-                    TempData["Id"] = "Inmueble agregado exitosamente!";
-                    return RedirectToAction("Index", "Propietarios");
+
+                    if (p.Archivos != null && p.Id > 0)
+                    {
+                        string wwwPath = environment.WebRootPath;
+                        string path = Path.Combine(wwwPath, "Galeria\\"+p.Id);
+                        Galeria g = null;
+
+                        List<String> permitidos = new List<string>();
+                        permitidos.AddRange(configuration["Permitidos"].Split());
+                        long limite_kb = 600;
+
+                        if (!Directory.Exists(path))
+                        {
+                            Directory.CreateDirectory(path);
+                        }
+
+                        for (int i = 0; i < p.Archivos.Count; i++)
+                        {
+                            if (permitidos.Contains(p.Archivos[i].ContentType) && p.Archivos[i].Length <= limite_kb * 1024)
+                            {
+                                string fileName = Path.GetFileName(p.Archivos[i].FileName);
+                                string pathCompleto = Path.Combine(path, fileName);
+
+                                if (System.IO.File.Exists(pathCompleto))
+                                {
+                                    ViewBag.Error = "Alguno de los archivos ya existe";
+                                    ViewBag.PropietarioId = p.PropietarioId;
+                                    ViewBag.TipoInmueble = repositorioInmueble.ObtenerTodosTipos();
+                                    repositorioInmueble.Baja(p.Id);
+                                    return View(p);
+                                }
+                            }
+                            else
+                            {
+                                ViewBag.Error = "Alguno de los archivos no está permitido o excede el tamaño de 200 kb";
+                                ViewBag.PropietarioId = p.PropietarioId;
+                                ViewBag.TipoInmueble = repositorioInmueble.ObtenerTodosTipos();
+                                repositorioInmueble.Baja(p.Id);
+                                return View(p);
+                            }
+                        }
+
+                        for (int i = 0; i < p.Archivos.Count; i++)
+                        {
+                            g = new Galeria();
+                            string fileName = Path.GetFileName(p.Archivos[i].FileName);
+                            string pathCompleto = Path.Combine(path, fileName);
+                            g.Ruta = Path.Combine("\\Galeria\\" + p.Id, fileName);
+                            g.InmuebleId = p.Id;
+
+                            using (FileStream stream = new FileStream(pathCompleto, FileMode.Create))
+                            {
+                                p.Archivos[i].CopyTo(stream);
+                            }
+
+                            repositorioGaleria.Alta(g);
+                        }
+
+                        TempData["Id"] = "Inmueble agregado exitosamente!";
+                        return RedirectToAction("Index", "Propietarios");
+                    }
+                    else
+                    {
+                        TempData["Id"] = "Inmueble agregado exitosamente!";
+                        return RedirectToAction("Index", "Propietarios");
+                    }
                 }
                 else
                 {
                     ViewBag.PropietarioId = p.PropietarioId;
                     ViewBag.TipoInmueble = repositorioInmueble.ObtenerTodosTipos();
-                    return View();
+                    return View(p);
                 }
             }
             catch (Exception ex)
@@ -253,11 +323,11 @@ namespace WebApplication1.Controllers
                 Propietario p = repositorioPropietario.ObtenerPorEmail(User.Identity.Name);
                 lista = repositorioInmueble.BuscarPorPropietario(p.Id);
             }
-            else 
+            else
             {
                 lista = repositorioInmueble.BuscarPorPropietario(id);
             }
-            
+
             if (lista.Count() != 0)
             {
                 ViewBag.Propietario = lista[0].Duenio;

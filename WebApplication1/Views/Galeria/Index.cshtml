@@ -1,0 +1,35 @@
+﻿@model IEnumerable<WebApplication1.Models.Galeria>
+
+@{
+    ViewData["Title"] = "Galeria";
+}
+
+<h1>Galería de Fotos</h1>
+<h3>Propietario: @ViewBag.Inmueble.Duenio.Apellido @ViewBag.Inmueble.Duenio.Nombre</h3>
+<h3>Dirección del Inmueble: @ViewBag.Inmueble.Direccion</h3>
+
+<p>
+    <a class="btn btn-info" asp-action="Create">Agregar Foto</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Fotos
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                <img src="@item.Ruta" class="img-thumbnail"/>
+            </td>
+            <td>
+                <a asp-action="Delete" asp-route-id="@item.Id" title="Eliminar"><span class="lnr lnr-trash" style="color:#fa0202; font-weight:bold"></span></a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
