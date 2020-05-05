@@ -44,7 +44,7 @@ namespace WebApplication1.Models
         [ForeignKey("Tipo")]
         public TipoInmueble TipoInmueble { get; set; }
 
-        public Galeria Foto { get; set; }
+        public String Foto { get; set; }
         
         public IList<IFormFile> Archivos { get; set; }
     }

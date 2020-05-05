@@ -17,12 +17,14 @@ namespace WebApplication1.Controllers
     {
         private readonly IConfiguration configuration;
         private readonly RepositorioGaleria repositorioGaleria;
+        private readonly RepositorioInmueble repositorioInmueble;
         private readonly IHostingEnvironment environment;
 
         public GaleriaController(IConfiguration configuration, IHostingEnvironment environment)
         {
             this.configuration = configuration;
             repositorioGaleria = new RepositorioGaleria(configuration);
+            repositorioInmueble = new RepositorioInmueble(configuration);
             this.environment = environment;
         }
 
@@ -54,41 +56,90 @@ namespace WebApplication1.Controllers
         {
             string wwwPath = environment.WebRootPath;
             string path = Path.Combine(wwwPath, "Galeria\\" + id);
+            Galeria g = new Galeria();
+            g.Propiedad = repositorioInmueble.ObtenerPorId(id);
+            g.InmuebleId = id;
+            g.Ruta = path;
 
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
             }
 
-            ViewBag.Ruta = path;
-            ViewBag.InmuebleId = id;
-
-            return View();
+            return View(g);
         }
 
         // POST: Galeria/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(int id, Galeria g)
+        public ActionResult Create(Galeria p)
         {
             try
             {
+                //p.Propiedad = null;
+
                 if (ModelState.IsValid)
                 {
+                    Galeria g = null;
+                    List<String> permitidos = new List<string>();
+                    permitidos.AddRange(configuration["Permitidos"].Split());
+                    long limite_kb = 600;
 
-                    return RedirectToAction(nameof(Index));
+                    for (int i = 0; i < p.Archivos.Count; i++)
+                    {
+                        if (permitidos.Contains(p.Archivos[i].ContentType) && p.Archivos[i].Length <= limite_kb * 1024)
+                        {
+                            string fileName = Path.GetFileName(p.Archivos[i].FileName);
+                            string pathCompleto = Path.Combine(p.Ruta, fileName);
+
+                            if (System.IO.File.Exists(pathCompleto))
+                            {
+                                ViewBag.Error = "Alguno de los archivos ya existe";
+                                ViewBag.Ruta = p.Ruta;
+                                ViewBag.InmuebleId = p.Id;
+                                return View(p);
+                            }
+                        }
+                        else
+                        {
+                            ViewBag.Error = "Alguno de los archivos no está permitido o excede el tamaño de 200 kb";
+                            ViewBag.Ruta = p.Ruta;
+                            ViewBag.InmuebleId = p.Id;
+                            return View(p);
+                        }
+                    }
+
+                    for (int i = 0; i < p.Archivos.Count; i++)
+                    {
+                        g = new Galeria();
+                        string fileName = Path.GetFileName(p.Archivos[i].FileName);
+                        string pathCompleto = Path.Combine(p.Ruta, fileName);
+                        g.Ruta = Path.Combine("\\Galeria\\" + p.Id, fileName);
+                        g.InmuebleId = p.Id;
+
+                        using (FileStream stream = new FileStream(pathCompleto, FileMode.Create))
+                        {
+                            p.Archivos[i].CopyTo(stream);
+                        }
+
+                        repositorioGaleria.Alta(g);
+                    }
+
+                    TempData["Id"] = "Fotos agregadas exitosamente!";
+                    return RedirectToAction(nameof(Index), new { id = p.Id });
                 }
                 else
                 {
-                    return View(g);
+                    ViewBag.Ruta = p.Ruta;
+                    ViewBag.InmuebleId = p.Id;
+                    return View(p);
                 }
-                
             }
             catch (Exception ex)
             {
                 ViewBag.Error = ex.Message;
                 ViewBag.StackTrate = ex.StackTrace;
-                return View(g);
+                return View(p);
             }
         }
 
