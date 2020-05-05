@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -18,5 +19,7 @@ namespace WebApplication1.Models
         public int InmuebleId { get; set; }
 
         public Inmueble Propiedad { get; set; }
+
+        public IList<IFormFile> Archivos { get; set; }
     }
 }

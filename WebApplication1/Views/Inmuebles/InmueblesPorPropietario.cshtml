@@ -63,6 +63,7 @@
                     }
 
                     <a asp-action="ListarContratos" asp-route-id="@item.Id" title="ContratosRealizados"><span class="lnr lnr-list" style="font-weight:bold"></span></a>&nbsp; |
+                    <a asp-action="Index" asp-controller="Galeria" asp-route-id="@item.Id" title="Ver Galería"><span class="lnr lnr-picture" style="font-weight:bold"></span></a>&nbsp; |
 
                     @if (User.IsInRole("Administrador"))
                     {

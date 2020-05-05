@@ -1,0 +1,30 @@
+﻿@model WebApplication1.Models.Galeria
+
+@{
+    ViewData["Title"] = "Agregar Foto";
+}
+
+<h1>Galería</h1>
+
+<h4>Agregar Foto</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Ruta" value="@ViewBag.Ruta" />
+            <input type="hidden" asp-for="InmuebleId" value="@ViewBag.InmuebleId" />
+            <div class="form-group">
+                <label for="Archivos" class="control-label">Seleccionar Fotos</label>
+                <input id="Archivos" name="Archivos" type="file" multiple accept="image/*" class="form-control" />
+                <span asp-validation-for="Archivos" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Agregar" class="btn btn-primary" />
+                <a class="btn btn-secondary" asp-action="Index" asp-rute-id="@ViewBag.InmuebleId">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+

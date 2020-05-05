@@ -9,7 +9,7 @@
 <h3>Dirección del Inmueble: @ViewBag.Inmueble.Direccion</h3>
 
 <p>
-    <a class="btn btn-info" asp-action="Create">Agregar Foto</a>
+    <a class="btn btn-info" asp-action="Create" asp-route-id="@ViewBag.Inmueble.Id">Agregar Foto</a>
 </p>
 <table class="table">
     <thead>

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -15,11 +17,13 @@ namespace WebApplication1.Controllers
     {
         private readonly IConfiguration configuration;
         private readonly RepositorioGaleria repositorioGaleria;
+        private readonly IHostingEnvironment environment;
 
-        public GaleriaController(IConfiguration configuration)
+        public GaleriaController(IConfiguration configuration, IHostingEnvironment environment)
         {
             this.configuration = configuration;
             repositorioGaleria = new RepositorioGaleria(configuration);
+            this.environment = environment;
         }
 
         // GET: Galeria
@@ -46,25 +50,45 @@ namespace WebApplication1.Controllers
         }
 
         // GET: Galeria/Create
-        public ActionResult Create()
+        public ActionResult Create(int id)
         {
+            string wwwPath = environment.WebRootPath;
+            string path = Path.Combine(wwwPath, "Galeria\\" + id);
+
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            ViewBag.Ruta = path;
+            ViewBag.InmuebleId = id;
+
             return View();
         }
 
         // POST: Galeria/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(int id, Galeria g)
         {
             try
             {
-                // TODO: Add insert logic here
+                if (ModelState.IsValid)
+                {
 
-                return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    return View(g);
+                }
+                
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                ViewBag.Error = ex.Message;
+                ViewBag.StackTrate = ex.StackTrace;
+                return View(g);
             }
         }
 
