@@ -35,6 +35,13 @@ namespace WebApplication1.Controllers
 
             if (lista.Count != 0)
             {
+                if (TempData.ContainsKey("Id"))
+                    ViewBag.Id = TempData["Id"];
+                if (TempData.ContainsKey("Mensaje"))
+                    ViewBag.Mensaje = TempData["Mensaje"];
+                if (TempData.ContainsKey("Error"))
+                    ViewBag.Error = TempData["Error"];
+
                 ViewBag.Inmueble = lista[0].Propiedad;
                 return View(lista);
             }
@@ -76,64 +83,53 @@ namespace WebApplication1.Controllers
         {
             try
             {
-                //p.Propiedad = null;
+                Galeria g = null;
+                List<String> permitidos = new List<string>();
+                permitidos.AddRange(configuration["Permitidos"].Split());
+                long limite_kb = 600;
 
-                if (ModelState.IsValid)
+                for (int i = 0; i < p.Archivos.Count; i++)
                 {
-                    Galeria g = null;
-                    List<String> permitidos = new List<string>();
-                    permitidos.AddRange(configuration["Permitidos"].Split());
-                    long limite_kb = 600;
-
-                    for (int i = 0; i < p.Archivos.Count; i++)
+                    if (permitidos.Contains(p.Archivos[i].ContentType) && p.Archivos[i].Length <= limite_kb * 1024)
                     {
-                        if (permitidos.Contains(p.Archivos[i].ContentType) && p.Archivos[i].Length <= limite_kb * 1024)
-                        {
-                            string fileName = Path.GetFileName(p.Archivos[i].FileName);
-                            string pathCompleto = Path.Combine(p.Ruta, fileName);
+                        string fileName = Path.GetFileName(p.Archivos[i].FileName);
+                        string pathCompleto = Path.Combine(p.Ruta, fileName);
 
-                            if (System.IO.File.Exists(pathCompleto))
-                            {
-                                ViewBag.Error = "Alguno de los archivos ya existe";
-                                ViewBag.Ruta = p.Ruta;
-                                ViewBag.InmuebleId = p.Id;
-                                return View(p);
-                            }
-                        }
-                        else
+                        if (System.IO.File.Exists(pathCompleto))
                         {
-                            ViewBag.Error = "Alguno de los archivos no está permitido o excede el tamaño de 200 kb";
+                            ViewBag.Error = "Alguno de los archivos ya existe";
                             ViewBag.Ruta = p.Ruta;
                             ViewBag.InmuebleId = p.Id;
                             return View(p);
                         }
                     }
-
-                    for (int i = 0; i < p.Archivos.Count; i++)
+                    else
                     {
-                        g = new Galeria();
-                        string fileName = Path.GetFileName(p.Archivos[i].FileName);
-                        string pathCompleto = Path.Combine(p.Ruta, fileName);
-                        g.Ruta = Path.Combine("\\Galeria\\" + p.Id, fileName);
-                        g.InmuebleId = p.Id;
+                        ViewBag.Error = "Alguno de los archivos no está permitido o excede el tamaño de 200 kb";
+                        ViewBag.Ruta = p.Ruta;
+                        ViewBag.InmuebleId = p.Id;
+                        return View(p);
+                    }
+                }
 
-                        using (FileStream stream = new FileStream(pathCompleto, FileMode.Create))
-                        {
-                            p.Archivos[i].CopyTo(stream);
-                        }
+                for (int i = 0; i < p.Archivos.Count; i++)
+                {
+                    g = new Galeria();
+                    string fileName = Path.GetFileName(p.Archivos[i].FileName);
+                    string pathCompleto = Path.Combine(p.Ruta, fileName);
+                    g.Ruta = Path.Combine("\\Galeria\\" + p.Id, fileName);
+                    g.InmuebleId = p.Id;
 
-                        repositorioGaleria.Alta(g);
+                    using (FileStream stream = new FileStream(pathCompleto, FileMode.Create))
+                    {
+                        p.Archivos[i].CopyTo(stream);
                     }
 
-                    TempData["Id"] = "Fotos agregadas exitosamente!";
-                    return RedirectToAction(nameof(Index), new { id = p.Id });
+                    repositorioGaleria.Alta(g);
                 }
-                else
-                {
-                    ViewBag.Ruta = p.Ruta;
-                    ViewBag.InmuebleId = p.Id;
-                    return View(p);
-                }
+
+                TempData["Id"] = "Fotos agregadas exitosamente!";
+                return RedirectToAction(nameof(Index), new { id = p.Id });
             }
             catch (Exception ex)
             {
@@ -169,23 +165,25 @@ namespace WebApplication1.Controllers
         // GET: Galeria/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            var g = repositorioGaleria.ObtenerPorId(id);
+            return View(g);
         }
 
         // POST: Galeria/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(int id, Galeria p)
         {
             try
             {
-                // TODO: Add delete logic here
-
-                return RedirectToAction(nameof(Index));
+                var g = repositorioGaleria.ObtenerPorId(id);
+                repositorioGaleria.Baja(id);
+                TempData["Mensaje"] = "Imagen eliminada correctamente";
+                return RedirectToAction(nameof(Index), new { id=g.InmuebleId });
             }
             catch
             {
-                return View();
+                return View(p);
             }
         }
     }

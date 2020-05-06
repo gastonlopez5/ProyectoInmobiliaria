@@ -223,7 +223,8 @@ namespace WebApplication1.Controllers
                     }
                     else
                     {
-                        TempData["Id"] = "Inmueble agregado exitosamente!";
+                        TempData["Error"] = "Debe agregar fotos al Inmueble!";
+                        repositorioInmueble.Baja(p.Id);
                         return RedirectToAction("Index", "Propietarios");
                     }
                 }

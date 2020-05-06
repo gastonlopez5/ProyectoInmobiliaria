@@ -46,6 +46,7 @@ namespace WebApplication1.Models
 
         public String Foto { get; set; }
         
+        [Required]
         public IList<IFormFile> Archivos { get; set; }
     }
 }

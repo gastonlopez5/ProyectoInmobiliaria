@@ -118,5 +118,47 @@ namespace WebApplication1.Models
 			}
 			return res;
 		}
+
+		public Galeria ObtenerPorId(int id)
+		{
+			Galeria entidad = null;
+			using (var connection = new MySqlConnection(connectionString))
+			{
+				string sql = $"SELECT g.Id, g.Ruta, g.InmuebleId, i.Direccion, p.Id, p.Apellido, p.Nombre " +
+					$" FROM galeria g JOIN inmuebles i ON(g.InmuebleId=i.Id) " +
+					$" JOIN propietarios p ON(i.PropietarioId = p.Id) " +
+					$" WHERE g.Id=@id";
+
+				using (var command = new MySqlCommand(sql, connection))
+				{
+					command.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
+					command.CommandType = CommandType.Text;
+					connection.Open();
+					var reader = command.ExecuteReader();
+					if (reader.Read())
+					{
+						entidad = new Galeria
+						{
+							Id = reader.GetInt32(0),
+							Ruta = reader.GetString(1),
+							InmuebleId = reader.GetInt32(2),
+							Propiedad = new Inmueble
+							{
+								Id = reader.GetInt32(2),
+								Direccion = reader.GetString(3),
+								Duenio = new Propietario
+								{
+									Id = reader.GetInt32(4),
+									Apellido = reader.GetString(5),
+									Nombre = reader.GetString(6),
+								}
+							}
+						};
+					}
+					connection.Close();
+				}
+			}
+			return entidad;
+		}
 	}
 }
