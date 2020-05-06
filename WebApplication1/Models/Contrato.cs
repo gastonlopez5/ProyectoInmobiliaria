@@ -46,15 +46,17 @@ namespace WebApplication1.Models
 		public string EmailGarante { get; set; }
 		
 		[Required]
+		[ForeignKey("InquilinoId")]
 		public int InquilinoId { get; set; }
 		
 		[Required]
+		[ForeignKey("InmuebleId")]
 		public int InmuebleId { get; set; }
 		
-		[ForeignKey("InquilinoId")]
+		
 		public Inquilino Inquilino { get; set; }
 		
-		[ForeignKey("InmuebleId")]
+		
 		public Inmueble Inmueble { get; set; }
 		
 		public Propietario Propietario { get; set; }
