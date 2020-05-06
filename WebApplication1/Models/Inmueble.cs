@@ -45,8 +45,8 @@ namespace WebApplication1.Models
         public TipoInmueble TipoInmueble { get; set; }
 
         public String Foto { get; set; }
-        
-        [Required]
+
+        [Required(ErrorMessage = "Fotos del Inmueble requeridas")]
         public IList<IFormFile> Archivos { get; set; }
     }
 }

@@ -20,6 +20,7 @@ namespace WebApplication1.Models
 
         public Inmueble Propiedad { get; set; }
 
+        [Required(ErrorMessage = "Fotos del Inmueble requeridas")]
         public IList<IFormFile> Archivos { get; set; }
     }
 }

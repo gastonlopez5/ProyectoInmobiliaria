@@ -194,7 +194,7 @@ namespace WebApplication1.Controllers
                             }
                             else
                             {
-                                ViewBag.Error = "Alguno de los archivos no está permitido o excede el tamaño de 200 kb";
+                                ViewBag.Error = "Alguno de los archivos no está permitido o excede el tamaño de 600 kb";
                                 ViewBag.PropietarioId = p.PropietarioId;
                                 ViewBag.TipoInmueble = repositorioInmueble.ObtenerTodosTipos();
                                 repositorioInmueble.Baja(p.Id);
@@ -296,6 +296,7 @@ namespace WebApplication1.Controllers
         {
             try
             {
+                repositorioGaleria.BajaPorInmuebleId(id);
                 repositorioInmueble.Baja(id);
                 TempData["Mensaje"] = "Inmueble eliminado correctamente";
                 return RedirectToAction(nameof(Index));
@@ -326,6 +327,8 @@ namespace WebApplication1.Controllers
             }
             else
             {
+                if (TempData.ContainsKey("Mensaje"))
+                    ViewBag.Mensaje = TempData["Mensaje"];
                 lista = repositorioInmueble.BuscarPorPropietario(id);
             }
 
@@ -352,7 +355,7 @@ namespace WebApplication1.Controllers
             }
             else
             {
-                TempData["Mensaje"] = "El Inmueble no tiene contratos registrados en el sistema";
+                TempData["Mensaje"] = "El Inmueble no tiene contratos vigentes registrados en el sistema";
                 return RedirectToAction("Index");
             }
         }

@@ -399,5 +399,21 @@ namespace WebApplication1.Controllers
             }
         }
 
+        public ActionResult ListarTodosContratos(int id)
+        {
+            var lista = repositorioContrato.ObtenerVigentesVencidosPorInmuebleId(id);
+            
+            if (lista.Count != 0)
+            {
+                ViewBag.Contrato = lista[0];
+                return View(lista);
+            }
+            else
+            {
+                TempData["Mensaje"] = "El Inmueble no tiene contratos registrados en el sistema";
+                return RedirectToAction("Index", "Inmuebles");
+            }
+        }
+
     }
 }

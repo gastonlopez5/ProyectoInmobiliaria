@@ -1,14 +1,14 @@
 ﻿@model IEnumerable<WebApplication1.Models.Inmueble>
 
 @{
-    ViewData["Title"] = "Disponibles";
+    ViewData["Title"] = "Inmuebles Buscados";
 }
 
 <h1>Listado de Inmuebles Buscados</h1>
 
 <p>
     <a class="btn btn-info" asp-action="Index">Ver Disponibles</a>
-1</p>
+</p>
 <table class="table">
     <thead>
         <tr>
@@ -58,8 +58,9 @@
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id" title="Editar"><span class="lnr lnr-pencil" style="font-weight:bold"></span></a>&nbsp; |
-                    <a asp-action="GenerarContrato" asp-route-id="@item.Id" title="GenerarContrato"><span class="lnr lnr-file-add" style="font-weight:bold"></span></a>&nbsp; |
-                    <a asp-action="ListarContratos" asp-route-id="@item.Id" title="ContratosRealizados"><span class="lnr lnr-list" style="font-weight:bold"></span></a>&nbsp; |
+                    <a asp-action="GenerarContrato" asp-route-id="@item.Id" title="Generar Contrato"><span class="lnr lnr-file-add" style="font-weight:bold"></span></a>&nbsp; |
+                    <a asp-action="ListarContratos" asp-route-id="@item.Id" title="Contratos Vigentes"><span class="lnr lnr-list" style="font-weight:bold"></span></a>&nbsp; |
+                    <a asp-action="ListarTodosContratos" asp-controller="Contratos" asp-route-id="@item.Id" title="Contratos"><span class="lnr lnr-book" style="font-weight:bold"></span></a>&nbsp; |
                     <a asp-action="Index" asp-controller="Galeria" asp-route-id="@item.Id" title="Ver Galería"><span class="lnr lnr-picture" style="font-weight:bold"></span></a>&nbsp; |
 
                     @if (User.IsInRole("Administrador"))

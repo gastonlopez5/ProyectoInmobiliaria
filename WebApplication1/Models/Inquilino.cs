@@ -15,13 +15,13 @@ namespace WebApplication1.Models
 		[Required(ErrorMessage = "Campo requerido")]
 		[MinLength(3, ErrorMessage = "Escriba al menos 4 caracteres")]
 		[MaxLength(50, ErrorMessage = "Escriba un máximo de 50 caracteres")]
-		[RegularExpression(@"^[a-zA-Z]{1,50}$", ErrorMessage = "Valores numéricos no permitidos")]
+		[RegularExpression(@"^[a-zA-Z''-'\s]{1,50}$", ErrorMessage = "Valores numéricos no permitidos")]
 		public string Nombre { get; set; }
 
 		[Required(ErrorMessage = "Campo requerido")]
 		[MinLength(3, ErrorMessage = "Escriba al menos 4 caracteres")]
 		[MaxLength(50, ErrorMessage = "Escriba un máximo de 50 caracteres")]
-		[RegularExpression(@"^[a-zA-Z]{1,50}$", ErrorMessage = "Valores numéricos no permitidos")]
+		[RegularExpression(@"^[a-zA-Z''-'\s]{1,50}$", ErrorMessage = "Valores numéricos no permitidos")]
 		public string Apellido { get; set; }
 
 		[Required(ErrorMessage = "DNI requerido")]
@@ -41,7 +41,7 @@ namespace WebApplication1.Models
 		[Required(ErrorMessage = "Campo requerido")]
 		[MinLength(4, ErrorMessage = "Escriba al menos 5 caracteres")]
 		[MaxLength(50, ErrorMessage = "Escriba un máximo de 50 caracteres")]
-		[RegularExpression(@"^[a-zA-Z]{5,50}$", ErrorMessage = "Valores numéricos no permitidos")]
+		[RegularExpression(@"^[a-zA-Z''-'\s]{1,50}$", ErrorMessage = "Valores numéricos no permitidos")]
 		public string DireccionTrabajo { get; set; }
 		
 

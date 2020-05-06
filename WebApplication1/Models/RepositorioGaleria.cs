@@ -56,6 +56,24 @@ namespace WebApplication1.Models
 			}
 			return res;
 		}
+
+		public int BajaPorInmuebleId(int id)
+		{
+			int res = -1;
+			using (var connection = new MySqlConnection(connectionString))
+			{
+				string sql = $"DELETE FROM galeria WHERE InmuebleId = {id}";
+				using (var command = new MySqlCommand(sql, connection))
+				{
+					command.CommandType = CommandType.Text;
+					connection.Open();
+					res = command.ExecuteNonQuery();
+					connection.Close();
+				}
+			}
+			return res;
+		}
+
 		public int Modificacion(Galeria p)
 		{
 			int res = -1;

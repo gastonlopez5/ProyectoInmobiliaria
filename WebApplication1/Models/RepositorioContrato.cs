@@ -97,7 +97,11 @@ namespace WebApplication1.Models
             IList<Contrato> res = new List<Contrato>();
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = $"SELECT contrato.Id, FechaInicio, FechaFin, Importe, DniGarante, NombreCompletoGarante, TelefonoGarante, EmailGarante, InquilinoId, InmuebleId, inquilinos.Nombre, inquilinos.Apellido, inmuebles.Direccion FROM contrato JOIN inquilinos ON(inquilinos.Id = contrato.InquilinoId) JOIN inmuebles ON(inmuebles.Id = contrato.InmuebleId)";
+                string sql = $"SELECT contrato.Id, FechaInicio, FechaFin, Importe, DniGarante, " +
+                    $" NombreCompletoGarante, TelefonoGarante, EmailGarante, InquilinoId, InmuebleId, " +
+                    $" inquilinos.Nombre, inquilinos.Apellido, inmuebles.Direccion " +
+                    $" FROM contrato JOIN inquilinos ON(inquilinos.Id = contrato.InquilinoId) " +
+                    $"JOIN inmuebles ON(inmuebles.Id = contrato.InmuebleId)";
 
                 using (var command = new MySqlCommand(sql, connection))
                 {
@@ -137,13 +141,74 @@ namespace WebApplication1.Models
             return res;
         }
 
+        public IList<Contrato> ObtenerVigentesVencidosPorInmuebleId(int id)
+        {
+            IList<Contrato> res = new List<Contrato>();
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                string sql = $"SELECT contrato.Id, FechaInicio, FechaFin, Importe, DniGarante, " +
+                    $" NombreCompletoGarante, TelefonoGarante, EmailGarante, InquilinoId, InmuebleId, " +
+                    $" inquilinos.Nombre, inquilinos.Apellido, inmuebles.Direccion, p.Id, p.Apellido, p.Nombre " +
+                    $" FROM contrato JOIN inquilinos ON(inquilinos.Id = contrato.InquilinoId) " +
+                    $" JOIN inmuebles ON(inmuebles.Id = contrato.InmuebleId) " +
+                    $" JOIN propietarios p ON(p.Id = inmuebles.PropietarioId) " +
+                    $" WHERE contrato.InmuebleId = @id";
+
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    command.Parameters.Add("@id", MySqlDbType.Int32).Value = id;
+                    command.CommandType = CommandType.Text;
+                    connection.Open();
+                    var reader = command.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        Contrato a = new Contrato
+                        {
+                            Id = reader.GetInt32(0),
+                            FechaInicio = reader.GetDateTime(1),
+                            FechaFin = reader.GetDateTime(2),
+                            Importe = reader.GetDecimal(3),
+                            DniGarante = reader.GetString(4),
+                            NombreCompletoGarante = reader.GetString(5),
+                            TelefonoGarante = reader.GetString(6),
+                            EmailGarante = reader.GetString(7),
+                            Inquilino = new Inquilino
+                            {
+                                Id = reader.GetInt32(8),
+                                Nombre = reader.GetString(10),
+                                Apellido = reader.GetString(11),
+                            },
+                            Inmueble = new Inmueble
+                            {
+                                Id = reader.GetInt32(9),
+                                Direccion = reader.GetString(12),
+                                Duenio = new Propietario
+                                {
+                                    Id = reader.GetInt32(13),
+                                    Apellido = reader.GetString(14),
+                                    Nombre = reader.GetString(15)
+                                }
+                            }
+                        };
+                        res.Add(a);
+                    }
+                    connection.Close();
+                }
+            }
+            return res;
+        }
+
         public IList<Contrato> ObtenerTodosVigentes()
         {
             DateTime fecha = DateTime.Now;
             IList<Contrato> res = new List<Contrato>();
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = $"SELECT contrato.Id, FechaInicio, FechaFin, Importe, DniGarante, NombreCompletoGarante, TelefonoGarante, EmailGarante, InquilinoId, InmuebleId, inquilinos.Nombre, inquilinos.Apellido, inmuebles.Direccion FROM contrato JOIN inquilinos ON(inquilinos.Id = contrato.InquilinoId) JOIN inmuebles ON(inmuebles.Id = contrato.InmuebleId) WHERE FechaFin >= @fecha";
+                string sql = $"SELECT contrato.Id, FechaInicio, FechaFin, Importe, DniGarante, " +
+                    $" NombreCompletoGarante, TelefonoGarante, EmailGarante, InquilinoId, InmuebleId, " +
+                    $" inquilinos.Nombre, inquilinos.Apellido, inmuebles.Direccion " +
+                    $" FROM contrato JOIN inquilinos ON(inquilinos.Id = contrato.InquilinoId)" +
+                    $" JOIN inmuebles ON(inmuebles.Id = contrato.InmuebleId) WHERE FechaFin >= @fecha";
 
                 using (var command = new MySqlCommand(sql, connection))
                 {
@@ -238,8 +303,11 @@ namespace WebApplication1.Models
             IList<Contrato> res = new List<Contrato>();
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = $"SELECT contrato.Id, FechaInicio, FechaFin, Importe, DniGarante, NombreCompletoGarante, TelefonoGarante, EmailGarante, InquilinoId, InmuebleId, p.Nombre, p.Apellido, inmuebles.Direccion, p.Id" +
-                    $" FROM contrato JOIN inmuebles ON(inmuebles.Id = contrato.InmuebleId) JOIN propietarios p ON(p.Id = inmuebles.PropietarioId)" +
+                string sql = $"SELECT contrato.Id, FechaInicio, FechaFin, Importe, DniGarante," +
+                    $" NombreCompletoGarante, TelefonoGarante, EmailGarante, InquilinoId, InmuebleId," +
+                    $" p.Nombre, p.Apellido, inmuebles.Direccion, p.Id" +
+                    $" FROM contrato JOIN inmuebles ON(inmuebles.Id = contrato.InmuebleId)" +
+                    $" JOIN propietarios p ON(p.Id = inmuebles.PropietarioId)" +
                     $" WHERE contrato.InmuebleId = @id AND FechaFin > CURDATE()";
 
                 using (var command = new MySqlCommand(sql, connection))

@@ -88,48 +88,56 @@ namespace WebApplication1.Controllers
                 permitidos.AddRange(configuration["Permitidos"].Split());
                 long limite_kb = 600;
 
-                for (int i = 0; i < p.Archivos.Count; i++)
+                if (p.Archivos != null)
                 {
-                    if (permitidos.Contains(p.Archivos[i].ContentType) && p.Archivos[i].Length <= limite_kb * 1024)
+                    for (int i = 0; i < p.Archivos.Count; i++)
                     {
-                        string fileName = Path.GetFileName(p.Archivos[i].FileName);
-                        string pathCompleto = Path.Combine(p.Ruta, fileName);
-
-                        if (System.IO.File.Exists(pathCompleto))
+                        if (permitidos.Contains(p.Archivos[i].ContentType) && p.Archivos[i].Length <= limite_kb * 1024)
                         {
-                            ViewBag.Error = "Alguno de los archivos ya existe";
+                            string fileName = Path.GetFileName(p.Archivos[i].FileName);
+                            string pathCompleto = Path.Combine(p.Ruta, fileName);
+
+                            if (System.IO.File.Exists(pathCompleto))
+                            {
+                                ViewBag.Error = "Alguno de los archivos ya existe";
+                                ViewBag.Ruta = p.Ruta;
+                                ViewBag.InmuebleId = p.Id;
+                                return View(p);
+                            }
+                        }
+                        else
+                        {
+                            ViewBag.Error = "Alguno de los archivos no está permitido o excede el tamaño de 600 kb";
                             ViewBag.Ruta = p.Ruta;
                             ViewBag.InmuebleId = p.Id;
                             return View(p);
                         }
                     }
-                    else
-                    {
-                        ViewBag.Error = "Alguno de los archivos no está permitido o excede el tamaño de 200 kb";
-                        ViewBag.Ruta = p.Ruta;
-                        ViewBag.InmuebleId = p.Id;
-                        return View(p);
-                    }
-                }
 
-                for (int i = 0; i < p.Archivos.Count; i++)
+                    for (int i = 0; i < p.Archivos.Count; i++)
+                    {
+                        g = new Galeria();
+                        string fileName = Path.GetFileName(p.Archivos[i].FileName);
+                        string pathCompleto = Path.Combine(p.Ruta, fileName);
+                        g.Ruta = Path.Combine("\\Galeria\\" + p.Id, fileName);
+                        g.InmuebleId = p.Id;
+
+                        using (FileStream stream = new FileStream(pathCompleto, FileMode.Create))
+                        {
+                            p.Archivos[i].CopyTo(stream);
+                        }
+
+                        repositorioGaleria.Alta(g);
+                    }
+
+                    TempData["Id"] = "Fotos agregadas exitosamente!";
+                    return RedirectToAction(nameof(Index), new { id = p.Id });
+                }
+                else
                 {
-                    g = new Galeria();
-                    string fileName = Path.GetFileName(p.Archivos[i].FileName);
-                    string pathCompleto = Path.Combine(p.Ruta, fileName);
-                    g.Ruta = Path.Combine("\\Galeria\\" + p.Id, fileName);
-                    g.InmuebleId = p.Id;
-
-                    using (FileStream stream = new FileStream(pathCompleto, FileMode.Create))
-                    {
-                        p.Archivos[i].CopyTo(stream);
-                    }
-
-                    repositorioGaleria.Alta(g);
+                    //ViewBag.Error = "Debe seleccionar una foto";
+                    return View(p);
                 }
-
-                TempData["Id"] = "Fotos agregadas exitosamente!";
-                return RedirectToAction(nameof(Index), new { id = p.Id });
             }
             catch (Exception ex)
             {
@@ -178,8 +186,8 @@ namespace WebApplication1.Controllers
             {
                 var g = repositorioGaleria.ObtenerPorId(id);
                 repositorioGaleria.Baja(id);
-                TempData["Mensaje"] = "Imagen eliminada correctamente";
-                return RedirectToAction(nameof(Index), new { id=g.InmuebleId });
+                TempData["Mensaje"] = "Foto eliminada correctamente";
+                return RedirectToAction(nameof(Index), new { id = g.InmuebleId });
             }
             catch
             {

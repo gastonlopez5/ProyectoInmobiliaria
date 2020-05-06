@@ -134,8 +134,18 @@ namespace WebApplication1.Controllers
 
                 repositorioUsuario.Modificacion(u);
                 repositorioEmpleado.Modificacion(p);
-                TempData["Mensaje"] = "Datos guardados correctamente. Ingresar nuevamente por favor.";
-                return RedirectToAction("Logout", "Usuario");
+
+                if (User.IsInRole("Empleado"))
+                {
+                    TempData["Mensaje"] = "Datos guardados correctamente. Ingresar nuevamente por favor.";
+                    return RedirectToAction("Logout", "Usuario");
+                }
+                else
+                {
+                    TempData["Mensaje"] = "Datos guardados correctamente";
+                    return RedirectToAction("Index");
+                }
+                
             }
             catch (Exception ex)
             {
