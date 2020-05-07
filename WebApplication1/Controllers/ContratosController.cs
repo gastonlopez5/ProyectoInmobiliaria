@@ -339,15 +339,22 @@ namespace WebApplication1.Controllers
             double cantidadPagos = Math.Round(totalDias / 30);
             //double cantidadPagos = 2;
 
-            int nroPagoMax = 0;
-            foreach (Pago pago in p)
+            double nroPagoMax = 0;
+            if (p.Count != 0)
             {
-                if (pago.NroPago > nroPagoMax)
+                foreach (Pago pago in p)
                 {
-                    nroPagoMax = pago.NroPago;
+                    if (pago.NroPago > nroPagoMax)
+                    {
+                        nroPagoMax = pago.NroPago;
+                    }
                 }
             }
-
+            else
+            {
+                nroPagoMax = cantidadPagos;
+            }
+            
             int cantidadPagosRealizados = p.Count;
 
             if (cantidadPagosRealizados < cantidadPagos)

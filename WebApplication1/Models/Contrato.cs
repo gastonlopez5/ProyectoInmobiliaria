@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -22,7 +23,7 @@ namespace WebApplication1.Models
 
 		[Required(ErrorMessage = "Importe requerido")]
 		[Range(1000, 1000000, ErrorMessage = "Ingrese un valor entre 1000 y 1000000")]
-		[RegularExpression(@"^[0-9]{1,1000000}$", ErrorMessage = "Ingrese un número")]
+		[RegularExpression(@"^[0-9]{1,1000000}$", ErrorMessage = "Ingrese un número entero")]
 		public decimal Importe { get; set; }
 		
 		[Required(ErrorMessage = "DNI requerido")]
@@ -56,7 +57,7 @@ namespace WebApplication1.Models
 		
 		public Inquilino Inquilino { get; set; }
 		
-		
+		[BindNever]
 		public Inmueble Inmueble { get; set; }
 		
 		public Propietario Propietario { get; set; }

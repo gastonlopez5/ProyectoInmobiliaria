@@ -83,13 +83,13 @@ namespace WebApplication1.Controllers
         {
             try
             {
-                Galeria g = null;
-                List<String> permitidos = new List<string>();
-                permitidos.AddRange(configuration["Permitidos"].Split());
-                long limite_kb = 600;
-
-                if (p.Archivos != null)
+                if (ModelState.IsValid)
                 {
+                    Galeria g = null;
+                    List<String> permitidos = new List<string>();
+                    permitidos.AddRange(configuration["Permitidos"].Split());
+                    long limite_kb = 600;
+
                     for (int i = 0; i < p.Archivos.Count; i++)
                     {
                         if (permitidos.Contains(p.Archivos[i].ContentType) && p.Archivos[i].Length <= limite_kb * 1024)
@@ -135,7 +135,6 @@ namespace WebApplication1.Controllers
                 }
                 else
                 {
-                    //ViewBag.Error = "Debe seleccionar una foto";
                     return View(p);
                 }
             }

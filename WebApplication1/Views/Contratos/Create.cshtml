@@ -4,6 +4,17 @@
     ViewData["Title"] = "Nuevo Alquiler";
     DateTime fechaInicio = DateTime.Today;
     DateTime fechaFin = fechaInicio.AddDays(730);
+
+    if (TempData.ContainsKey("FechaInicio"))
+    {
+        ViewBag.FechaInicial = TempData["FechaInicio"];
+        fechaInicio = ViewBag.FechaInicial;
+    }
+    if (TempData.ContainsKey("FechaFinal"))
+    {
+        ViewBag.FechaFinal = TempData["FechaFinal"];
+        fechaFin = ViewBag.FechaFinal;
+    }
 }
 
 <h2>Nuevo Contrato de Alquiler</h2>

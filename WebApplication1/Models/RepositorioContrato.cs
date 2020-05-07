@@ -353,12 +353,17 @@ namespace WebApplication1.Models
             IList<Contrato> res = new List<Contrato>();
             using (var connection = new MySqlConnection(connectionString))
             {
-                string sql = $"SELECT contrato.Id, FechaInicio, FechaFin, Importe, DniGarante, NombreCompletoGarante, TelefonoGarante, EmailGarante, InquilinoId, InmuebleId, inquilinos.Nombre, inquilinos.Apellido, inmuebles.Direccion " +
-                    $"FROM contrato JOIN inquilinos ON(inquilinos.Id = contrato.InquilinoId) JOIN inmuebles ON(inmuebles.Id = contrato.InmuebleId) " +
-                    $"WHERE contrato.InmuebleId = @id " +
-                    $"AND FechaInicio < @fi AND FechaFin > @fi AND FechaFin < @ff " +
-                    $"OR FechaInicio > @fi AND FechaFin < @fi AND FechaFin > @ff " +
-                    $"OR FechaInicio < @fi AND FechaFin > @ff AND FechaFin > @fi AND FechaFin > @ff";
+                string sql = $"SELECT contrato.Id, FechaInicio, FechaFin, Importe, DniGarante, " +
+                    $" NombreCompletoGarante, TelefonoGarante, EmailGarante, InquilinoId, InmuebleId, " +
+                    $" inquilinos.Nombre, inquilinos.Apellido, inmuebles.Direccion " +
+                    $" FROM contrato JOIN inquilinos ON(inquilinos.Id = contrato.InquilinoId) " +
+                    $" JOIN inmuebles ON(inmuebles.Id = contrato.InmuebleId) " +
+                    $" WHERE contrato.InmuebleId = @id AND ((FechaInicio < @fi AND " +
+                    $" FechaFin > @fi AND FechaFin < @ff ) " +
+                    $" OR (FechaInicio > @fi AND FechaInicio < @ff " +
+                    $" AND FechaFin > @ff ) OR (FechaInicio < @fi " +
+                    $" AND FechaInicio < @ff AND FechaFin > @fi " +
+                    $" AND FechaFin > @ff))";
 
                 using (var command = new MySqlCommand(sql, connection))
                 {

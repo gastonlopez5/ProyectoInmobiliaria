@@ -88,6 +88,9 @@ namespace WebApplication1.Controllers
 
                 if (listaInmuebles.Count != 0)
                 {
+                    TempData["FechaInicio"] = p.FechaInicio;
+                    TempData["FechaFinal"] = p.FechaFin;
+
                     foreach (Inmueble i in listaInmuebles)
                     {
                         var listaContratos = repositorioContrato.ObtenerTodosPorInmueble(i.Id, p.FechaInicio, p.FechaFin);
@@ -118,7 +121,7 @@ namespace WebApplication1.Controllers
                 {
                     ViewBag.TipoInmueble = repositorioInmueble.ObtenerTodosTipos();
                     TempData["Mensaje"] = "No hay Inmuebles disponibles.";
-                    return RedirectToAction("Busqueda");
+                    return View(p);
                 }
 
                 return View();

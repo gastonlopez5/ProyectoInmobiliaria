@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -18,6 +19,7 @@ namespace WebApplication1.Models
         [ForeignKey("InmuebleId")]
         public int InmuebleId { get; set; }
 
+        [BindNever]
         public Inmueble Propiedad { get; set; }
 
         [Required(ErrorMessage = "Fotos del Inmueble requeridas")]
