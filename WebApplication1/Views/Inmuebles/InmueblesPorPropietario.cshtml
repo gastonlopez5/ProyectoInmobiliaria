@@ -62,9 +62,10 @@
 
                     }
 
-                    <a asp-action="ListarContratos" asp-route-id="@item.Id"  title="Contratos Vigentes"><span class="lnr lnr-list" style="font-weight:bold"></span></a>&nbsp;|
+                    <a asp-action="ListarContratos" asp-route-id="@item.Id" title="Contratos Vigentes"><span class="lnr lnr-list" style="font-weight:bold"></span></a>&nbsp;|
                     <a asp-action="ListarTodosContratos" asp-controller="Contratos" asp-route-id="@item.Id" title="Contratos"><span class="lnr lnr-book" style="font-weight:bold"></span></a>&nbsp; |
                     <a asp-action="Index" asp-controller="Galeria" asp-route-id="@item.Id" title="Ver Galería"><span class="lnr lnr-picture" style="font-weight:bold"></span></a>&nbsp;|
+                    <a asp-action="Create" asp-controller="Galeria" asp-route-id="@item.Id" title="Agregar Foto"><span class="lnr lnr-star" style="font-weight:bold"></span></a>&nbsp; |
 
                     @if (User.IsInRole("Administrador"))
                     {

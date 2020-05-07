@@ -15,7 +15,8 @@ namespace WebApplication1.Models
 		public int NroPago { get; set; }
 		
 		public int ContratoId { get; set; }
-		
+
+		[DataType(DataType.Date)]
 		public DateTime Fecha { get; set; }
 
 		[Required(ErrorMessage = "Importe requerido")]

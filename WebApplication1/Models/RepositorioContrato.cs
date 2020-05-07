@@ -358,12 +358,9 @@ namespace WebApplication1.Models
                     $" inquilinos.Nombre, inquilinos.Apellido, inmuebles.Direccion " +
                     $" FROM contrato JOIN inquilinos ON(inquilinos.Id = contrato.InquilinoId) " +
                     $" JOIN inmuebles ON(inmuebles.Id = contrato.InmuebleId) " +
-                    $" WHERE contrato.InmuebleId = @id AND ((FechaInicio < @fi AND " +
-                    $" FechaFin > @fi AND FechaFin < @ff ) " +
-                    $" OR (FechaInicio > @fi AND FechaInicio < @ff " +
-                    $" AND FechaFin > @ff ) OR (FechaInicio < @fi " +
-                    $" AND FechaInicio < @ff AND FechaFin > @fi " +
-                    $" AND FechaFin > @ff))";
+                    $" WHERE contrato.InmuebleId = @id " +
+                    $" AND ((FechaInicio <= @fi AND FechaFin >= @fi) " +
+                    $" OR (FechaInicio <= @ff AND FechaFin >= @ff ))";
 
                 using (var command = new MySqlCommand(sql, connection))
                 {

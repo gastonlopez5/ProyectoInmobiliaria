@@ -184,6 +184,11 @@ namespace WebApplication1.Controllers
             try
             {
                 var g = repositorioGaleria.ObtenerPorId(id);
+
+                string wwwPath = environment.WebRootPath;
+                string path = wwwPath + g.Ruta;
+                System.IO.File.Delete(path);
+                
                 repositorioGaleria.Baja(id);
                 TempData["Mensaje"] = "Foto eliminada correctamente";
                 return RedirectToAction(nameof(Index), new { id = g.InmuebleId });
