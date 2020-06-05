@@ -8,11 +8,14 @@ using Inmobiliaria_.Net_Core.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using WebApplication1.Models;
+using WebApplication2.Models;
 
 namespace WebApplication1.Api
 {
@@ -23,11 +26,13 @@ namespace WebApplication1.Api
     {
         private readonly DataContext contexto;
         private readonly IConfiguration config;
+        private readonly IHostingEnvironment environment;
 
-        public PropietariosController(DataContext contexto, IConfiguration config)
+        public PropietariosController(DataContext contexto, IConfiguration config, IHostingEnvironment environment)
         {
             this.contexto = contexto;
             this.config = config;
+            this.environment = environment;
         }
 
         // GET: api/Propietarios
@@ -37,7 +42,22 @@ namespace WebApplication1.Api
             try
             {
                 var usuario = User.Identity.Name;
-                return Ok(contexto.Propietarios.SingleOrDefault(x => x.Email == usuario));
+                PropietarioFoto propietarioFoto = new PropietarioFoto();
+
+                var propietario = contexto.Propietarios.SingleOrDefault(x => x.Email == usuario);
+                var ruta = contexto.FotoPerfil.SingleOrDefault(e => e.PropietarioId == propietario.Id).Ruta;
+                var pass = contexto.Usuarios.SingleOrDefault(a => a.Email == usuario).Clave;
+
+                propietarioFoto.Id = propietario.Id;
+                propietarioFoto.Dni = propietario.Dni;
+                propietarioFoto.Nombre = propietario.Nombre;
+                propietarioFoto.Apellido = propietario.Apellido;
+                propietarioFoto.Email = propietario.Email;
+                propietarioFoto.Telefono = propietario.Telefono;
+                propietarioFoto.Ruta = ruta;
+                propietarioFoto.Clave = pass;
+
+                return Ok(propietarioFoto);
             }
             catch (Exception ex)
             {
@@ -110,9 +130,45 @@ namespace WebApplication1.Api
         }
 
         // PUT: api/Propietarios/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPut()]
+        public async Task<IActionResult> Put(PropietarioClave entidad)
         {
+            try
+            {
+                Propietario propietario = null;
+                Usuario usuario = null;
+
+                if (ModelState.IsValid && contexto.Usuarios.AsNoTracking().SingleOrDefault(e => e.Email == User.Identity.Name) != null)
+                {
+                    entidad.Clave = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                                                password: entidad.Clave,
+                                                salt: System.Text.Encoding.ASCII.GetBytes("Salt"),
+                                                prf: KeyDerivationPrf.HMACSHA1,
+                                                iterationCount: 1000,
+                                                numBytesRequested: 256 / 8));
+                    
+                    usuario = contexto.Usuarios.SingleOrDefault(x => x.Email == User.Identity.Name);
+                    usuario.Email = entidad.Email;
+                    usuario.Clave = entidad.Clave;
+                    contexto.Usuarios.Update(usuario);
+
+                    propietario = contexto.Propietarios.SingleOrDefault(x => x.Email == User.Identity.Name);
+                    propietario.Nombre = entidad.Nombre;
+                    propietario.Apellido = entidad.Apellido;
+                    propietario.Dni = entidad.Dni;
+                    propietario.Email = entidad.Email;
+                    propietario.Telefono = entidad.Telefono;
+                    contexto.Propietarios.Update(propietario);
+
+                    contexto.SaveChanges();
+                    return Ok(entidad);
+                }
+                return BadRequest();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
         }
 
         // DELETE: api/ApiWithActions/5

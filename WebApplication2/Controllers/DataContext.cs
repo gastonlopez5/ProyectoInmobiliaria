@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApplication1.Models;
+using WebApplication2.Models;
 
 namespace Inmobiliaria_.Net_Core.Models
 {
@@ -16,5 +17,6 @@ namespace Inmobiliaria_.Net_Core.Models
         public DbSet<Propietario> Propietarios { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Inmueble> Inmuebles { get; set; }
+        public DbSet<FotoPerfil> FotoPerfil { get; set; }
     }
 }
