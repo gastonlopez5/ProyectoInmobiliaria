@@ -18,5 +18,7 @@ namespace Inmobiliaria_.Net_Core.Models
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Inmueble> Inmuebles { get; set; }
         public DbSet<FotoPerfil> FotoPerfil { get; set; }
+        public DbSet<TipoInmueble> TipoInmueble { get; set; }
+        public DbSet<Galeria> Galeria { get; set; }
     }
 }

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using WebApplication1.Models;
+using WebApplication2.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -32,7 +33,20 @@ namespace Inmobiliaria_.Net_Core.Api
             try
             {
                 var usuario = User.Identity.Name;
-                return Ok(contexto.Inmuebles.Include(e => e.Duenio).Where(e => e.Duenio.Email == usuario));
+                var listaInmuebles = contexto.Inmuebles.Include(e => e.Duenio).Where(e => e.Duenio.Email == usuario).Include(e => e.TipoInmueble);
+                List<InmuebleFoto> listaInmueblesFoto = new List<InmuebleFoto>();
+
+                foreach(Inmueble i in listaInmuebles)
+                {
+                    InmuebleFoto inmuebleFoto = new InmuebleFoto
+                    {
+                        Inmueble = i,
+                        Ruta = contexto.Galeria.FirstOrDefault(e => e.InmuebleId == i.Id).Ruta
+                    };
+                    listaInmueblesFoto.Add(inmuebleFoto);
+                }
+
+                return Ok(listaInmueblesFoto);
             }
             catch (Exception ex)
             {
