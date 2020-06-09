@@ -30,8 +30,8 @@ namespace WebApplication3.Controllers
         }
 
         // GET: api/Contratos
-        [HttpGet]
-        public async Task<IActionResult> Get()
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(int id)
         {
             try
             {
@@ -42,7 +42,7 @@ namespace WebApplication3.Controllers
                 .ThenInclude(p => p.Duenio)
                 .Include(e => e.Inmueble)
                 .ThenInclude(t => t.TipoInmueble)
-                .Where(x => x.Inmueble.Duenio.Email == usuario && x.FechaFin >= DateTime.Now);
+                .Where(x => x.Inmueble.Duenio.Email == usuario && x.Inmueble.Id == id && x.FechaFin >= DateTime.Now);
 
                 return Ok(contratosByPropietario);
             }
