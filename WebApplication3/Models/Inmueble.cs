@@ -31,10 +31,10 @@ namespace WebApplication1.Models
         [Required(ErrorMessage = "Importe requerido")]
         [Range(1000, 1000000, ErrorMessage = "Ingrese un valor entre 1000 y 1000000")]
         [RegularExpression(@"^[0-9]{1,1000000}$", ErrorMessage = "Ingrese un número entero")]
-        public decimal Costo { get; set; }
-        
+        public double Costo { get; set; }
+
         public Boolean Disponible { get; set; }
-        
+
         [Display(Name = "Dueño")]
         public int PropietarioId { get; set; }
         

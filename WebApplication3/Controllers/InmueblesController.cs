@@ -70,7 +70,7 @@ namespace Inmobiliaria_.Net_Core.Api
         }
 
         // POST api/<controller>
-        [HttpPost]
+        [HttpPost()]
         public async Task<IActionResult> Post(Inmueble entidad)
         {
             try
@@ -91,15 +91,24 @@ namespace Inmobiliaria_.Net_Core.Api
         }
 
         // PUT api/<controller>/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, Inmueble entidad)
+        [HttpPut]
+        public async Task<IActionResult> Put([FromBody] Inmueble entidad)
         {
             try
             {
-                if (ModelState.IsValid && contexto.Inmuebles.AsNoTracking().Include(e=>e.Duenio).FirstOrDefault(e => e.Id == id && e.Duenio.Email == User.Identity.Name) != null)
+                Inmueble inmueble = null;
+
+                if (ModelState.IsValid && contexto.Inmuebles.AsNoTracking().SingleOrDefault(e => e.Id == entidad.Id) != null)
                 {
-                    entidad.Id = id;
-                    contexto.Inmuebles.Update(entidad);
+                    inmueble = contexto.Inmuebles.SingleOrDefault(x => x.Id == entidad.Id);
+                    inmueble.Uso = entidad.Uso;
+                    inmueble.Direccion = entidad.Direccion;
+                    inmueble.Costo = entidad.Costo;
+                    inmueble.Ambientes = entidad.Ambientes;
+                    inmueble.Disponible = entidad.Disponible;
+                    inmueble.Tipo = entidad.TipoInmueble.Id;
+                    contexto.Inmuebles.Update(inmueble);
+
                     contexto.SaveChanges();
                     return Ok(entidad);
                 }
