@@ -40,7 +40,9 @@ namespace WebApplication3.Controllers
                 .Include(i => i.Inquilino)
                 .Include(e => e.Inmueble)
                 .ThenInclude(p => p.Duenio)
-                .Where(x => x.Inmueble.Duenio.Email == usuario);
+                .Include(e => e.Inmueble)
+                .ThenInclude(t => t.TipoInmueble)
+                .Where(x => x.Inmueble.Duenio.Email == usuario && x.FechaFin >= DateTime.Now);
 
                 return Ok(contratosByPropietario);
             }
