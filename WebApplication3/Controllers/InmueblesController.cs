@@ -13,6 +13,7 @@ using WebApplication2.Models;
 using Microsoft.AspNetCore.Hosting;
 
 using System.IO;
+using WebApplication3.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -131,6 +132,7 @@ namespace Inmobiliaria_.Net_Core.Api
         {
             try
             {
+                Mensaje msg = null;
                 var entidad = contexto.Inmuebles.Include(e => e.Duenio).FirstOrDefault(e => e.Id == id && e.Duenio.Email == User.Identity.Name);
                 var galeria = contexto.Galeria.Where(x => x.InmuebleId == id);
                 var contratosByPropietario = contexto.Contrato
@@ -153,7 +155,9 @@ namespace Inmobiliaria_.Net_Core.Api
                     contexto.Galeria.RemoveRange(galeria);
                     contexto.Inmuebles.Remove(entidad);
                     contexto.SaveChanges();
-                    return Ok();
+                    msg = new Mensaje();
+                    msg.Msg = "Inmueble eliminado exitosamente!!";
+                    return Ok(msg);
                 }
                 return BadRequest();
             }
