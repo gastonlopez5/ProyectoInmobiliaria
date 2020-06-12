@@ -10,6 +10,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using WebApplication1.Models;
 using WebApplication2.Models;
+using Microsoft.AspNetCore.Hosting;
+
+using System.IO;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -20,10 +23,12 @@ namespace Inmobiliaria_.Net_Core.Api
     public class InmueblesController : Controller
     {
         private readonly DataContext contexto;
+        private readonly IHostingEnvironment environment;
 
-        public InmueblesController(DataContext contexto)
+        public InmueblesController(DataContext contexto, IHostingEnvironment environment)
         {
             this.contexto = contexto;
+            this.environment = environment;
         }
 
         // GET: api/<controller>
@@ -127,8 +132,25 @@ namespace Inmobiliaria_.Net_Core.Api
             try
             {
                 var entidad = contexto.Inmuebles.Include(e => e.Duenio).FirstOrDefault(e => e.Id == id && e.Duenio.Email == User.Identity.Name);
-                if (entidad != null)
+                var galeria = contexto.Galeria.Where(x => x.InmuebleId == id);
+                var contratosByPropietario = contexto.Contrato
+                .Include(i => i.Inquilino)
+                .Include(e => e.Inmueble)
+                .ThenInclude(p => p.Duenio)
+                .Include(e => e.Inmueble)
+                .ThenInclude(t => t.TipoInmueble)
+                .Where(x => x.Inmueble.Duenio.Email == User.Identity.Name && x.Inmueble.Id == id);
+
+                if (entidad != null && contratosByPropietario.Count() == 0)
                 {
+                    foreach(Galeria g in galeria)
+                    {
+                        string wwwPath = environment.WebRootPath;
+                        string path = wwwPath + g.Ruta;
+                        System.IO.File.Delete(path);
+                    }
+
+                    contexto.Galeria.RemoveRange(galeria);
                     contexto.Inmuebles.Remove(entidad);
                     contexto.SaveChanges();
                     return Ok();
@@ -140,29 +162,5 @@ namespace Inmobiliaria_.Net_Core.Api
                 return BadRequest(ex);
             }
 		}
-
-        /*
-		// DELETE api/<controller>/5
-		[HttpDelete("BajaLogica/{id}")]
-		public async Task<IActionResult> BajaLogica(int id)
-		{
-			try
-			{
-				var entidad = contexto.Inmuebles.Include(e => e.Duenio).FirstOrDefault(e => e.Id == id && e.Duenio.Email == User.Identity.Name);
-				if (entidad != null)
-				{
-					entidad.Superficie = -1;//cambiar por estado = 0
-					contexto.Inmuebles.Update(entidad);
-					contexto.SaveChanges();
-					return Ok();
-				}
-				return BadRequest();
-			}
-			catch (Exception ex)
-			{
-				return BadRequest(ex);
-			}
-		}
-        */
 	}
 }
