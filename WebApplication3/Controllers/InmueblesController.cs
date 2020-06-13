@@ -77,8 +77,8 @@ namespace Inmobiliaria_.Net_Core.Api
 
         // POST api/<controller>
         [HttpPost()]
-        public async Task<IActionResult> Post(Inmueble entidad)
-        {
+        public async Task<IActionResult> Post([FromBody] Inmueble entidad)
+            {
             try
             {
                 if (ModelState.IsValid)
@@ -86,7 +86,26 @@ namespace Inmobiliaria_.Net_Core.Api
                     entidad.PropietarioId = contexto.Propietarios.Single(e => e.Email == User.Identity.Name).Id;
                     contexto.Inmuebles.Add(entidad);
                     contexto.SaveChanges();
-                    return CreatedAtAction(nameof(Get), new { id = entidad.Id }, entidad);
+
+                    Galeria foto = new Galeria();
+                    foto.Ruta = "/Galeria/" + entidad.Id + "/casa2.jpg";
+                    foto.InmuebleId = entidad.Id;
+                    contexto.Galeria.Add(foto);
+                    contexto.SaveChanges();
+
+                    string wwwPath = environment.WebRootPath;
+                    string path = wwwPath + "/Galeria/" + entidad.Id + "";
+
+                    if (!Directory.Exists(path))
+                    {
+                        Directory.CreateDirectory(path);
+                    }
+
+                    InmuebleFoto inmuebleFoto = new InmuebleFoto();
+                    inmuebleFoto.Inmueble = entidad;
+                    inmuebleFoto.Ruta = foto.Ruta;
+
+                    return Ok(inmuebleFoto);
                 }
                 return BadRequest();
             }
