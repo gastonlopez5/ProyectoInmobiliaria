@@ -88,7 +88,7 @@ namespace Inmobiliaria_.Net_Core.Api
                     contexto.SaveChanges();
 
                     Galeria foto = new Galeria();
-                    foto.Ruta = "/Galeria/" + entidad.Id + "/casa2.jpg";
+                    foto.Ruta = "/Galeria/" + entidad.Id + "/casa1.jpg";
                     foto.InmuebleId = entidad.Id;
                     contexto.Galeria.Add(foto);
                     contexto.SaveChanges();
